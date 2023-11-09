@@ -18,14 +18,13 @@ contract BellumStaff is Ownable {
 
     /* Events */
     event AdminADD(address indexed _wallet);
-    event AdminUpdated(address indexed _wallet);
     event AdminRemoved(address indexed _wallet);
     event TokenAdded(IERC20 tokenAddress, string symbol);
     event TokenRemoved(string symbol, address _stablecoin );
     event InstallmentDateUpdated(uint _installmentNumber, uint _dateOfPayment);    
     event TheInstallmenteIsOnTime(uint _paymentDelay);
     event TheInstallmentIsOneDayLate(uint _amountToPay);
-    event TheInstallmentWasCloseToBeCanceled(uint currentInterestRate, uint amountToPay);
+    event TheTitleIsCloseToBeCanceled(uint currentInterestRate, uint amountToPay);
     event PaymentIsLate(uint currentInterestRate, uint amountToPay);
 
     /* Structs */
