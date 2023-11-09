@@ -2,32 +2,34 @@
 pragma solidity 0.8.19;
 
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
-import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
-    
+contract HorizonS is CCIPReceiver, Ownable {
+
+    // Custom errors to provide more descriptive revert messages.
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
     error NothingToWithdraw();
     error FailedToWithdrawEth(address owner, address target, uint256 value);
     error DestinationChainNotWhitelisted(uint64 destinationChainSelector);
 
     // Event emitted when a message is sent to another chain.
-    event MessageSent(bytes32 indexed messageId, uint64 indexed destinationChainSelector, address receiver, bytes _data, address feeToken, uint256 fees);
+    event MessageSent(bytes32 indexed messageId, uint64 indexed destinationChainSelector, address receiver, bytes text, address feeToken, uint256 fees);
     event MessageReceived(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text, address token, uint256 tokenAmount);
 
     bytes32 private lastReceivedMessageId;
     string private lastReceivedText;
     uint private destinationChainSelector;
 
+    // Mapping to keep track of whitelisted destination chains.
     mapping(uint64 => bool) public whitelistedDestinationChains;
 
-    LinkTokenInterface linkToken = LinkTokenInterface(); //FALTA O ENDEREÇO
+    LinkTokenInterface linkToken = LinkTokenInterface();  //FALTA O ENDEREÇO
 
-    constructor(address _router) CCIPReceiver(_router){  //FALTA O ENDEREÇO
+    constructor(address _router) CCIPReceiver(_router){ //FALTA O ENDEREÇO
     }
 
     /// @dev Whitelists a chain for transactions.
@@ -44,9 +46,12 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
         whitelistedDestinationChains[_destinationChainSelector] = false;
     }
 
-    function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiver, bytes memory _data) external /*onlyOwner onlyWhitelistedDestinationChain(_destinationChainSelector)*/ returns (bytes32 messageId){
-        
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage( _receiver, _data, address(linkToken));
+    function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiver, bytes memory _data) external /*onlyOwner*/ returns (bytes32 messageId){
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
+            _receiver,
+            _data,
+            address(linkToken)
+        );
 
         IRouterClient router = IRouterClient(this.getRouter());
 
@@ -59,7 +64,7 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
 
         messageId = router.ccipSend(_destinationChainSelector, evm2AnyMessage);
 
-        emit MessageSent( messageId, _destinationChainSelector, _receiver, _data, address(linkToken), fees);
+        emit MessageSent(messageId, _destinationChainSelector, _receiver, _data, address(0), fees);
 
         return messageId;
     }
@@ -102,15 +107,5 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
         if (amount == 0) revert NothingToWithdraw();
 
         IERC20(_token).transfer(_beneficiary, amount);
-    }
-
-    /* MODIFIERS */
-
-    /// @dev Modifier that checks if the chain with the given destinationChainSelector is whitelisted.
-    /// @param _destinationChainSelector The selector of the destination chain.
-    modifier onlyWhitelistedDestinationChain(uint64 _destinationChainSelector) {
-        if (!whitelistedDestinationChains[_destinationChainSelector])
-            revert DestinationChainNotWhitelisted(_destinationChainSelector);
-        _;
     }
 }
