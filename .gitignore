@@ -1,3 +1,4 @@
 
 node_modules
 .env
+hardhat.config.js
