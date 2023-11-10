@@ -32,7 +32,7 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
         uint idTitle;
         uint drawNumber;
         uint contractId;
-        address nftOwner;
+        address rwaOwner;
         uint ensuranceValue;
         ERC721 colateralAddress;
         uint colateralId;
@@ -40,7 +40,7 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
         bool isPermission;
     }
 
-    //Array to keep track of NFT's prices
+    //Array to keep track of RWA's prices
     Permissions[] colateralAddresses;
 
     // Mapping to keep track of whitelisted source chains.
@@ -53,14 +53,14 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
     
     // Event emitted when a message is received from another chain.
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
-    event EnsuranceAdd(address provisoryOwner, uint _nftId, uint _titleId, uint _drawNumber);
-    event NFTRefunded(uint _titleId, uint _drawNumber, address _nftOwner, uint _colateralId);
-    event NFTPriceAtMoment(uint _contractId, ERC721 _colateralAddresses, int _nftValue, uint _referenceValue);
-    event PriceLowEvent(uint _contractId, ERC721 _colateralAddresses, int _nftValue, uint _referenceValue);
+    event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
+    event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
+    event RWAPriceAtMoment(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
+    event PriceLowEvent(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
 
     LinkTokenInterface linkToken = LinkTokenInterface();//FALTA O ENDEREÇO
     HorizonFujiS sender = HorizonFujiS(payable());//FALTA O ENDEREÇO
-    ERC721 nft;
+    ERC721 rwa;
 
     constructor(address _router) CCIPReceiver(_router) { //FALTA O ENDEREÇO
     }
@@ -77,7 +77,7 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
             idTitle: 0,
             contractId: 0,
             drawNumber: 0,
-            nftOwner: address(0),
+            rwaOwner: address(0),
             ensuranceValue: _ensuranceValue,
             colateralAddress: ERC721(address(0)),
             colateralId: 0,
@@ -89,12 +89,12 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
             permissionsInfo[_permissionHash] = permission;
         }else{
             if(_colateralLocked == false){
-                sendNftBackToOwner(_permissionHash);
+                sendRwaBackToOwner(_permissionHash);
             }
         }
     }
 
-    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _nftId, ERC721 _colectionAddress) public {
+    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, ERC721 _rwaAddress) public {
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
 
         require(permissionsInfo[permissionHash].isPermission == true, "This permission didn't exists!");
@@ -104,8 +104,8 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
         permission.idTitle = _titleId;
         permission.contractId = _contractId;
         permission.drawNumber = _drawNumber;
-        permission.nftOwner = msg.sender;
-        permission.colateralId = _nftId;
+        permission.rwaOwner = msg.sender;
+        permission.colateralId = _rwaId;
         permission.colateralAddress = _colectionAddress;
 
         colateralAddresses.push(permission);
@@ -116,49 +116,49 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
 
         require(uint(colateralPrice) >= targetPrice.mul(10), "The ensurance must have at least 10 times the value of the value needed!");
         
-        nft = _colectionAddress;
-        nft.transferFrom(msg.sender, address(this), _nftId);
+        rwa = _colectionAddress;
+        rwa.transferFrom(msg.sender, address(this), _rwaId);
 
-        address provisoryOwner = nft.ownerOf(_nftId);
+        address provisoryOwner = rwa.ownerOf(_rwaId);
 
-        bytes memory colateralAdded = abi.encode(permissionHash, _colectionAddress, _nftId);
+        bytes memory colateralAdded = abi.encode(permissionHash, _colectionAddress, _rwaId);
 
-        sender.sendMessagePayLINK(12532609583862916517, polygonReceiver, colateralAdded);
+        sender.sendMessagePayLINK(, polygonReceiver, colateralAdded); //Destination chainId
 
-        emit EnsuranceAdd(provisoryOwner, _nftId, _titleId, _drawNumber);
+        emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
     }
 
-    function sendNftBackToOwner(bytes32 _permissionHash) internal{
+    function sendRwaBackToOwner(bytes32 _permissionHash) internal{
         require(permissionsInfo[_permissionHash].isPermission == true, "This permission didnt exists!");
 
         Permissions storage permission = permissionsInfo[_permissionHash];
 
-        nft = permission.colateralAddress;
+        rwa = permission.colateralAddress;
 
-        nft.safeTransferFrom(address(this), permission.nftOwner, permission.colateralId);
+        rwa.safeTransferFrom(address(this), permission.rwaOwner, permission.colateralId);
 
-        emit NFTRefunded(permission.idTitle, permission.drawNumber, permission.nftOwner, permission.colateralId);
+        emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
     }
 
     //Tem de reformular com o Functions
     function checkColateralPrice(bytes32 _permissionHash) internal {
         for (uint256 i = 0; i < colateralAddresses.length; i++) {
-            // Obter o valor atual do NFT
-            int256 nftValue = 100 * 10**18;
+            // Obter o valor atual do RWA
+            int256 rwaValue = 100 * 10**18;
             
             Permissions storage permission = permissionsInfo[_permissionHash];
             
             // Valor de referência
             uint256 referenceValue = permission.ensuranceValue;
 
-            if (uint(nftValue) >= referenceValue.mul(10)) {
-                emit NFTPriceAtMoment(permission.contractId, colateralAddresses[i].colateralAddress, nftValue, referenceValue);
-            } else if (uint(nftValue) >= referenceValue.mul(6)) {
-                // O EVENTO ABAIXO IRÁ 'ALERTAR' O FRONTEND QUE, POR SUA VEZ, IRÁ COMUNICAR O DONO DO NFT QUE ELE PRECISA TOMAR PROVIDENCIA.
-                emit PriceLowEvent(permission.contractId, colateralAddresses[i].colateralAddress, nftValue, referenceValue);
-            } else if (uint(nftValue) < referenceValue.mul(3)) {
-                //address nftAddress = colateralAddresses[i]; PRECISO DESCOBRIR SE SERÁ POSSÍVEL MANTER O NFT NA CARTEIRA DO DONO OU PRECISAREI TRANSFERIR PARA O CONTRATO.
-                //nftAddress.sellNFT(colateralOwner.owner, 0, colateralOwner.coleteralId, ""); AQUI EU PRECISARIA REGISTRAR O NFT NA OPENSEA, POR EXEMPLO.
+            if (uint(rwaValue) >= referenceValue.mul(10)) {
+                emit RWAPriceAtMoment(permission.contractId, colateralAddresses[i].colateralAddress, rwaValue, referenceValue);
+            } else if (uint(rwaValue) >= referenceValue.mul(6)) {
+                // O EVENTO ABAIXO IRÁ 'ALERTAR' O FRONTEND QUE, POR SUA VEZ, IRÁ COMUNICAR O DONO DO RWA QUE ELE PRECISA TOMAR PROVIDENCIA.
+                emit PriceLowEvent(permission.contractId, colateralAddresses[i].colateralAddress, rwaValue, referenceValue);
+            } else if (uint(rwaValue) < referenceValue.mul(3)) {
+                //address rwaAddress = colateralAddresses[i]; PRECISO DESCOBRIR SE SERÁ POSSÍVEL MANTER O RWA NA CARTEIRA DO DONO OU PRECISAREI TRANSFERIR PARA O CONTRATO.
+                //rwaAddress.sellRWA(colateralOwner.owner, 0, colateralOwner.coleteralId, ""); AQUI EU PRECISARIA REGISTRAR O RWA NA OPENSEA, POR EXEMPLO.
             }
         }
     }
@@ -236,14 +236,14 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
     }
 
     /*MODIFIERS    */
-    // modifier onlyWhitelistedSourceChain(uint64 _sourceChainSelector) {
-    //     if (!whitelistedSourceChains[_sourceChainSelector])
-    //         revert SourceChainNotWhitelisted(_sourceChainSelector);
-    //     _;
-    // }
+    modifier onlyWhitelistedSourceChain(uint64 _sourceChainSelector) {
+        if (!whitelistedSourceChains[_sourceChainSelector])
+            revert SourceChainNotWhitelisted(_sourceChainSelector);
+        _;
+    }
 
-    // modifier onlyWhitelistedSenders(address _sender) {
-    //     if (!whitelistedSenders[_sender]) revert SenderNotWhitelisted(_sender);
-    //     _;
-    // }
+    modifier onlyWhitelistedSenders(address _sender) {
+        if (!whitelistedSenders[_sender]) revert SenderNotWhitelisted(_sender);
+        _;
+    }
 }
