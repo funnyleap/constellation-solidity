@@ -40,9 +40,11 @@ contract Horizon is CCIPReceiver, Ownable{
     HorizonVRF vrfv2consumer = HorizonVRF(0xE7d98f63EFCDD443549b64205B1A1d22Af8c1007); //FALTA ENDEREÇO
     HorizonS sender = HorizonS(payable(0xC3e7E776227D34874f6082f2F8476DD150DEC2de)); //FALTA ENDEREÇO
 
+    event NewTitleCreated(uint _titleId, uint _scheduleId, uint _monthlyValue, uint _titleValue);
     event TitleStatusUpdated(TitleStatus status);
     event NewTitleSold(uint _contractId, address _owner);
     event AmountToPay(uint amountWithInterests);
+    event InstallmentPaid(uint _idTitle, uint _contractId, uint _installmentsPaid);
     event EnsuranceValueNeededUpdate(uint _idTitle, uint _contractId, uint _valueOfEnsurance);
     event EnsuranceUpdated(address _temporaryEnsurance);
     event NextDraw(uint _nextDraw);
@@ -101,6 +103,7 @@ contract Horizon is CCIPReceiver, Ownable{
         uint titleValue;
         uint installments;
         uint monthlyValue;
+        uint periodLocked;
         address titleOwner;
         uint installmentsPaid;
         uint drawSelected;
@@ -117,6 +120,7 @@ contract Horizon is CCIPReceiver, Ownable{
         uint contractId;
         uint256 installmentNumber;
         uint paymentDate;
+        address payerAddress;
         address user;
         uint amount;
         uint paymentDelay;
@@ -181,6 +185,10 @@ contract Horizon is CCIPReceiver, Ownable{
         });
 
         allTitles[titleId] = newTitle;
+
+        uint monthlyValue = (allTitles[titleId].monthlyInvestiment.add(allTitles[titleId].protocolFee));
+
+        emit NewTitleCreated(titleId, scheduleId, monthlyValue, allTitles[titleId].titleValue);
     }
 
     function updateTitleStatus(uint _titleId) public { //OK
@@ -196,55 +204,66 @@ contract Horizon is CCIPReceiver, Ownable{
             if(block.timestamp > title.closeSellingDate && title.status == TitleStatus.Open){
                 title.status = TitleStatus.Closed;
 
-                emit TitleStatusUpdated(title.status);
             }else{
-                if(title.installments < title.nextDrawNumber || (title.titleCanceled).add(title.nextDrawNumber.sub(1)) >= title.installments && title.nextDrawTitlesAvailable == 0){
-                                    title.status = TitleStatus.Finalized;
-                }else{
-                    if(title.status == TitleStatus.Closed && title.nextDrawTitlesAvailable == 0){
-                            title.status = TitleStatus.Canceled;
+                uint nextDrawParticipants = staff.returnDrawParticipants(_titleId, title.nextDrawNumber);
 
-                            emit ThisTitleHasBeenCanceled(title.nextDrawTitlesAvailable);
+                if( title.status == TitleStatus.Closed && title.nextDrawNumber > title.installments ||
+                    title.status == TitleStatus.Closed && title.nextDrawNumber.add(title.titleCanceled) > title.installments && nextDrawParticipants == 0){
+                    title.status = TitleStatus.Finalized;
+
+                    emit TitleStatusUpdated(title.status);
+                }else{
+                    if(title.numberOfTitlesSold == 0){
+                        title.status = TitleStatus.Canceled;
+
+                        emit ThisTitleHasBeenCanceled(nextDrawParticipants);
                     }
                 }
             }
         }
     }
 
-    function buyTitle(uint64 _titleId) public { //OK
+    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //OK
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
         require(title.nextPurchaseId <= title.installments, "Title soldout!");
 
-        uint purchase = title.nextPurchaseId++;
+        title.numberOfTitlesSold++;
+        //Se você deseja sacar o valor do titulo em menos de 5 meses, se sorteado. Marque como true.
+        if(withdrawPeriod == true){
+            uint fee = title.protocolFee;
+            uint lockPeriod = 0;
+        } else {
+            uint fee = 0;
+            uint lockPeriod = 5;
+        }
 
         TitlesSold memory myTitle = TitlesSold({
-            contractId: purchase,
+            contractId: title.numberOfTitlesSold,
             titleValue: title.titleValue,
             installments: title.installments,
-            monthlyValue: ((title.monthlyInvestiment).add(title.protocolFee)),
+            monthlyValue: ((title.monthlyInvestiment).add(fee)),
+            periodLocked: lockPeriod,
             titleOwner: msg.sender,
             installmentsPaid: 0,
             drawSelected: 0,
-            drawReceiptId: 0,
             colateralId: 0,
-            colateralTitleAddress: address(0),
-            colateralNftAddress: address(0),
+            colateralTitleAddress: address(this),
+            colateralRWAAddress: address(0),
             valueOfEnsuranceNeeded: 0,
+            withdrawToken: 0,
             myTitleStatus: MyTitleWithdraw.OnSchedule,
             paid: false
         });
 
-        titleSoldInfos[_titleId][purchase] = myTitle;
-
-        bytes memory purchaseReceipt = abi.encode(title, block.timestamp);
-
-        receiptB.mint(msg.sender, _titleId, 1, purchaseReceipt);
+        titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
 
         if(title.nextPurchaseId > title.installments){
             title.status = TitleStatus.Closed;
         }
+
+        payInstallment(_titleId, titleSoldInfos[_titleId][title.numberOfTitlesSold].contractId, titleSoldInfos[_titleId][title.numberOfTitlesSold].installmentsPaid, _tokenAddress);
 
         emit NewTitleSold(purchase, msg.sender);
     }
@@ -256,11 +275,19 @@ contract Horizon is CCIPReceiver, Ownable{
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         require(title.status == TitleStatus.Closed, "Check the title status!");
-        require(_installmentNumber > myTitle.installmentsPaid, "Already paid!");
-        require(myTitle.installments >= _installmentNumber, "You don't have any installment to pay!");
+        require(myTitle.installments >= _installmentNumber, "You don't have any installment left to pay!");
         require(myTitle.myTitleStatus == MyTitleWithdraw.OnSchedule || myTitle.myTitleStatus == MyTitleWithdraw.Late || myTitle.myTitleStatus == MyTitleWithdraw.Withdraw );
 
-        uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, _installmentNumber);
+        uint _installment;
+
+        if(_installmentNumber == 0){
+            _installment = 1;
+        } else{
+            require(_installmentNumber > myTitle.installmentsPaid, "Already paid!");
+            _installment = _installmentNumber;
+        }
+
+        uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, _installment);
 
         if(block.timestamp > paymentDate){
             paymentDelay = (block.timestamp.sub(paymentDate));
@@ -283,8 +310,9 @@ contract Horizon is CCIPReceiver, Ownable{
 
         TitleRecord memory record = TitleRecord({
             contractId: _contractId,
-            installmentNumber: _installmentNumber,
+            installmentNumber: _installment,
             paymentDate: block.timestamp,
+            payerAddress: msg.sender,
             user: myTitle.titleOwner,
             amount: amountToPay,
             paymentDelay: paymentDelay,
@@ -293,9 +321,12 @@ contract Horizon is CCIPReceiver, Ownable{
         });
 
         if(myTitle.installmentsPaid >= title.nextDrawNumber && myTitle.drawSelected == 0){
-            title.nextDrawTitlesAvailable++;
+            
+            staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
-            selectorVRF[_idTitle][_installmentNumber][title.nextDrawTitlesAvailable] = record;
+            uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
+
+            selectorVRF[_idTitle][_installmentNumber][nextDrawParticipants] = record;
         }
 
         bytes memory paymentReceipt = abi.encode(record);
@@ -304,18 +335,24 @@ contract Horizon is CCIPReceiver, Ownable{
 
         if(myTitle.installmentsPaid == myTitle.installments){
             myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
+
+            if(myTitle.colateralId != 0 ){
+                refundColateral(_idTitle, _contractId);
+            }
         }
         if(myTitle.installmentsPaid == title.nextDrawNumber &&  myTitle.myTitleStatus == MyTitleWithdraw.Late){
             myTitle.myTitleStatus = MyTitleWithdraw.OnSchedule;
         }
 
         updateValueOfEnsurance(_idTitle, _contractId);
+
+        emit InstallmentPaid(_idTitle, _contractId, myTitle.installmentsPaid);
     }
 
     function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //OK
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Titles storage titles = allTitles[_idTitle];
-        require(myTitle.contractId < titles.nextPurchaseId, "Enter a valid contract Id for this Title!");
+        require(myTitle.contractId <= title.numberOfTitlesSold, "Enter a valid contract Id for this Title!");
 
         require(address(_tokenAddress) != address(0), "Enter a token address");
 
@@ -333,41 +370,53 @@ contract Horizon is CCIPReceiver, Ownable{
         //Valida se o contrato(esse), tem permissão para realizar a transferência do valor.
         require(stablecoin.allowance(msg.sender, address(this)) >= _amountToPay, "You must approve the contract to transfer the tokens");
 
-        //Transfere o valor correspondente a parcela para o contrato.
-        stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
-        stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+        if(myTitle.periodLocked == 0){
+            titles.totalValueReceived = titles.totalValueReceived.add(titles.monthlyInvestiment);
+            
+            stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
+            stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+        } else{
+            titles.totalValueReceived = titles.totalValueReceived.add(titles.monthlyInvestiment);
 
-        allTitles[_idTitle].totalValueReceived = allTitles[_idTitle].totalValueReceived.add((_amountToPay.sub(allTitles[_idTitle].protocolFee)));
+            if(_amountToPay.sub(titles.monthlyInvestiment) > 0){
+            
+                stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
+                stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+            } else{
+                stablecoin.transferFrom(msg.sender, address(this), _amountToPay);
+            }
+        }
 
         myTitle.installmentsPaid++;
     }
 
     function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal { //OK
+        Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
-        uint valueAlreadyPaid = ((myTitle.installmentsPaid).mul(myTitle.monthlyValue));
+        uint valueAlreadyPaid = ((myTitle.installmentsPaid).mul(titles.monthlyInvestiment));
 
-        if(valueAlreadyPaid > myTitle.titleValue){
+        if(valueAlreadyPaid >= myTitle.titleValue){
             myTitle.valueOfEnsuranceNeeded = 0;
         }else{
-            myTitle.valueOfEnsuranceNeeded = (myTitle.titleValue).sub((myTitle.installmentsPaid).mul(myTitle.monthlyValue));
+            myTitle.valueOfEnsuranceNeeded = (myTitle.titleValue).sub(valueAlreadyPaid);
         }
 
         emit EnsuranceValueNeededUpdate(_idTitle, _contractId, myTitle.valueOfEnsuranceNeeded);
     }
 
-    function monthlyVRFWinner(uint _idTitle, uint _drawNumber) public { //OK
+    function monthlyVRFWinner(uint _idTitle) public { //OK
         Titles storage title = allTitles[_idTitle];
 
-        require(_drawNumber == title.nextDrawNumber, "draw already done!");
-
-        uint thisDrawDate = staff.returnDrawDate(title.paymentSchedule, _drawNumber);
+        uint thisDrawDate = staff.returnDrawDate(title.paymentSchedule, title.nextDrawNumber);
 
         require(block.timestamp > thisDrawDate, "Isn't the time yet!");
 
-        uint256 requestId = vrfv2consumer.requestRandomWords(_idTitle, _drawNumber, title.nextDrawTitlesAvailable);
+        uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
 
-        title.nextDrawNumber++;
+        uint256 requestId = vrfv2consumer.requestRandomWords(_idTitle, title.nextDrawNumber, nextDrawParticipants);
+
+        title.status = TitleStatus.Waiting;
 
         Draw memory draw = Draw({
             idTitle: _idTitle,
@@ -383,11 +432,11 @@ contract Horizon is CCIPReceiver, Ownable{
 
         drawInfos[_idTitle][_drawNumber] = draw;
 
+        title.nextDrawNumber++;
+
         if(title.nextDrawNumber > title.installments){
             title.status = TitleStatus.Finalized;
         }
-        
-        title.nextDrawTitlesAvailable = 0;
     }
 
     function receiveVRFRandomNumber(uint256 _idTitle, uint _drawNumber) public{ //OK
@@ -470,7 +519,7 @@ contract Horizon is CCIPReceiver, Ownable{
         emit CreatingPermission(_idTitle, _drawNumber, draw.winner, sepoliaReceiver);
     }
 
-    function refundNft(uint _idTitle, uint _contractId, uint _drawNumber) public { //OK
+    function refundColateral(uint _idTitle, uint _contractId, uint _drawNumber) public { //OK
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         if(myTitle.installmentsPaid == myTitle.installments && myTitle.colateralNftAddress != address(0)){
 
