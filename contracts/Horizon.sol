@@ -459,7 +459,10 @@ contract Horizon is CCIPReceiver, Ownable{
 
         myTitle.drawSelected = draw.drawNumber;
         myTitle.drawReceiptId = receiptId;
+
         updateValueOfEnsurance(_idTitle, winningTicket.contractId);
+
+        title.status = TitleStatus.Closed;
 
         title.nextDrawNumber++;
 
@@ -469,30 +472,30 @@ contract Horizon is CCIPReceiver, Ownable{
     function addTitleColateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract, uint _tokenId) public{ //OK
         require(msg.sender == ERC721(receipt).ownerOf(_tokenId), "The winner must have the receipt token to add the colateralTitle");
 
+        TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId];
         TitlesSold storage myColateralTitle = titleSoldInfos[_idOfColateralTitle][_idOfColateralContract];
 
         require(myColateralTitle.drawReceiptId == _tokenId, "The token Id must correspond to the receipt of your colateral Title!");
 
-        uint colateralValue = myColateralTitle.installmentsPaid.mul(myColateralTitle.monthlyValue);
-        
-        TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId];
+        require(myColateralTitle.titleValue >= myTitle.valueOfEnsuranceNeeded, "The colateral total value must be greater than tue ensuranceValueNeeded");
 
-        uint targetValue = (myTitle.titleValue).sub((myTitle.installmentsPaid).mul(myTitle.monthlyValue));
+        uint colateralValuePaid = myColateralTitle.installmentsPaid.mul(myColateralTitle.monthlyInvestiment);
+        uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded.mul(2);
 
-        require(colateralValue >= targetValue, "The colateral must have a bigger value than the targetValue");
+        require(myColateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= ensuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
 
-        myTitle.colateralId = _tokenId;
+        myTitle.colateralId = _tokenId; AJUSTAR ISSO AQUI
         myTitle.colateralTitleAddress = address(receipt);
         myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
 
         nftToken = receipt;
 
-        nftToken.transferFrom(msg.sender, address(this), _tokenId);
+        nftToken.transferFrom(msg.sender, address(this), _tokenId); AJUSTAR ISSO AQUI
 
         emit ColateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfColateralTitle, _idOfColateralContract);
     }
 
-    function addNFTColateral(uint _idTitle, uint _contractId, uint _drawNumber) public { //OK
+    function addRWAColateral(uint _idTitle, uint _contractId, uint _drawNumber) public { //OK
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Draw storage draw = drawInfos[_idTitle][_drawNumber];
 
