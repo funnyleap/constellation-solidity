@@ -89,8 +89,7 @@ contract Horizon is CCIPReceiver, Ownable{
         uint installments;
         uint monthlyInvestiment;
         uint protocolFee;
-        uint nextDrawTitlesAvailable;
-        uint nextPurchaseId;
+        uint numberOfTitlesSold;
         uint totalValueReceived;
         uint totalValuePaid;
         uint titleCanceled;
@@ -153,33 +152,28 @@ contract Horizon is CCIPReceiver, Ownable{
     constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1E2a3c41108bd3730F6670a44595D1
     }
 
-    
-
     function createTitle(uint _opening, //OK
                          uint _closing,
                          uint _participants,
-                         uint _value,
-                         uint _scheduleId,
-                         uint _intervalDays) public {
+                         uint _value) public {
         require(_opening != 0, "Must Select a date to start to sell the titles!");
         require(_closing > _opening, "Must Select a date to stop to sell the titles!");
         require(_participants != 0, "Must set the number of total participants!");
 
-        staff.createSchedule(_scheduleId, _participants, _closing, _intervalDays);
-
         titleId++;
+
+        uint scheduleId = staff.createSchedule( titleId, _participants, _closing);
 
         Titles memory newTitle = Titles ({
         openSellingDate:_opening,
         closeSellingDate: _closing,
-        paymentSchedule: _scheduleId,
+        paymentSchedule: scheduleId,
         nextDrawNumber: 1,
         titleValue: _value * 10 ** 18,
         installments: _participants,
         monthlyInvestiment: (_value * 10 ** 18).div(_participants),
         protocolFee: (((_value * 10 ** 18).div(_participants)).mul(5)).div(100),
-        nextDrawTitlesAvailable: 0,
-        nextPurchaseId: 1,
+        numberOfTitlesSold: 0,
         totalValueReceived: 0,
         totalValuePaid: 0,
         titleCanceled: 0,

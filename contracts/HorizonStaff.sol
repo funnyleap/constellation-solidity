@@ -12,6 +12,7 @@ contract BellumStaff is Ownable {
     using SafeMath for uint256;
 
     /*Interest variables*/
+    uint scheduleId = 1;
     uint public baseInterestRate = 10;
     uint public dailyInterestRate = 3;
     uint oneDay = 60; //86400
@@ -48,7 +49,7 @@ contract BellumStaff is Ownable {
 
     /* Mappings */
     mapping(IERC20 coinAddress => TokenInfo) public allowedCrypto;
-    mapping(uint scheduleId => mapping(uint installmentId => Deadlines)) internal schedule;
+    mapping(uint _titleId => mapping(uint installmentId => Deadlines)) internal schedule;
     mapping(address adminWallet => AdminInfo) public staff;
 
     IERC20 stablecoin;
@@ -119,16 +120,15 @@ contract BellumStaff is Ownable {
 
     /**
      * 
-     * @param _scheduleId 
+     * @param _titleId 
      * @param _numPayments 
      * @param _closing 
      */
-    function createSchedule(uint _scheduleId, uint _numPayments, uint _closing) public {//OK
-        require(_scheduleId > 0, "Must set a title number!");
+    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public return (uint _scheduleId){//OK
         require(_numPayments > 0, "Number of payments must be greater than 0!");
-        require(schedule[_scheduleId][1].installmentNumber == 0, "Schedule Id already used!");
+        require(_closing > block.timestamp, "The closing of title selling must be in the future!");
 
-        uint intervalDays = 5 minutes; // We can adjust this as needed.
+        uint intervalDays = 5 minutes; // This will be dinamic. We can adjust this as needed.
 
         uint nextDate = _closing.add(300); // We can adjust this as needed.
 
@@ -144,11 +144,18 @@ contract BellumStaff is Ownable {
                 dailyInterestRate: dailyInterestRate
             });
 
-            schedule[_scheduleId][i] = dates;
+            schedule[_titleId][i] = dates;
 
             nextDate = nextDate.add(intervalDays);
         }
+
+        uint titleSchedule = scheduleId;
+
+        scheduleId ++;
+
+        return titleSchedule;
     }
+    
     /**
      * 
      * @param _scheduleId 
