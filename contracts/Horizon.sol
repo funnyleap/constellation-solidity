@@ -137,7 +137,6 @@ contract Horizon is CCIPReceiver, Ownable{
         uint randomNumberVRF;
         uint selectedContractID;
         address winner;
-        uint receiptId;
     }
 
     struct EthereumPermissions{
@@ -420,27 +419,25 @@ contract Horizon is CCIPReceiver, Ownable{
 
         Draw memory draw = Draw({
             idTitle: _idTitle,
-            drawNumber: _drawNumber,
+            drawNumber: title.nextDrawNumber,
             drawDate: block.timestamp,
             totalParticipants: title.nextDrawTitlesAvailable,
             requestId: requestId,
             randomNumberVRF: 0,
             selectedContractID: 0,
-            winner: address(0),
-            receiptId: 0
+            winner: address(0)
         });
 
-        drawInfos[_idTitle][_drawNumber] = draw;
-
-        title.nextDrawNumber++;
+        drawInfos[_idTitle][title.nextDrawNumber] = draw;
 
         if(title.nextDrawNumber > title.installments){
             title.status = TitleStatus.Finalized;
         }
     }
 
-    function receiveVRFRandomNumber(uint256 _idTitle, uint _drawNumber) public{ //OK
-        Draw storage draw = drawInfos[_idTitle][_drawNumber];
+    function receiveVRFRandomNumber(uint256 _idTitle) public{ //OK
+        Titles storage title = allTitles[_idTitle];
+        Draw storage draw = drawInfos[_idTitle][title.nextDrawNumber];
 
         (bool fulfilled, uint256[] memory randomWords, uint256 randomValue) = vrfv2consumer.getRequestStatus(draw.requestId);
 
@@ -448,17 +445,15 @@ contract Horizon is CCIPReceiver, Ownable{
         
         emit VRFAnswer(fulfilled, randomWords, randomValue);
 
-        TitleRecord storage winningTicket = selectorVRF[_idTitle][_drawNumber][randomValue];
+        TitleRecord storage winningTicket = selectorVRF[_idTitle][drawInfos.drawNumber][randomValue];
 
         draw.randomNumberVRF = randomValue;
-        draw.winner = winningTicket.user;
         draw.selectedContractID = winningTicket.contractId;
+        draw.winner = winningTicket.user;
 
         //Emite o comprovante do sorteio.
         bytes memory drawResult = abi.encode(draw);
         uint receiptId = receipt.safeMint(winningTicket.user, string(drawResult));
-
-        draw.receiptId = receiptId;
 
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][winningTicket.contractId];
 
@@ -466,7 +461,9 @@ contract Horizon is CCIPReceiver, Ownable{
         myTitle.drawReceiptId = receiptId;
         updateValueOfEnsurance(_idTitle, winningTicket.contractId);
 
-        emit MonthlyWinnerSelected(_idTitle, _drawNumber, randomValue, winningTicket.contractId, winningTicket.user, receiptId);        
+        title.nextDrawNumber++;
+
+        emit MonthlyWinnerSelected(_idTitle, drawInfos.drawNumber, randomValue, winningTicket.contractId, winningTicket.user, receiptId);        
     }
 
     function addTitleColateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract, uint _tokenId) public{ //OK
