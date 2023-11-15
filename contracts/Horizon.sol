@@ -526,6 +526,7 @@ contract Horizon is CCIPReceiver, Ownable{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(myTitle.installmentsPaid == myTitle.installments, "All the installments must have been paid!");
+        require(myTitle.paid == true, "You can't retrieve the colateral before the withdraw!");
 
         if(myTitle.installmentsPaid == myTitle.installments && myTitle.colateralRWAAddress != address(0)){
 
@@ -544,10 +545,10 @@ contract Horizon is CCIPReceiver, Ownable{
         }
     }
 
-    function winnerWithdraw(uint _idTitle, uint _drawNumber, IERC20 _stablecoin) public { //OK
+    function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public { //OK
         Titles storage title = allTitles[_idTitle];
-        Draw storage draw = drawInfos[_idTitle][_drawNumber];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][draw.selectedContractID];
+        Draw storage draw = drawInfos[_idTitle][myTitle.drawSelected];
 
         address protocolOwner = owner();
         
@@ -556,7 +557,7 @@ contract Horizon is CCIPReceiver, Ownable{
         require(myTitle.myTitleStatus == MyTitleWithdraw.Withdraw, "This title don't have the permission to withdraw");
  
         if(myTitle.installmentsPaid == myTitle.installments ||
-           myTitle.colateralTitleAddress != address(0) || myTitle.colateralNftAddress != address(0)) {
+           myTitle.colateralId != 0 || myTitle.colateralRWAAddress != address(0) && myTitle.colateralId != 0) {
 
             (, , bool isStable) = staff.returnAvailableStablecoin(_stablecoin);
 
@@ -567,16 +568,16 @@ contract Horizon is CCIPReceiver, Ownable{
             //Valida se o endereço tem o valor da parcela na carteira.
             require(stablecoin.balanceOf(address(this))>= myTitle.titleValue);
             //Valida se a carteira vencedora possui os tokens/recibos.
-            require(draw.winner == receipt.ownerOf(draw.receiptId), "The winner should have the draw receipt to receive the payment!");
+            require(myTitle.titleOwner == receipt.ownerOf(draw.winnerReceiptId), "The winner should have the draw receipt to receive the payment!");
             //Transfere o valor correspondente a parcela para o contrato.
-            stablecoin.transfer(draw.winner, myTitle.titleValue);
+            stablecoin.transfer(myTitle.titleOwner, myTitle.titleValue);
 
-            emit MonthlyWinnerPaid(_idTitle, _drawNumber, draw.winner, myTitle.titleValue);
+            emit MonthlyWinnerPaid(_idTitle, myTitle.drawSelected, myTitle.titleOwner, myTitle.titleValue);
         }else{
             emit ThereAreSomePendencies(myTitle.installmentsPaid,
                                         myTitle.colateralId,
                                         myTitle.colateralTitleAddress,
-                                        myTitle.colateralNftAddress,
+                                        myTitle.colateralRWAAddress,
                                         myTitle.myTitleStatus);
         }
         myTitle.paid = true;
