@@ -111,6 +111,7 @@ contract Horizon is CCIPReceiver, Ownable{
         uint drawSelected;
         uint colateralId;
         address colateralTitleAddress;
+        address colateralRWAAddress;
         uint valueOfEnsuranceNeeded;
         MyTitleWithdraw myTitleStatus;
         bool paid;
@@ -148,10 +149,10 @@ contract Horizon is CCIPReceiver, Ownable{
 
     mapping(uint titleId => Titles) public allTitles; //ok
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos; //OK
-    mapping(uint titleId => mapping(uint contractId => TitleRecord)) public installmentsPaidList;
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
     mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrder => TitleRecord))) public selectorVRF;
     mapping(bytes32 permissionHash => FujiPermissions) permissionInfo;
+    mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos; //OK
 
     constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1E2a3c41108bd3730F6670a44595D1
     }
@@ -493,6 +494,16 @@ contract Horizon is CCIPReceiver, Ownable{
         myTitle.colateralTitleAddress = address(receipt);
         myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
 
+        ColateralTitles memory colateral = ColateralTitles ({
+            colateralId: myColateralTitle.withdrawToken,
+            colateralAddress: address(receiptD),
+            colateralOwner: msg.sender,
+            titleIdOfColateral: _idOfColateralTitle,
+            contractIdOfColateral: _idOfColateralContract
+        });
+
+        colateralInfos[_titleId][_contractId] = colateral;
+
         receipt.transferFrom(msg.sender, address(this), myColateralTitle.withdrawToken);
 
         emit ColateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfColateralTitle, _idOfColateralContract);
@@ -587,46 +598,34 @@ contract Horizon is CCIPReceiver, Ownable{
     // Function to check titles with overdue payments and apply rules
     function verifyLatePayments(uint _titleId, uint _contractId) public { //OK
         Titles storage title = allTitles[_titleId];
-        TitlesSold storage clientTitle = titleSoldInfos[_titleId][_contractId];
 
-        if(title.nextDrawNumber > 1 && clientTitle.installmentsPaid == 0){
-            clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
-            title.titleCanceled++;
-        }else{
-            uint dateOfFirstLatePayment = staff.returnPaymentDeadline(title.paymentSchedule, clientTitle.installmentsPaid.add(1));
+        for(i = 1; i < title.numberOfTitlesSold; i++){
 
-            if(block.timestamp.sub(dateOfFirstLatePayment) > 0){
+            TitlesSold storage clientTitle = titleSoldInfos[_titleId][i];
 
-                clientTitle.myTitleStatus = MyTitleWithdraw.Late;
+            if(title.nextDrawNumber.sub(clientTitle.installmentsPaid) >= 2){
+                clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
+                title.titleCanceled++;
 
-                emit MyTitleStatusUpdated(clientTitle.myTitleStatus);
-
-                uint totalAmountOfInterest = 0;
-
-                uint mostRecentDraw = title.nextDrawNumber.sub(1);
-
-                for(uint i = clientTitle.installmentsPaid; i <= mostRecentDraw; i++) {
-
-                    emit PaymentLateNumber(i);
-
-                    uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, i);
-                    uint paymentTimeLate = block.timestamp.sub(paymentDate);
-                    uint inicialAmountToPay = clientTitle.monthlyValue;
-                    totalAmountOfInterest = (staff.calculateDelayedPayment(paymentTimeLate, inicialAmountToPay)).sub(clientTitle.monthlyValue);
-
-                    emit AmountLateWithInterest(totalAmountOfInterest);
-                }
-
-                uint amountAlreadyPaid = clientTitle.monthlyValue.mul(clientTitle.installmentsPaid);
-
-                if (totalAmountOfInterest > amountAlreadyPaid.div(2) && clientTitle.myTitleStatus == MyTitleWithdraw.Late){
+                if(clientTitle.colateralId != 0 || clientTitle.colateralRWAAddress != address(0) && clientTitle.colateralId != 0){
                             
-                    clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
-                    title.titleCanceled++;
-                    
+                    ColateralTitles storage colateral = colateralInfos[_titleId][_contractId];
+                    Titles storage colateralTitle = allTitles[colateral.titleIdOfColateral];
+                    TitlesSold storage colateralContract = titleSoldInfos[colateral.titleIdOfColateral][colateral.contractIdOfColateral];
+
+                    colateralContract.myTitleStatus = MyTitleWithdraw.Canceled;
+                    colateralTitle.titleCanceled++;
                 }
-            }
-        } 
+            }else{
+                uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, title.nextDrawNumber);
+                if(block.timestamp > paymentDate) {
+                    clientTitle.myTitleStatus = MyTitleWithdraw.Late;
+
+                    emit MyTitleStatusUpdated(clientTitle.myTitleStatus);
+
+                }
+            }    
+        }
     }
 
     function titleClosedWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //OK
