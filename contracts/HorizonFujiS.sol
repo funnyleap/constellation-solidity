@@ -35,9 +35,9 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
     // Mapping to keep track of receivers.
     mapping(address receiverAddress => ReceiverInfo) public ccipReceicers;
 
-    LinkTokenInterface linkToken = LinkTokenInterface(); //FALTA O ENDEREÇO
+    LinkTokenInterface linkToken = LinkTokenInterface(0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846); //0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
 
-    constructor(address _router) CCIPReceiver(_router){  //FALTA O ENDEREÇO
+    constructor(address _router) CCIPReceiver(_router){  //0x554472a2720e5e7d5d3c817529aba05eed5f82d8
     }
 
     /// @dev Whitelists a chain for transactions.

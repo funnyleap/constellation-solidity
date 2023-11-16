@@ -154,7 +154,7 @@ contract Horizon is CCIPReceiver, Ownable{
     mapping(bytes32 permissionHash => FujiPermissions) permissionInfo;
     mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos; //OK
 
-    constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1E2a3c41108bd3730F6670a44595D1
+    constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1e2a3c41108bd3730f6670a44595d1
     }
 
     function createTitle(uint _opening, //OK
@@ -528,7 +528,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
         bytes memory permission = abi.encode(permissionHash, myTitle.valueOfEnsuranceNeeded, true);
     
-        sender.sendMessagePayLINK(, /*_receiver*/ fujiReceiver,  permission); //FALTA O ENDEREÇO DA CHAIN
+        sender.sendMessagePayLINK(14767482510784806043, fujiReceiver,  permission); // CHAIN -14767482510784806043
 
         emit CreatingPermission(_idTitle, _contractId, myTitle.drawSelected, fujiReceiver);
     }
@@ -545,7 +545,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
             bytes memory updatePermission = abi.encode(permissionHash, myTitle.valueOfEnsuranceNeeded, false);
 
-            sender.sendMessagePayLINK(, /*_receiver*/ fujiReceiver, updatePermission);
+            sender.sendMessagePayLINK(14767482510784806043, fujiReceiver, updatePermission); // Chain - 14767482510784806043
         }else{
             if(myTitle.installmentsPaid == myTitle.installments && myTitle.colateralId != 0){
 
@@ -628,12 +628,18 @@ contract Horizon is CCIPReceiver, Ownable{
         }
     }
 
-    function titleClosedWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //OK
+    function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //OK
         Titles storage title = allTitles[_idTitle];
 
-        uint amount = title.totalValueReceived.sub(title.totalValuePaid);
+        require(title.status == TitleStatus.Finalized || title.status == TitleStatus.Canceled);
 
-        require(amount <= title.totalValueReceived.sub(title.totalValuePaid),"_amount can't exceed the title value!");
+        uint validTitles = title.numberOfTitlesSold.sub(title.titleCanceled);
+
+        uint lockedAmount = validTitles.mul(title.titleValue);
+
+        uint amount = title.totalValueReceived.sub(lockedAmount);
+
+        require(amount <= title.totalValueReceived.sub(lockedAmount),"_amount can't exceed the title value!");
 
         require(address(_tokenAddress) != address(0), "Token not allowed");
 
@@ -643,9 +649,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
         stablecoin = _tokenAddress;
 
-        //Valida se o endereço tem o valor da parcela na carteira.
         require(stablecoin.balanceOf(address(this))>= amount);
-        //Transfere o valor correspondente a parcela para o contrato.
         stablecoin.transfer(address(staff), amount);
     }
 

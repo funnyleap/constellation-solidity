@@ -25,30 +25,26 @@ contract BellumVRF is Ownable, VRFConsumerBaseV2 {
 
     mapping(uint256 requestId => RequestStatus) public s_requests;
     mapping(uint256 requestId => DrawInfos) public s_draw;
-    VRFCoordinatorV2Interface COORDINATOR;
 
     //State variable
     uint256 private randomValue;
 
-    // Your subscription ID.
-    uint64 s_subscriptionId;
-
     // past requests Id.
     uint256[] public requestIds;
     uint256 public lastRequestId;
-
-    bytes32 keyHash =
-        0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;
-
+    
+    VRFCoordinatorV2Interface COORDINATOR;
+    address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
+    bytes32 keyHash = 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;    
+    s_subscriptionId;
+    uint64 s_subscriptionId = 5413;
     uint32 callbackGasLimit = 100000;
-
     uint16 requestConfirmations = 3;
-
     uint32 numWords = 1;
 
-    constructor() VRFConsumerBaseV2(0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed){
-        COORDINATOR = VRFCoordinatorV2Interface(0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed);
-        s_subscriptionId = 5413;
+    constructor() VRFConsumerBaseV2(vrfCoordinator){
+        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        s_owner = msg.sender;
     }
 
     function requestRandomWords(uint _titleId, uint _drawNumber, uint256 _totalPlayersAvailable) external returns (uint256 requestId) {

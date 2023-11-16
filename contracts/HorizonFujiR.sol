@@ -58,11 +58,11 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
     event RWAPriceAtMoment(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
     event PriceLowEvent(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
 
-    LinkTokenInterface linkToken = LinkTokenInterface();//FALTA O ENDEREÇO
+    LinkTokenInterface linkToken = LinkTokenInterface(0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846);//0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
     HorizonFujiS sender = HorizonFujiS(payable());//FALTA O ENDEREÇO
     ERC721 rwa;
 
-    constructor(address _router) CCIPReceiver(_router) { //FALTA O ENDEREÇO
+    constructor(address _router) CCIPReceiver(_router) { //0x554472a2720e5e7d5d3c817529aba05eed5f82d8
     }
 
     function addReceiver(address _receiverAddress) public {
@@ -110,8 +110,7 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
 
         colateralAddresses.push(permission);
 
-        //Só para teste
-        uint colateralPrice = 100 * 10**18;
+        uint colateralPrice = 10 * 10**18; //Testing pourpose
         uint targetPrice = permission.ensuranceValue;
 
         require(uint(colateralPrice) >= targetPrice.mul(10), "The ensurance must have at least 10 times the value of the value needed!");
@@ -123,7 +122,7 @@ contract HorizonFujiR is CCIPReceiver, Ownable {
 
         bytes memory colateralAdded = abi.encode(permissionHash, _colectionAddress, _rwaId);
 
-        sender.sendMessagePayLINK(, polygonReceiver, colateralAdded); //Destination chainId
+        sender.sendMessagePayLINK(12532609583862916517, polygonReceiver, colateralAdded); //Destination chainId - 12532609583862916517
 
         emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
     }

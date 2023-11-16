@@ -37,9 +37,9 @@ contract HorizonS is CCIPReceiver, Ownable {
     // Mapping to keep track of receivers.
     mapping(address receiverAddress => ReceiverInfo) public ccipReceicers;
 
-    LinkTokenInterface linkToken = LinkTokenInterface();  //FALTA O ENDEREÇO
+    LinkTokenInterface linkToken = LinkTokenInterface(0x326C977E6efc84E512bB9C30f76E30c160eD06FB);  //0x326C977E6efc84E512bB9C30f76E30c160eD06FB
 
-    constructor(address _router) CCIPReceiver(_router){ //FALTA O ENDEREÇO
+    constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1e2a3c41108bd3730f6670a44595d1
     }
 
     /// @dev Whitelists a chain for transactions.
