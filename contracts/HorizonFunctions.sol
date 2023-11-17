@@ -3,92 +3,125 @@ pragma solidity 0.8.19;
 
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
+import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 
 /**
- * @title Functions contract used for Automation.
- * @notice This contract is a demonstration of using Functions and Automation.
- * @notice NOT FOR PRODUCTION USE
+ * Request testnet LINK and ETH here: https://faucets.chain.link/
+ * Find information on LINK Token Contracts and get the latest ETH and LINK faucets here: https://docs.chain.link/resources/link-token-contracts/
  */
-contract AutomatedFunctionsConsumerExample is FunctionsClient, ConfirmedOwner {
-    address public upkeepContract;
-    bytes public request;
-    uint64 public subscriptionId;
-    uint32 public gasLimit;
-    bytes32 public donID;
+
+/**
+ * @title GettingStartedFunctionsConsumer
+ * @notice This is an example contract to show how to make HTTP requests using Chainlink
+ * @dev This contract uses hardcoded values and should not be used in production.
+ */
+contract GettingStartedFunctionsConsumer is FunctionsClient, ConfirmedOwner {
+    using FunctionsRequest for FunctionsRequest.Request;
+
+    // State variables to store the last request ID, response, and error
     bytes32 public s_lastRequestId;
     bytes public s_lastResponse;
     bytes public s_lastError;
 
-    error NotAllowedCaller(
-        address caller,
-        address owner,
-        address automationRegistry
-    );
+    // Custom error type
     error UnexpectedRequestID(bytes32 requestId);
 
-    event Response(bytes32 indexed requestId, bytes response, bytes err);
+    // Event to log responses
+    event Response(
+        bytes32 indexed requestId,
+        string character,
+        bytes response,
+        bytes err
+    );
 
-    constructor(
-        address router
-    ) FunctionsClient(router) ConfirmedOwner(msg.sender) {} //0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0
+    struct VehicleData {
+        string value;
+        uint requestTime;
+        uint responseTime;
+    }
+
+    mapping(bytes32 requestId => VehicleData) public vehicleDataMapping;
+
+    // Router address - Modified -> Fuji
+    // Check to get the router address for your supported network https://docs.chain.link/chainlink-functions/supported-networks
+    address router = 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0;
+
+    // JavaScript source code
+    // Fetch vehicle name from the Star Wars API.
+    // Documentation: https://swapi.dev/documentation#people
+    string source =
+        "const codigoTipoVeiculo = args[0];"
+        "const anoModelo = args[1];"
+        "const modeloCodigoExterno = args[2];"
+        "const apiResponse = await Functions.makeHttpRequest({"
+            "url: `https://fipeapi.appspot.com/api/1/carros/veiculo/21/${vehicleId}/`"
+            "headers: {"
+                "Host: veiculos.fipe.org.br,"
+                "Referer: http://veiculos.fipe.org.br,"
+                "Content-Type: application/json"
+            " },"
+            "body: JSON.stringify({"
+                "codigoTabelaReferencia': 263,"
+                "codigoTipoVeiculo': 2,"
+                "anoModelo': 2015,"
+                "modeloCodigoExterno': '810052-7',"
+                "codigoTipoCombustivel': 1,"
+                "tipoConsulta': 'codigo'"
+            "})"
+        "});"
+        "if (apiResponse.error) {"
+        "throw Error('Request failed');"
+        "}"
+        "const { data } = apiResponse;"
+        // "const simplifiedResponse = `${data.Valor}|${data.CodigoFipe}|${data.Autenticacao}`;"
+        "return Functions.encodeString(data.Valor);";
+
+    //Callback gas limit
+    uint32 gasLimit = 300000;
+
+    // donID - Modified -> Fuji
+    // Check to get the donID for your supported network https://docs.chain.link/chainlink-functions/supported-networks
+    bytes32 donID =
+        0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000;
+
+    // State variable to store the returned vehicle information
+    string public vehicle;
 
     /**
-     * @notice Reverts if called by anyone other than the contract owner or automation registry.
+     * @notice Initializes the contract with the Chainlink router address and sets the contract owner
      */
-    modifier onlyAllowed() {
-        if (msg.sender != owner() && msg.sender != upkeepContract)
-            revert NotAllowedCaller(msg.sender, owner(), upkeepContract);
-        _;
-    }
-
-    function setAutomationCronContract(
-        address _upkeepContract
-    ) external onlyOwner {
-        upkeepContract = _upkeepContract;
-    }
-
-    /// @notice Update the request settings
-    /// @dev Only callable by the owner of the contract
-    /// @param _request The new encoded CBOR request to be set. The request is encoded off-chain
-    /// @param _subscriptionId The new subscription ID to be set
-    /// @param _gasLimit The new gas limit to be set
-    /// @param _donID The new job ID to be set
-    function updateRequest(
-        bytes memory _request,
-        uint64 _subscriptionId,
-        uint32 _gasLimit,
-        bytes32 _donID
-    ) external onlyOwner {
-        request = _request;
-        subscriptionId = _subscriptionId;
-        gasLimit = _gasLimit;
-        donID = _donID;
-    }
+    constructor() FunctionsClient(router) ConfirmedOwner(msg.sender) {}
 
     /**
-     * @notice Send a pre-encoded CBOR request
-     * @return requestId The ID of the sent request
+     * @notice Sends an HTTP request for vehicle information
+     * @param subscriptionId The ID for the Chainlink subscription
+     * @param args The arguments to pass to the HTTP request
+     * @return requestId The ID of the request
      */
-    function sendRequestCBOR()
-        external
-        onlyAllowed
-        returns (bytes32 requestId)
-    {
+    function sendRequest(
+        uint64 subscriptionId,
+        string[] calldata args
+    ) external onlyOwner returns (bytes32 requestId) {
+        FunctionsRequest.Request memory req;
+        req.initializeRequestForInlineJavaScript(source); // Initialize the request with JS code
+        if (args.length > 0) req.setArgs(args); // Set the arguments for the request
+
+        // Send the request and store the request ID
         s_lastRequestId = _sendRequest(
-            request,
+            req.encodeCBOR(),
             subscriptionId,
             gasLimit,
             donID
         );
+
         return s_lastRequestId;
     }
 
     /**
-     * @notice Store latest result/error
-     * @param requestId The request ID, returned by sendRequest()
-     * @param response Aggregated response from the user code
-     * @param err Aggregated error from the user code or from the execution pipeline
-     * Either response or error parameter will be set, but never both
+     * @notice Callback function for fulfilling a request
+     * @param requestId The ID of the request to fulfill
+     * @param response The HTTP response data
+     * @param err Any errors from the Functions request
      */
     function fulfillRequest(
         bytes32 requestId,
@@ -96,10 +129,14 @@ contract AutomatedFunctionsConsumerExample is FunctionsClient, ConfirmedOwner {
         bytes memory err
     ) internal override {
         if (s_lastRequestId != requestId) {
-            revert UnexpectedRequestID(requestId);
+            revert UnexpectedRequestID(requestId); // Check if request IDs match
         }
+        // Update the contract's state variables with the response and any errors
         s_lastResponse = response;
+        vehicle = string(response);
         s_lastError = err;
-        emit Response(requestId, s_lastResponse, s_lastError);
+
+        // Emit an event to log the response
+        emit Response(requestId, vehicle, s_lastResponse, s_lastError);
     }
 }
