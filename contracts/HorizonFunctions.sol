@@ -55,9 +55,9 @@ contract GettingStartedFunctionsConsumer is FunctionsClient, ConfirmedOwner {
         "return Functions.encodeString(data.Valor);";
 
 
-    constructor(uint64 _subscriptionId, address _router, uint32 _gasLimit, bytes32 _donID) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(uint64 _subscriptionId, address _routerFunctions, uint32 _gasLimit, bytes32 _donID) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         subscriptionId = _subscriptionId; //770
-        router = _router; // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
+        router = _routerFunctions; // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
         gasLimit = _gasLimit; // 300000
         donID = _donID; // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
     }
