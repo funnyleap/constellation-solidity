@@ -61,7 +61,7 @@ contract BellumStaff is Ownable {
      * 
      * @param _wallet 
      */
-    function addAdmin(address _wallet) public {//OK 0x5FA769922a6428758fb44453815e2c436c57C3c7
+    function addAdmin(address _wallet) public {//OK
         require(_wallet != address(0), "Admin wallet can't be empty!");
         require(staff[_wallet].isAdmin == false,"Admin already registered");
 
