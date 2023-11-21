@@ -300,35 +300,43 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         Permissions storage permission = permissionsInfo[_permissionHash];
 
+        for(i = 0; rwaMonitors[i].hashPermission != _permissionHash; i++){
+            if(rwaMonitors[i].hashPermission == _permissionHash){
+                rwaMonitors[i].isActive = false;
+            }
+        }
+
         rwa.safeTransferFrom(address(this), permission.rwaOwner, permission.colateralId);
 
         emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
     }
         
-    //Tem de reformular com o Functions
     function checkColateralPrice() internal {
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
-            
-            Permissions storage permission = permissionsInfo[rwaMonitors[i].hashPermission];
-            
-            sendRequest(permission.args, rwaMonitors[i].hashPermission);
 
-            VehicleData storage vehicle = vehicleDataMapping[permission.lastRequestId];
+            if(rwaMonitors[i].isActive == true){
+                Permissions storage permission = permissionsInfo[rwaMonitors[i].hashPermission];
+                
+                sendRequest(permission.args, rwaMonitors[i].hashPermission);
 
-            permission.ensureValueNow = vehicle.uintValue;
-            permission.lastResponseTime = vehicle.responseTime;
+                VehicleData storage vehicle = vehicleDataMapping[permission.lastRequestId];
 
-            uint rwaValue = vehicle.uintValue;
-            uint referenceValue = permission.ensuranceValue;
+                permission.ensureValueNow = vehicle.uintValue;
+                permission.lastResponseTime = vehicle.responseTime;
 
-            if (rwaValue >= (referenceValue.mul(5))) {
-                emit RWAPriceAtMoment(permission.contractId, rwaMonitors[i], rwaValue);
+                uint rwaValue = vehicle.uintValue;
+                uint referenceValue = permission.ensuranceValue;
 
-            } else if (rwaValue >= referenceValue.mul(4)) {
-                emit PriceLowEvent(permission.contractId, rwaMonitors[i], rwaValue); //ALERT
+                if (rwaValue >= (referenceValue.mul(5))) {
+                    emit RWAPriceAtMoment(permission.contractId, rwaMonitors[i], rwaValue);
 
-            } else if (rwaValue < referenceValue.mul(2)) {
-                emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaMonitors[i], rwaValue);
+                } else if (rwaValue >= referenceValue.mul(4)) {
+                    emit PriceLowEvent(permission.contractId, rwaMonitors[i], rwaValue); //ALERT
+
+                } else if (rwaValue < referenceValue.mul(2)) {
+                    rwaMonitors[i].isActive = false;
+                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaMonitors[i], rwaValue);
+                }
             }
         }
     }
