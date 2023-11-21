@@ -250,7 +250,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
 
-        vehicle.uintValue = valueConverted;
+        vehicle.uintValue = (valueConverted.div(5));
 
         // Emit an event to log the response
         emit Response(requestId, s_lastResponse, s_lastError);
@@ -311,7 +311,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
     }
         
-    function checkColateralPrice() internal {
+    function checkColateralPrice() internal { //Triggered by Automation
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
 
             if(rwaMonitors[i].isActive == true){

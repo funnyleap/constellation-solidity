@@ -3,8 +3,6 @@ pragma solidity ^0.8.19;
 
 contract HorizonFujiAssistant {
 
-    /*CHAIN LINK DATA FEEDS */
-
     /*CONVERTER FUNCTION */
     function stringToUint(string memory s) public pure returns (uint) {
         bytes memory b = bytes(s);
