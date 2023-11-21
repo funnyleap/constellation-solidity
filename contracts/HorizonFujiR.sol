@@ -12,6 +12,7 @@ import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 
+import "./HorizonFujiAssistant.sol";
 import "./HorizonFujiS.sol";
 
 // Custom errors to provide more descriptive revert messages.
@@ -29,6 +30,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
     // Event emitted when a message is received from another chain.
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
+    event TheRwaValueIsLessThanTheMinimumNeeded(uint _rwaId, uint _rwaValue);
     event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
     event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
     event RWAPriceAtMoment(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
@@ -41,8 +43,6 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
     
     // Functions State variables to store the last request ID, response, and error
     bytes32 public s_lastRequestId;
-    bytes public s_lastResponse;
-    bytes public s_lastError;
     
     //State variable to store the polygon receiver address
     address private horizonR;
@@ -61,17 +61,33 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         uint drawNumber;
         uint contractId;
         address rwaOwner;
-        uint ensuranceValue;
-        ERC721 colateralAddress;
+        uint ensuranceValueNeeded;
+        uint ensureValueNow;
         uint colateralId;
+        bytes32 requstId;
         uint lastRequestTime;
         uint lastResponseTime;
         bool colateralLocked;
         bool isPermission;
     }
 
+    struct VehicleData {
+        address owner;
+        uint rwaId;
+        string value;
+        uint requestTime;
+        uint responseTime;      
+        uint titleId;
+        uint contractId;
+        uint drawNumber;
+        bytes lastResponse;
+        bytes lastError;
+        bool isRequest;
+    }
+
     //Array to keep track of RWA's prices
     Permissions[] colateralAddresses;
+    //Mapping to store the requests from Functions
     mapping(bytes32 requestId => VehicleData) public vehicleDataMapping;
 
     // Mapping to keep track of whitelisted source chains.
@@ -99,7 +115,8 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         "return Functions.encodeString(data.Valor);";
 
     HorizonFujiS sender = HorizonFujiS(payable());//FALTA O ENDEREÇO
-    ERC721 rwa;
+    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable());//FALTA O ENDEREÇO
+    ERC721 rwa = ERC721(payable());//FALTA O ENDEREÇO
 
     constructor(uint64 _subscriptionId, //770
                 address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
@@ -118,9 +135,63 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         horizonR = _receiverAddress;
     }
 
-    /* FUNCTIONS ~ FUNCTIONS */
+    /* handle a received message*/
+    function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override /*onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address)))*/ {
+        lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
+        lastReceivedText = abi.decode(any2EvmMessage.data, (bytes)); // abi-decoding of the sent text
 
-    function sendRequest(string[] calldata args) external onlyOwner returns (bytes32 requestId) {
+        bytes32 permissionHash;
+        uint _ensuranceValue;
+        bool _colateralLocked;
+
+        (permissionHash, _ensuranceValue, _colateralLocked) = abi.decode(lastReceivedText, (bytes32, uint, bool));
+
+        handlePermission(permissionHash, _ensuranceValue, _colateralLocked);
+
+        emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));
+    }
+
+    function handlePermission(bytes32 _permissionHash,
+                              uint _ensuranceValueNeeded,
+                              bool _colateralLocked) internal{
+
+        Permissions memory permission = Permissions({
+            idTitle: 0,
+            contractId: 0,
+            drawNumber: 0,
+            rwaOwner: address(0),
+            ensuranceValueNeeded: _ensuranceValueNeeded,
+            ensureValueNow: 0,
+            colateralId: 0,
+            requstId: 0,
+            lastRequestTime: 0
+            lastResponseTime: 0
+            colateralLocked: _colateralLocked,
+            isPermission: true
+        });
+
+        if(_colateralLocked == true){
+            permissionsInfo[_permissionHash] = permission;
+        }else{
+            if(_colateralLocked == false){
+                sendRwaBackToOwner(_permissionHash);
+            }
+        }
+    }
+
+    function verifyColateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) { //["motos",77,5223,"2015-1"]
+        bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
+
+        require(permissionsInfo[permissionHash].isPermission == true, "This permission didn't exists!");
+
+        Permissions storage permission = permissionsInfo[permissionHash];
+
+        sendRequest(args, _titleId, _contractId, _drawNumber, msg.sender, _rwaId);
+
+    }
+
+    function sendRequest(string[] calldata args, uint256 _titleId, uint _contractId, uint _drawNumber, address _rwaOwner, uint _rwaId) external onlyOwner returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
+
         FunctionsRequest.Request memory req;
 
         req.initializeRequestForInlineJavaScript(source);
@@ -135,9 +206,17 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         );
         
         VehicleData memory vehicleInfo = VehicleData ({
+            owner: _rwaOwner,
+            rwaId: _rwaId,
             value: "",
             requestTime: block.timestamp,
-            responseTime: 0
+            responseTime: 0,
+            titleId: _titleId,
+            contractId: _contractId,
+            drawNumber: _drawNumber,
+            lastResponse: 0,
+            lastError: 0,
+            isRequest: true
         });
 
         vehicleDataMapping[s_lastRequestId] = vehicleInfo;
@@ -152,94 +231,44 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
      * @param err Any errors from the Functions request
      */
     function fulfillRequest( bytes32 requestId, bytes memory response, bytes memory err) internal override {
+        VehicleData storage vehicle = vehicleDataMapping[requestId];
 
-        if (s_lastRequestId != requestId) {
+        if (vehicle.isRequest == false) {
             revert UnexpectedRequestID(requestId); // Check if request IDs match
         }
 
-        // Update the contract's state variables with the response and any errors
-        s_lastResponse = response;
-        s_lastError = err;
+        // Update the vehicle mapping with the response and any errors
+        vehicle.lastResponse = response;
+        vehicle.lastError = err;
+        vehicle.value = string(response);
+        vehicle.responseTime = block.timestamp;
 
-        vehicleDataMapping[requestId].value = string(response);
-        vehicleDataMapping[requestId].responseTime = block.timestamp;
+        bytes32 permissionHash = keccak256(abi.encodePacked(vehicle.titleId, vehicle.contractId, vehicle.drawNumber));
+
+        Permissions storage permission = permissionsInfo[permissionHash];
+
+        uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
+
+        If(valueConverted >= ((permission.ensuranceValueNeeded).mul(5))){
+            permission.idTitle = vehicle.titleId;
+            permission.contractId = vehicle.contractId;
+            permission.drawNumber = vehicle.drawNumber;
+            poermission.rwaOwner = vehicle.owner;
+            permission.ensureValueNow = valueConverted;
+            permission.colateralId = vehicle.rwaId;
+            permission.requestId = requestId;
+            permission.lastRequestTime = vehicle.requestTime;
+            permission.lastResponseTime = block.timestamp;
+
+            addCollateral(vehicle.titleId, vehicle.contractId, vehicle.drawNumber, vehicle.rwaId)
+        } else{
+            emit TheRwaValueIsLessThanTheMinimumNeeded(vehicle.rwaId, valueConverted);
+        }
 
         // Emit an event to log the response
         emit Response(requestId, s_lastResponse, s_lastError);
     }
-
-    /* CCIP FUNCTIONS */
-
-    function handlePermission(bytes32 _permissionHash,
-                              uint _ensuranceValue,
-                              bool _colateralLocked) internal{
-
-        Permissions memory permission = Permissions({
-            idTitle: 0,
-            contractId: 0,
-            drawNumber: 0,
-            rwaOwner: address(0),
-            ensuranceValue: _ensuranceValue,
-            colateralAddress: ERC721(address(0)),
-            colateralId: 0,
-            colateralLocked: _colateralLocked,
-            isPermission: true
-        });
-
-        if(_colateralLocked == true){
-            permissionsInfo[_permissionHash] = permission;
-        }else{
-            if(_colateralLocked == false){
-                sendRwaBackToOwner(_permissionHash);
-            }
-        }
-    }
-
-    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, ERC721 _rwaAddress) public {
-        bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
-
-        require(permissionsInfo[permissionHash].isPermission == true, "This permission didn't exists!");
-
-        Permissions storage permission = permissionsInfo[permissionHash];
-
-        permission.idTitle = _titleId;
-        permission.contractId = _contractId;
-        permission.drawNumber = _drawNumber;
-        permission.rwaOwner = msg.sender;
-        permission.colateralId = _rwaId;
-        permission.colateralAddress = _colectionAddress;
-
-        colateralAddresses.push(permission);
-
-        uint colateralPrice = 10 * 10**18; //Testing pourpose
-        uint targetPrice = permission.ensuranceValue;
-
-        require(uint(colateralPrice) >= targetPrice.mul(10), "The ensurance must have at least 10 times the value of the value needed!");
-        
-        rwa = _colectionAddress;
-        rwa.transferFrom(msg.sender, address(this), _rwaId);
-
-        address provisoryOwner = rwa.ownerOf(_rwaId);
-
-        bytes memory colateralAdded = abi.encode(permissionHash, _colectionAddress, _rwaId);
-
-        sender.sendMessagePayLINK(12532609583862916517, polygonReceiver, colateralAdded); //Destination chainId - 12532609583862916517
-
-        emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
-    }
-
-    function sendRwaBackToOwner(bytes32 _permissionHash) internal{
-        require(permissionsInfo[_permissionHash].isPermission == true, "This permission didnt exists!");
-
-        Permissions storage permission = permissionsInfo[_permissionHash];
-
-        rwa = permission.colateralAddress;
-
-        rwa.safeTransferFrom(address(this), permission.rwaOwner, permission.colateralId);
-
-        emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
-    }
-
+    
     //Tem de reformular com o Functions
     function checkColateralPrice(bytes32 _permissionHash) internal {
         for (uint256 i = 0; i < colateralAddresses.length; i++) {
@@ -261,6 +290,41 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
                 //rwaAddress.sellRWA(colateralOwner.owner, 0, colateralOwner.coleteralId, ""); AQUI EU PRECISARIA REGISTRAR O RWA NA OPENSEA, POR EXEMPLO.
             }
         }
+    }
+
+    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId) public {
+        bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
+
+        Permissions storage permission = permissionsInfo[permissionHash];
+
+        require(permission.isPermission == true, "This permission didn't exists!");
+
+        colateralAddresses.push(permission);
+
+        uint colateralPrice = permission.ensuranceValue;
+        uint targetPrice = permission.ensuranceValueNeeded;
+
+        require(uint(colateralPrice) >= targetPrice.mul(5), "The ensurance must have at least 10 times the value of the value needed!");
+        
+        rwa.transferFrom(msg.sender, address(this), _rwaId);
+
+        address provisoryOwner = rwa.ownerOf(_rwaId);
+
+        bytes memory colateralAdded = abi.encode(permissionHash, rwa, _rwaId);
+
+        sender.sendMessagePayLINK(12532609583862916517, polygonReceiver, colateralAdded); //Destination chainId - 12532609583862916517
+
+        emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
+    }
+
+    function sendRwaBackToOwner(bytes32 _permissionHash) internal{
+        require(permissionsInfo[_permissionHash].isPermission == true, "This permission didnt exists!");
+
+        Permissions storage permission = permissionsInfo[_permissionHash];
+
+        rwa.safeTransferFrom(address(this), permission.rwaOwner, permission.colateralId);
+
+        emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
     }
 
     /// @dev Whitelists a chain for transactions.
@@ -286,22 +350,6 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
     /// @param _sender The address of the sender.
     function removeSender(address _sender) external /*onlyOwner*/ {
         whitelistedSenders[_sender] = false;
-    }
-
-    /* handle a received message*/
-    function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override /*onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address)))*/ {
-        lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
-        lastReceivedText = abi.decode(any2EvmMessage.data, (bytes)); // abi-decoding of the sent text
-
-        bytes32 permissionHash;
-        uint _ensuranceValue;
-        bool _colateralLocked;
-
-        (permissionHash, _ensuranceValue, _colateralLocked) = abi.decode(lastReceivedText, (bytes32, uint, bool));
-
-        handlePermission(permissionHash, _ensuranceValue, _colateralLocked);
-
-        emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));
     }
 
     function getLastReceivedMessageDetails() external view returns (bytes32 messageId, bytes memory text) {
