@@ -526,7 +526,9 @@ contract Horizon is CCIPReceiver, Ownable{
 
         permissionInfo[permissionHash] = fuji;
 
-        bytes memory permission = abi.encode(permissionHash, myTitle.valueOfEnsuranceNeeded, true);
+        uint rwaValueNeeded = myTitle.valueOfEnsuranceNeeded;
+
+        bytes memory permission = abi.encode(permissionHash, rwaValueNeeded, true);
     
         sender.sendMessagePayLINK(14767482510784806043, fujiReceiver,  permission); // CHAIN -14767482510784806043
 
