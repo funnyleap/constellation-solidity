@@ -34,16 +34,26 @@ contract BellumVRF is Ownable, VRFConsumerBaseV2 {
     uint256 public lastRequestId;
     
     VRFCoordinatorV2Interface COORDINATOR;
-    address vrfCoordinator = 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed;
-    bytes32 keyHash = 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f;    
-    s_subscriptionId;
-    uint64 s_subscriptionId = 5413;
-    uint32 callbackGasLimit = 100000;
-    uint16 requestConfirmations = 3;
-    uint32 numWords = 1;
+    address vrfCoordinator;
+    bytes32 keyHash;
+    uint64 s_subscriptionId;
+    uint32 callbackGasLimit;
+    uint16 requestConfirmations;
+    uint32 numWords;
 
-    constructor() VRFConsumerBaseV2(vrfCoordinator){
-        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+    constructor(address _vrfCoordinator, //0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed
+                bytes32 _keyHash, //0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f
+                uint64 _subscriptionId, //5413
+                uint32 _callbackGasLimit, //100000
+                uint16 _requestConfirmations, //3
+                uint32 _numWords //1
+               ) VRFConsumerBaseV2(_vrfCoordinator){
+        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
+        keyHash = _keyHash;
+        s_subscriptionId = _subscriptionId;
+        callbackGasLimit = _callbackGasLimit;
+        requestConfirmations = _requestConfirmations;
+        numWords = _numWords;
         s_owner = msg.sender;
     }
 
