@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.20;
 
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
-import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
+import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
@@ -25,8 +24,6 @@ error SenderNotWhitelisted(address sender);
 error UnexpectedRequestID(bytes32 requestId);
 
 contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
-
-    using SafeMath for uint256;
 
     // Event emitted when a message is received from another chain.
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
@@ -166,12 +163,12 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
             contractId: 0,
             drawNumber: 0,
             rwaOwner: address(0),
-            ensuranceValueNeeded: (_ensuranceValueNeeded.mul(5)),
+            ensuranceValueNeeded: (_ensuranceValueNeeded * 5),
             ensureValueNow: 0,
             colateralId: 0,
             requstId: 0,
-            lastRequestTime: 0
-            lastResponseTime: 0
+            lastRequestTime: 0,
+            lastResponseTime: 0,
             colateralLocked: _colateralLocked,
             isPermission: true
         });
@@ -185,11 +182,11 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         }
     }
 
-    function verifyColateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) { //["motos",77,5223,"2015-1"]
+    function verifyColateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public { //["motos",77,5223,"2015-1"]
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
 
         require(permissionsInfo[permissionHash].isPermission == true, "This permission didn't exists!");
-        require(msg.sender == rwa.ownerOf(_rwaId), "You must be the owner of the informed RWA!")
+        require(msg.sender == rwa.ownerOf(_rwaId), "You must be the owner of the informed RWA!");
 
         Permissions storage permission = permissionsInfo[permissionHash];
 
@@ -250,7 +247,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
 
-        vehicle.uintValue = (valueConverted.div(5));
+        vehicle.uintValue = (valueConverted / 5);
 
         // Emit an event to log the response
         emit Response(requestId, s_lastResponse, s_lastError);
@@ -265,7 +262,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         VehicleData storage vehicle = vehicleDataMapping[permission.lastRequestId];
 
-        If(vehicle.uintValue >= permission.ensuranceValueNeeded){
+        if(vehicle.uintValue >= permission.ensuranceValueNeeded){
             
             permission.ensureValueNow = valueConverted;
             permission.lastResponseTime = block.timestamp;
@@ -327,13 +324,13 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
                 uint rwaValue = vehicle.uintValue;
                 uint referenceValue = permission.ensuranceValue;
 
-                if (rwaValue >= (referenceValue.mul(5))) {
+                if (rwaValue >= (referenceValue * 5)) {
                     emit RWAPriceAtMoment(permission.contractId, rwaMonitors[i], rwaValue);
 
-                } else if (rwaValue >= referenceValue.mul(4)) {
+                } else if (rwaValue >= referenceValue * 4) {
                     emit PriceLowEvent(permission.contractId, rwaMonitors[i], rwaValue); //ALERT
 
-                } else if (rwaValue < referenceValue.mul(2)) {
+                } else if (rwaValue < referenceValue * 2) {
                     rwaMonitors[i].isActive = false;
                     emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaMonitors[i], rwaValue);
                 }

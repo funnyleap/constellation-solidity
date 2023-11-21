@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.9 <=0.8.19;
+pragma solidity >=0.8.9 <=0.8.20;
 
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
@@ -8,7 +8,6 @@ import {HorizonS} from "./HorizonS.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./HorizonStaff.sol";
 import "./HorizonVRF.sol";
 import "./HorizonReceipt.sol";
@@ -18,8 +17,6 @@ error FailedToWithdrawEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
 
 contract Horizon is CCIPReceiver, Ownable{
-
-    using SafeMath for uint256;
 
     /* CCIP */
     bytes32 private lastReceivedMessageId;
@@ -32,10 +29,10 @@ contract Horizon is CCIPReceiver, Ownable{
     uint paymentDelay;
     address fujiReceiver;
 
-    HorizonStaff staff = HorizonStaff(0xCd24c9696f2aA4bB15170B263E72642b5600B479); //FALTA ENDEREÇO
     IERC20 stablecoin;
     IERC721 nftToken;
 
+    HorizonStaff staff = HorizonStaff(0xCd24c9696f2aA4bB15170B263E72642b5600B479); //FALTA ENDEREÇO
     HorizonReceipt receipt = HorizonReceipt(0x0203fc68dED882C7B669b4711C42fb7A27E119a9); //FALTA ENDEREÇO
     HorizonVRF vrfv2consumer = HorizonVRF(0xE7d98f63EFCDD443549b64205B1A1d22Af8c1007); //FALTA ENDEREÇO
     HorizonS sender = HorizonS(payable(0xC3e7E776227D34874f6082f2F8476DD150DEC2de)); //FALTA ENDEREÇO
@@ -176,8 +173,8 @@ contract Horizon is CCIPReceiver, Ownable{
         nextDrawNumber: 1,
         titleValue: _value * 10 ** 18,
         installments: _participants,
-        monthlyInvestiment: (_value * 10 ** 18).div(_participants),
-        protocolFee: (((_value * 10 ** 18).div(_participants)).mul(5)).div(100),
+        monthlyInvestiment: (_value * 10 ** 18) / (_participants),
+        protocolFee: (((_value * 10 ** 18) / _participants) * 5) / 100,
         numberOfTitlesSold: 0,
         totalValueReceived: 0,
         totalValuePaid: 0,
@@ -187,7 +184,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
         allTitles[titleId] = newTitle;
 
-        uint monthlyValue = (allTitles[titleId].monthlyInvestiment.add(allTitles[titleId].protocolFee));
+        uint monthlyValue = (allTitles[titleId].monthlyInvestiment + (allTitles[titleId].protocolFee));
 
         emit NewTitleCreated(titleId, scheduleId, monthlyValue, allTitles[titleId].titleValue);
     }
@@ -209,7 +206,7 @@ contract Horizon is CCIPReceiver, Ownable{
                 uint nextDrawParticipants = staff.returnDrawParticipants(_titleId, title.nextDrawNumber);
 
                 if( title.status == TitleStatus.Closed && title.nextDrawNumber > title.installments ||
-                    title.status == TitleStatus.Closed && title.nextDrawNumber.add(title.titleCanceled) > title.installments && nextDrawParticipants == 0){
+                    title.status == TitleStatus.Closed && title.nextDrawNumber + (title.titleCanceled) > title.installments && nextDrawParticipants == 0){
                     title.status = TitleStatus.Finalized;
 
                     emit TitleStatusUpdated(title.status);
@@ -244,7 +241,7 @@ contract Horizon is CCIPReceiver, Ownable{
             contractId: title.numberOfTitlesSold,
             titleValue: title.titleValue,
             installments: title.installments,
-            monthlyValue: ((title.monthlyInvestiment).add(fee)),
+            monthlyValue: ((title.monthlyInvestiment) + (fee)),
             periodLocked: lockPeriod,
             titleOwner: msg.sender,
             installmentsPaid: 0,
@@ -296,7 +293,7 @@ contract Horizon is CCIPReceiver, Ownable{
         uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, _installment);
 
         if(block.timestamp > paymentDate){
-            paymentDelay = (block.timestamp.sub(paymentDate));
+            paymentDelay = (block.timestamp - paymentDate);
 
             if(paymentDelay > 0){
 
@@ -359,7 +356,7 @@ contract Horizon is CCIPReceiver, Ownable{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Titles storage titles = allTitles[_idTitle];
         require(myTitle.contractId <= title.numberOfTitlesSold, "Enter a valid contract Id for this Title!");
-        require(myTitle.myTitleStatus != MyTitleWithdraw.Canceled || myTitle.myTitleStatus != MyTitleWithdraw.Finalized, "your title already have been finalized or canceled. Please check the status.")
+        require(myTitle.myTitleStatus != MyTitleWithdraw.Canceled || myTitle.myTitleStatus != MyTitleWithdraw.Finalized, "your title already have been finalized or canceled. Please check the status.");
         require(address(_tokenAddress) != address(0), "Enter a token address");
 
         (, , bool isStable) = staff.returnAvailableStablecoin(_tokenAddress);
@@ -377,17 +374,17 @@ contract Horizon is CCIPReceiver, Ownable{
         require(stablecoin.allowance(msg.sender, address(this)) >= _amountToPay, "You must approve the contract to transfer the tokens");
 
         if(myTitle.periodLocked == 0){
-            titles.totalValueReceived = titles.totalValueReceived.add(titles.monthlyInvestiment);
+            titles.totalValueReceived = titles.totalValueReceived + titles.monthlyInvestiment;
             
             stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
-            stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+            stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay - titles.monthlyInvestiment));
         } else{
-            titles.totalValueReceived = titles.totalValueReceived.add(titles.monthlyInvestiment);
+            titles.totalValueReceived = titles.totalValueReceived + titles.monthlyInvestiment;
 
-            if(_amountToPay.sub(titles.monthlyInvestiment) > 0){
+            if(_amountToPay - titles.monthlyInvestiment > 0){
             
                 stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
-                stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+                stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay - titles.monthlyInvestiment));
             } else{
                 stablecoin.transferFrom(msg.sender, address(this), _amountToPay);
             }
@@ -400,12 +397,12 @@ contract Horizon is CCIPReceiver, Ownable{
         Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
-        uint valueAlreadyPaid = ((myTitle.installmentsPaid).mul(titles.monthlyInvestiment));
+        uint valueAlreadyPaid = (myTitle.installmentsPaid * titles.monthlyInvestiment);
 
         if(valueAlreadyPaid >= myTitle.titleValue){
             myTitle.valueOfEnsuranceNeeded = 0;
         }else{
-            myTitle.valueOfEnsuranceNeeded = (myTitle.titleValue).sub(valueAlreadyPaid);
+            myTitle.valueOfEnsuranceNeeded = myTitle.titleValue - valueAlreadyPaid;
         }
 
         emit EnsuranceValueNeededUpdate(_idTitle, _contractId, myTitle.valueOfEnsuranceNeeded);
@@ -481,12 +478,12 @@ contract Horizon is CCIPReceiver, Ownable{
 
         TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId];
 
-        require(myTitle.drawSelected != 0, "You haven't been selected yet!")
+        require(myTitle.drawSelected != 0, "You haven't been selected yet!");
 
         require(myColateralTitle.titleValue >= myTitle.valueOfEnsuranceNeeded, "The colateral total value must be greater than tue ensuranceValueNeeded");
 
-        uint colateralValuePaid = myColateralTitle.installmentsPaid.mul(myColateralTitle.monthlyInvestiment);
-        uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded.mul(2);
+        uint colateralValuePaid = myColateralTitle.installmentsPaid * myColateralTitle.monthlyInvestiment;
+        uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded * 2;
 
         require(myColateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= ensuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
 
@@ -594,7 +591,7 @@ contract Horizon is CCIPReceiver, Ownable{
                                         myTitle.myTitleStatus);
         }
         myTitle.paid = true;
-        title.totalValuePaid = title.totalValuePaid.add(myTitle.titleValue);
+        title.totalValuePaid = title.totalValuePaid + myTitle.titleValue;
     }
 
     // Function to check titles with overdue payments and apply rules
@@ -605,7 +602,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
             TitlesSold storage clientTitle = titleSoldInfos[_titleId][i];
 
-            if(title.nextDrawNumber.sub(clientTitle.installmentsPaid) >= 2){
+            if(title.nextDrawNumber - clientTitle.installmentsPaid >= 2){
                 clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
                 title.titleCanceled++;
 
@@ -635,13 +632,13 @@ contract Horizon is CCIPReceiver, Ownable{
 
         require(title.status == TitleStatus.Finalized || title.status == TitleStatus.Canceled);
 
-        uint validTitles = title.numberOfTitlesSold.sub(title.titleCanceled);
+        uint validTitles = title.numberOfTitlesSold - title.titleCanceled;
 
-        uint lockedAmount = validTitles.mul(title.titleValue);
+        uint lockedAmount = validTitles * title.titleValue;
 
-        uint amount = title.totalValueReceived.sub(lockedAmount);
+        uint amount = title.totalValueReceived - lockedAmount;
 
-        require(amount <= title.totalValueReceived.sub(lockedAmount),"_amount can't exceed the title value!");
+        require(amount <= title.totalValueReceived - lockedAmount,"_amount can't exceed the title value!");
 
         require(address(_tokenAddress) != address(0), "Token not allowed");
 

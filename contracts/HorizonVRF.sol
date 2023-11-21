@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.9 <=0.8.19;
+pragma solidity >=0.8.9 <=0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
 contract BellumVRF is Ownable, VRFConsumerBaseV2 {
 
@@ -54,7 +54,6 @@ contract BellumVRF is Ownable, VRFConsumerBaseV2 {
         callbackGasLimit = _callbackGasLimit;
         requestConfirmations = _requestConfirmations;
         numWords = _numWords;
-        s_owner = msg.sender;
     }
 
     function requestRandomWords(uint _titleId, uint _drawNumber, uint256 _totalPlayersAvailable) external returns (uint256 requestId) {
