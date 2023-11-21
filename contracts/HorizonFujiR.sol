@@ -31,6 +31,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
     // Event emitted when a message is received from another chain.
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
     event TheRwaValueIsLessThanTheMinimumNeeded(uint _rwaId, uint _rwaValue);
+    event VerifyingRwaValue(uint _rwaId, string[] args);
     event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
     event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
     event RWAPriceAtMoment(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
@@ -46,6 +47,9 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
     
     //State variable to store the polygon receiver address
     address private horizonR;
+
+    //State variable to count the rwa's alocated
+    uint monitorCounter = 1;
 
     //State variables to store the Functions params
     uint64 private subscriptionId;
@@ -85,10 +89,17 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         bool isRequest;
     }
 
+    struct RwaMonitor{
+        uint rwaId;
+        string[] args;
+    }
+
     //Array to keep track of RWA's prices
     Permissions[] colateralAddresses;
     //Mapping to store the requests from Functions
     mapping(bytes32 requestId => VehicleData) public vehicleDataMapping;
+    //Mapping to monitor the rwa values
+    mapping(uint id => RwaMonitor) public monitor;
 
     // Mapping to keep track of whitelisted source chains.
     mapping(uint64 => bool) public whitelistedSourceChains;
@@ -186,8 +197,14 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         Permissions storage permission = permissionsInfo[permissionHash];
 
-        sendRequest(args, _titleId, _contractId, _drawNumber, msg.sender, _rwaId);
+        monitor[monitorCounter] = RwaMonitor({
+            rwaId = _rwaId,
+            args = args
+        })
 
+        emit VerifyingRwaValue(_rwaId, args);
+
+        sendRequest(args, _titleId, _contractId, _drawNumber, msg.sender, _rwaId);
     }
 
     function sendRequest(string[] calldata args, uint256 _titleId, uint _contractId, uint _drawNumber, address _rwaOwner, uint _rwaId) external onlyOwner returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
@@ -224,12 +241,6 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         return s_lastRequestId;
     }
 
-    /**
-     * @notice Callback function for fulfilling a request
-     * @param requestId The ID of the request to fulfill
-     * @param response The HTTP response data
-     * @param err Any errors from the Functions request
-     */
     function fulfillRequest( bytes32 requestId, bytes memory response, bytes memory err) internal override {
         VehicleData storage vehicle = vehicleDataMapping[requestId];
 
