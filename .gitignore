@@ -1,7 +1,9 @@
-
+artifacts
+cache
 node_modules
 .env
 hardhat.config.js
 hardhat.config.js
 deployments
 tests
+*.json
