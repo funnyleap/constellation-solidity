@@ -879,8 +879,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\Horizon.sol": {
-      "lastModificationDate": 1700676352854,
-      "contentHash": "7ecd00f490af0acb6feb5ad3fc4d3053",
+      "lastModificationDate": 1700677779060,
+      "contentHash": "6a67963728944ef6e3a73dbc00a564c7",
       "sourceName": "contracts/Horizon.sol",
       "solcConfig": {
         "version": "0.8.20",

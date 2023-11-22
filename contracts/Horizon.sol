@@ -262,7 +262,7 @@ contract Horizon is CCIPReceiver{
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
 
-        if(title.numberOfTitlesSold == title.installments){
+        if(title.numberOfTitlesSold > title.installments){
             title.status = TitleStatus.Closed;
 
             revert ThereIsNoTitlesAvailableAnymore(title.numberOfTitlesSold);
@@ -438,7 +438,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function receiveVRFRandomNumber(uint256 _idTitle) public{
+    function receiveVRFRandomNumber(uint256 _idTitle) public{ //Working Nice
         Titles storage title = allTitles[_idTitle];
         Draw storage draw = drawInfos[_idTitle][title.nextDrawNumber];
 
@@ -550,7 +550,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public { //OK
+    function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public { //Working Nice
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
@@ -589,7 +589,7 @@ contract Horizon is CCIPReceiver{
     }
 
     // Function to check titles with overdue payments and apply rules
-    function verifyLatePayments(uint _titleId, uint _contractId) public { //MODIFIED
+    function verifyLatePayments(uint _titleId, uint _contractId) public { //Working Nice
         Titles storage title = allTitles[_titleId];
 
         for(uint i = 1; i < title.numberOfTitlesSold; i++){
