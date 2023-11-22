@@ -46,7 +46,7 @@ contract Horizon is CCIPReceiver{
     event PaymentLateNumber(uint _i);
     event AmountLateWithInterest(uint totalAmountLate);
     event PaymentIsLate(uint lateInstallments);
-    event ThereAreSomePendencies(uint _installmentsPaid, uint _colateralTitleId, address _colateralReceiptAddress, address _nftAddress, MyTitleWithdraw myTitleStatus);
+    event ThereAreSomePendencies(uint _installmentsPaid, uint _colateralTitleId, address _colateralTitleAddress, address colateralRWAAddress, MyTitleWithdraw myTitleStatus);
     event LastInstallmentPaid(uint _installmentsPaid);
     event NewInvestmentCreated(uint _investmentValue, address _protocolAddress);
     event ThisTitleHasBeenCanceled(uint _titlesAvailableForNextDraw);
@@ -143,17 +143,16 @@ contract Horizon is CCIPReceiver{
     IERC20 stablecoin;
     IERC721 nftToken;
 
-    HorizonStaff staff = HorizonStaff(0xCd24c9696f2aA4bB15170B263E72642b5600B479); //FALTA ENDEREÇO
-    HorizonVRF vrfv2consumer = HorizonVRF(0xE7d98f63EFCDD443549b64205B1A1d22Af8c1007); //FALTA ENDEREÇO
-    HorizonReceipt receipt = HorizonReceipt(0x0203fc68dED882C7B669b4711C42fb7A27E119a9); //FALTA ENDEREÇO
-    HorizonS sender = HorizonS(payable(0xC3e7E776227D34874f6082f2F8476DD150DEC2de)); //FALTA ENDEREÇO
+    HorizonStaff staff = HorizonStaff(0xe4e7E811D79877f6838C9fDee5A06aa1e1E263cA);
+    HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
+    HorizonS sender = HorizonS(payable(0x55a5214740Ce71c80B9f91390276a0AE0e063911));
 
-    mapping(uint titleId => Titles) public allTitles; //ok
-    mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos; //OK
+    mapping(uint titleId => Titles) public allTitles;
+    mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos;
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
-    mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrder => TitleRecord))) public selectorVRF;
+    mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrderOrRandomValue => TitleRecord))) public selectorVRF;
     mapping(bytes32 permissionHash => FujiPermissions) permissionInfo;
-    mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos; //OK
+    mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos;
 
     constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1e2a3c41108bd3730f6670a44595d1
         owner = msg.sender;
@@ -254,7 +253,7 @@ contract Horizon is CCIPReceiver{
             installmentsPaid: 0,
             drawSelected: 0,
             colateralId: 0,
-            colateralTitleAddress: address(this),
+            colateralTitleAddress: address(0),
             colateralRWAAddress: address(0),
             valueOfEnsuranceNeeded: 0,
             myTitleStatus: MyTitleWithdraw.OnSchedule,
@@ -266,10 +265,6 @@ contract Horizon is CCIPReceiver{
         if(title.numberOfTitlesSold > title.installments){
             title.status = TitleStatus.Closed;
         }
-        
-        bytes memory myTitleReceipt = abi.encode(myTitle);
-
-        uint myTitleReceiptId = receipt.safeMint(msg.sender, string(myTitleReceipt));
 
         payInstallment(_titleId, titleSoldInfos[_titleId][title.numberOfTitlesSold].contractId, titleSoldInfos[_titleId][title.numberOfTitlesSold].installmentsPaid, _tokenAddress);
 
@@ -282,7 +277,7 @@ contract Horizon is CCIPReceiver{
                             IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
-        require(title.status == TitleStatus.Closed, "Check the title status!");
+        require(title.status == TitleStatus.Closed || title.status == TitleStatus.Open, "Check the title status!");
         require(myTitle.installments >= _installmentNumber, "You don't have any installment left to pay!");
         require(myTitle.myTitleStatus == MyTitleWithdraw.OnSchedule || myTitle.myTitleStatus == MyTitleWithdraw.Late || myTitle.myTitleStatus == MyTitleWithdraw.Withdraw );
 
@@ -316,30 +311,24 @@ contract Horizon is CCIPReceiver{
             receiveInstallment(_idTitle, _contractId, amountToPay, _tokenAddress);
         }
 
-        TitleRecord memory record = TitleRecord({
-            contractId: _contractId,
-            installmentNumber: _installment,
-            paymentDate: block.timestamp,
-            payerAddress: msg.sender,
-            user: myTitle.titleOwner,
-            amount: amountToPay,
-            paymentDelay: paymentDelay,
-            paid: true,
-            installmentsPaid: myTitle.installmentsPaid
-        });
-
         if(myTitle.installmentsPaid >= title.nextDrawNumber && myTitle.drawSelected == 0){
-            
-            staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
-            uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
+            TitleRecord memory record = TitleRecord({
+                contractId: _contractId,
+                installmentNumber: _installment,
+                paymentDate: block.timestamp,
+                payerAddress: msg.sender,
+                user: myTitle.titleOwner,
+                amount: amountToPay,
+                paymentDelay: paymentDelay,
+                paid: true,
+                installmentsPaid: myTitle.installmentsPaid
+            });
+            
+            uint nextDrawParticipants = staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
             selectorVRF[_idTitle][_installmentNumber][nextDrawParticipants] = record;
         }
-
-        bytes memory paymentReceipt = abi.encode(record);
-
-        receipt.safeMint(msg.sender, string(paymentReceipt));
 
         if(myTitle.installmentsPaid == myTitle.installments){
             myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
@@ -398,7 +387,7 @@ contract Horizon is CCIPReceiver{
         myTitle.installmentsPaid++;
     }
 
-    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal { //OK
+    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {
         Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
@@ -416,11 +405,15 @@ contract Horizon is CCIPReceiver{
     function monthlyVRFWinner(uint _idTitle) public { //OK
         Titles storage title = allTitles[_idTitle];
 
+        require(title.nextDrawNumber <= title.installments, "All the draws already ocurred!");
+
         uint thisDrawDate = staff.returnDrawDate(title.paymentSchedule, title.nextDrawNumber);
 
         require(block.timestamp > thisDrawDate, "Isn't the time yet!");
 
         uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
+
+        require(nextDrawParticipants > 0, "There is no participantes available for the draw!");
 
         uint256 requestId = vrfv2consumer.requestRandomWords(_idTitle, title.nextDrawNumber, nextDrawParticipants);
 
@@ -496,8 +489,9 @@ contract Horizon is CCIPReceiver{
         });
 
         colateralInfos[_titleId][_contractId] = colateral;
-
-        myColateralTitle.titleOwner = address(this);
+        
+        myTitle.colateralTitleAddress = address(this);
+        myColateralTitle.titleOwner = address(this);        
 
         emit ColateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfColateralTitle, _idOfColateralContract);
     }

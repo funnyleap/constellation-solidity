@@ -2,11 +2,10 @@
 // pragma solidity 0.8.19;
 
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
-import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 import "./HorizonFujiAssistant.sol";
 
-contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
+contract HorizonFunctions is FunctionsClient{
     using FunctionsRequest for FunctionsRequest.Request;
 
     // State variables to store the last request ID, response, and error
@@ -58,7 +57,7 @@ contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
                 address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
                 uint32 _gasLimit, // 300000
                 bytes32 _donID // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
-                ) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+                ) FunctionsClient(_routerFunctions) {
         subscriptionId = _subscriptionId; //770
         router = _routerFunctions; // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
         gasLimit = _gasLimit; // 300000

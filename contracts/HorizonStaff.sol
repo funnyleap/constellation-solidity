@@ -19,6 +19,7 @@ contract HorizonStaff {
     event AdminRemoved(address indexed _wallet);
     event TokenAdded(IERC20 tokenAddress, string symbol);
     event TokenRemoved(string symbol, address _stablecoin );
+    event ScheduleCreated(uint _titleId, uint _numPayments, uint titleSchedule);
     event InstallmentDateUpdated(uint _installmentNumber, uint _dateOfPayment);    
     event TheInstallmenteIsOnTime(uint _paymentDelay);
     event TheInstallmentIsOneDayLate(uint _amountToPay);
@@ -130,6 +131,8 @@ contract HorizonStaff {
 
         scheduleId ++;
 
+        emit ScheduleCreated(_titleId, _numPayments, titleSchedule);
+
         return titleSchedule;
     }
     
@@ -147,10 +150,12 @@ contract HorizonStaff {
         emit InstallmentDateUpdated(_installmentNumber, _dateOfPayment);
     }
     
-    function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) public {
+    function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) public returns(uint) {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 
         deadline.participants++;
+
+        return deadline.participants;
     }
 
     /* INTERESTS */
@@ -216,12 +221,12 @@ contract HorizonStaff {
 
     /* GET FUNCTIONS */
 
-    function returnAvailableStablecoin(IERC20 _stablecoin) external returns(string memory, IERC20, bool){//ok
+    function returnAvailableStablecoin(IERC20 _stablecoin) external view returns(string memory, address, bool){//ok
         string memory symbol = allowedCrypto[_stablecoin].tokenSymbol;
-        stablecoin = allowedCrypto[_stablecoin].stablecoin;
+        address stableAddress = address(allowedCrypto[_stablecoin].stablecoin); 
         bool isStable = allowedCrypto[_stablecoin].isStable;
 
-        return (symbol, stablecoin, isStable);
+        return (symbol, stableAddress, isStable);
     }
 
     function returnPaymentDeadline(uint _scheduleId, uint _installmentNumber) external view returns(uint){ //OK

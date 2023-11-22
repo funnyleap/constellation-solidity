@@ -2,13 +2,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const horizonReceipt = await deploy("HorizonReceiptD", {
+  const arguments = ["0x70499c328e1e2a3c41108bd3730f6670a44595d1"];
+
+  const horizon = await deploy("Horizon", {
     from: deployer,
+    args: arguments,
     log: true,
     waitConfirmations: 3,
   });
 
-  log(
-    `HorizonReceiptD contract deployed at address: ${horizonReceipt.address}`
-  );
+  log(`Horizon contract deployed at address: ${horizon.address}`);
 };

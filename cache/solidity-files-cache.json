@@ -831,8 +831,8 @@
       "artifacts": []
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonReceipt.sol": {
-      "lastModificationDate": 1700617679008,
-      "contentHash": "65b98ad8ce9b4b8a1e339ae55fd63f2b",
+      "lastModificationDate": 1700651455311,
+      "contentHash": "964952020c1f23e4203ac7bee19b7b49",
       "sourceName": "contracts/HorizonReceipt.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -869,8 +869,7 @@
       "imports": [
         "@openzeppelin/contracts/token/ERC721/ERC721.sol",
         "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol"
       ],
       "versionPragmas": [
         "^0.8.20"
@@ -880,8 +879,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\Horizon.sol": {
-      "lastModificationDate": 1700620641745,
-      "contentHash": "44107210cf6ea17dce75200afb7879a0",
+      "lastModificationDate": 1700654010830,
+      "contentHash": "3e9d30b14ac9b9fcc3960505d4cf4c44",
       "sourceName": "contracts/Horizon.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1031,8 +1030,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonStaff.sol": {
-      "lastModificationDate": 1700614215548,
-      "contentHash": "b121187e7c43d94cc42697ac97af7df1",
+      "lastModificationDate": 1700653873997,
+      "contentHash": "947a23b6fa6f8fa03bcf51f5e72a4cb7",
       "sourceName": "contracts/HorizonStaff.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1628,8 +1627,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFunctions.sol": {
-      "lastModificationDate": 1700614215548,
-      "contentHash": "6a5d0b8cc31dd5c61be19cb6442ebb97",
+      "lastModificationDate": 1700651205242,
+      "contentHash": "9b90806088c648f63e2084723fd45e20",
       "sourceName": "contracts/HorizonFunctions.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1665,7 +1664,6 @@
       },
       "imports": [
         "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol",
-        "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
         "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol",
         "./HorizonFujiAssistant.sol"
       ],

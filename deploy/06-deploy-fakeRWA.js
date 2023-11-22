@@ -1,4 +1,4 @@
-module.exports = async ({ getNamedAccounts, deployments }) => {
+/*module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
 
@@ -9,4 +9,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 
   log(`FakeRWA contract deployed at address: ${fakeRWA.address}`);
-};
+};*/
