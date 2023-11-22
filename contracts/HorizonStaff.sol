@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.9 <=0.8.19;
+pragma solidity >=0.8.9 <=0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 error NothingToWithdraw();
 
 contract HorizonStaff {
-
-    using SafeMath for uint256;
 
     /*Interest variables*/
     uint scheduleId = 1;
@@ -58,10 +55,6 @@ contract HorizonStaff {
         owner = msg.sender;
     }
 
-    /**
-     * 
-     * @param _wallet 
-     */
     function addAdmin(address _wallet) public {//OK
         require(_wallet != address(0), "Admin wallet can't be empty!");
         require(staff[_wallet].isAdmin == false,"Admin already registered");
@@ -73,10 +66,7 @@ contract HorizonStaff {
 
         emit AdminADD(_wallet);
     }
-    /**
-     * 
-     * @param _wallet 
-     */
+
     function removeAdmin(address _wallet) public {// OK
         require(_wallet != address(0), "Admin wallet can't be empty!");
         require(staff[_wallet].isAdmin == true);
@@ -86,11 +76,6 @@ contract HorizonStaff {
         emit AdminRemoved(_wallet);
     }
 
-    /**
-     * 
-     * @param _stablecoin 
-     * @param _tokenSymbol 
-     */
     function addToken(IERC20 _stablecoin, string memory _tokenSymbol) public { //OK
         require(address(_stablecoin) != address(0), "Token address cannot be zero");
         require(allowedCrypto[_stablecoin].stablecoin == IERC20(address(0)), "Token already added");
@@ -103,10 +88,7 @@ contract HorizonStaff {
 
         emit TokenAdded(_stablecoin, _tokenSymbol);
     }
-    /**
-     * 
-     * @param _stablecoin 
-     */
+
     function removeToken(IERC20 _stablecoin) public { //OK
         address stablecoinAddress = address(allowedCrypto[_stablecoin].stablecoin);
 
@@ -119,19 +101,13 @@ contract HorizonStaff {
         emit TokenRemoved(tokenToRemove.tokenSymbol, stablecoinAddress);
     }
 
-    /**
-     * 
-     * @param _titleId 
-     * @param _numPayments 
-     * @param _closing 
-     */
-    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public return (uint _scheduleId){//OK
+    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public returns(uint _scheduleId){//OK
         require(_numPayments > 0, "Number of payments must be greater than 0!");
         require(_closing > block.timestamp, "The closing of title selling must be in the future!");
 
         uint intervalDays = 5 minutes; // This will be dinamic. We can adjust this as needed.
 
-        uint nextDate = _closing.add(300); // We can adjust this as needed.
+        uint nextDate = _closing + 300; // We can adjust this as needed.
 
         for (uint i = 1; i <= _numPayments; i++) {
             require(nextDate > block.timestamp, "Payment date must be in the future!");
@@ -140,14 +116,14 @@ contract HorizonStaff {
                 installmentNumber: i,
                 participants: 0,
                 dateOfPayment: nextDate,
-                dateOfDraw: nextDate.add(300), // We can adjust this as needed.
+                dateOfDraw: nextDate + 300, // We can adjust this as needed.
                 baseInterestRate: baseInterestRate,
                 dailyInterestRate: dailyInterestRate
             });
 
             schedule[_titleId][i] = dates;
 
-            nextDate = nextDate.add(intervalDays);
+            nextDate = nextDate + intervalDays;
         }
 
         uint titleSchedule = scheduleId;
@@ -157,31 +133,20 @@ contract HorizonStaff {
         return titleSchedule;
     }
     
-    /**
-     * 
-     * @param _scheduleId 
-     * @param _installmentNumber 
-     * @param _dateOfPayment 
-     */
     function updatePaymentDate(uint _scheduleId, uint _installmentNumber, uint _dateOfPayment) public { //OK
         require(_installmentNumber > 0, "Installment number must be greater than zero!");
         require(schedule[_scheduleId][_installmentNumber].installmentNumber == _installmentNumber, "Installment number must exist!");
-        require(_dateOfPayment > schedule[_scheduleId][_installmentNumber].dateOfPayment, "You can only postpone the payment!")
+        require(_dateOfPayment > schedule[_scheduleId][_installmentNumber].dateOfPayment, "You can only postpone the payment!");
 
-        uint nextDate = _dateOfPayment.mul(1 minutes);
+        uint nextDate = _dateOfPayment * (1 minutes);
 
-        require(nextDate.sub(schedule[_scheduleId][_installmentNumber.sub(1)].dateOfPayment) > 5 minutes, "Must have a period of 30 days between installments!"); // We can adjust this as needed.
+        require(nextDate - (schedule[_scheduleId][_installmentNumber - 1].dateOfPayment) > 5 minutes, "Must have a period of 30 days between installments!"); // We can adjust this as needed.
 
         schedule[_scheduleId][_installmentNumber].dateOfPayment = _dateOfPayment;
 
         emit InstallmentDateUpdated(_installmentNumber, _dateOfPayment);
     }
     
-    /**
-     * 
-     * @param _scheduleId 
-     * @param _drawNumber 
-     */
     function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) public {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 
@@ -189,12 +154,7 @@ contract HorizonStaff {
     }
 
     /* INTERESTS */
-    /**
-     * 
-     * @param _paymentDelay 
-     * @param _scheduleId
-     * @param _inicialInstallment 
-     */
+
     function calculateDelayedPayment(uint _paymentDelay, uint _scheduleId, uint _inicialInstallment) external returns(uint) { //OK
 
         uint inicialValue = _inicialInstallment;
@@ -203,25 +163,25 @@ contract HorizonStaff {
 
 
         if(_paymentDelay < oneDay){
-            currentInterestRate = schedule[_scheduleId][_installmentNumber].baseInterestRate;
+            currentInterestRate = schedule[_scheduleId][_inicialInstallment].baseInterestRate;
 
-            uint valueWithInterest = (inicialValue.mul(currentInterestRate)).div(100);
+            uint valueWithInterest = (inicialValue * currentInterestRate) / 100;
 
-            amountToPay = inicialValue.add(valueWithInterest);
+            amountToPay = inicialValue + valueWithInterest;
 
             emit TheInstallmentIsOneDayLate(amountToPay);
         }else{
             //Calcula os juros a partir dos dias atrasados
-            uint daily = schedule[_scheduleId][_installmentNumber].dailyInterestRate;
+            uint daily = schedule[_scheduleId][_inicialInstallment].dailyInterestRate;
 
-            uint totalDailyInterest = (_paymentDelay.div(oneDay)).mul(daily);
+            uint totalDailyInterest = (_paymentDelay / oneDay) * daily;
 
-            currentInterestRate = baseInterestRate.add(totalDailyInterest);
+            currentInterestRate = baseInterestRate + totalDailyInterest;
 
-            uint valueWithInterests = inicialValue.mul(currentInterestRate).div(100);
+            uint valueWithInterests = (inicialValue * currentInterestRate) / 100;
 
             //Calcula o valor a pagar a partir do valor inicial + juros(se houver)
-            amountToPay = inicialValue.add(valueWithInterests);
+            amountToPay = inicialValue + valueWithInterests;
 
             if(currentInterestRate > 40){
                 emit TheTitleIsCloseToBeCanceled(currentInterestRate, amountToPay);
@@ -231,21 +191,14 @@ contract HorizonStaff {
         }
         return amountToPay;
     }
-    /**
-     * 
-     * @param _baseRate 
-     * @param _dailyRate 
-     */
+
     function updateInterest(uint _baseRate, uint _dailyRate) public { // OK.
         baseInterestRate = _baseRate;
         dailyInterestRate = _dailyRate;
     }
 
     /* WITHDRAW */
-    /**
-     * 
-     * @param _tokenAddress 
-     */
+
     function withdrawProtocolFee(IERC20 _tokenAddress) public onlyOwner {//OK
         require(allowedCrypto[_tokenAddress].isStable == true, "Token not allowed");
 
@@ -265,35 +218,23 @@ contract HorizonStaff {
 
     function returnAvailableStablecoin(IERC20 _stablecoin) external returns(string memory, IERC20, bool){//ok
         string memory symbol = allowedCrypto[_stablecoin].tokenSymbol;
-        stablecoin = allowedCrypto[_stablecoin].stablecoin; 
+        stablecoin = allowedCrypto[_stablecoin].stablecoin;
         bool isStable = allowedCrypto[_stablecoin].isStable;
 
         return (symbol, stablecoin, isStable);
     }
-    /**
-     * 
-     * @param _scheduleId 
-     * @param _installmentNumber 
-     */
+
     function returnPaymentDeadline(uint _scheduleId, uint _installmentNumber) external view returns(uint){ //OK
         uint paymentDate = schedule[_scheduleId][_installmentNumber].dateOfPayment;
         return paymentDate;
     }
-    /**
-     * 
-     * @param _scheduleId 
-     * @param _installmentNumber 
-     * @return _drawDate
-     */
+
     function returnDrawDate(uint _scheduleId, uint _installmentNumber) external view returns(uint){ //OK
-        drawDate = schedule[_scheduleId][_installmentNumber].dateOfDraw;
+        uint drawDate = schedule[_scheduleId][_installmentNumber].dateOfDraw;
+        
         return drawDate;
     }
-    /**
-     * 
-     * @param _scheduleId 
-     * @param _drawNumber 
-     */
+
     function returnDrawParticipants(uint _scheduleId, uint _drawNumber) public view returns(uint) {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 

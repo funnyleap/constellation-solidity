@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+// // SPDX-License-Identifier: MIT
+// pragma solidity 0.8.19;
 
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
@@ -20,8 +20,12 @@ contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
 
     struct VehicleData {
         string value;
+        uint uintValue;
         uint requestTime;
         uint responseTime;
+        bytes lastResponse;
+        bytes lastError;
+        bool isRequest;
     }
 
     mapping(bytes32 requestId => VehicleData) public vehicleDataMapping;
@@ -48,7 +52,7 @@ contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
         "const { data } = apiResponse;"
         "return Functions.encodeString(data.Valor);";
 
-    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable());//FALTA O ENDEREÇO
+    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable(0x5FA769922a6428758fb44453815e2c436c57C3c7));//FALTA O ENDEREÇO
 
     constructor(uint64 _subscriptionId, //770
                 address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
@@ -61,7 +65,7 @@ contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
         donID = _donID; // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
     }
 
-    function sendRequest(string[] calldata args, bytes32 permissionHash) external returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
+    function sendRequest(string[] calldata args) external returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
 
         FunctionsRequest.Request memory req;
 
@@ -76,8 +80,8 @@ contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
             uintValue: 0,
             requestTime: block.timestamp,
             responseTime: 0,
-            lastResponse: 0,
-            lastError: 0,
+            lastResponse: "",
+            lastError: "",
             isRequest: true
         });
 
@@ -104,10 +108,10 @@ contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
         vehicle.uintValue = (valueConverted / 5);
 
         // Emit an event to log the response
-        emit Response(requestId, s_lastResponse, s_lastError);
+        emit Response(requestId, response, err);
     }
 
-    function returnFunctionsInfo(bytes requestId) external returns(uint, uint){
+    function returnFunctionsInfo(bytes32 requestId) external view returns(uint, uint){
         VehicleData storage vehicle = vehicleDataMapping[requestId];
         uint vehicleValue = vehicle.uintValue;
         uint responseTime = vehicle.responseTime;
