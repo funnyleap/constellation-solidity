@@ -147,7 +147,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         uint _ensuranceValueNeeded;
         bool _colateralLocked;
 
-        (permissionHash, _ensuranceValue, _colateralLocked) = abi.decode(lastReceivedText, (bytes32, uint, bool));
+        (permissionHash, _ensuranceValueNeeded, _colateralLocked) = abi.decode(lastReceivedText, (bytes32, uint, bool));
 
         handlePermission(permissionHash, _ensuranceValueNeeded, _colateralLocked);
 
@@ -193,7 +193,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         permission.idTitle = _titleId;
         permission.contractId = _contractId;
         permission.drawNumber = _drawNumber;
-        poermission.rwaOwner = msg.sender;
+        permission.rwaOwner = msg.sender;
         permission.colateralId = _rwaId;
         permission.args = args;
 
