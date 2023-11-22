@@ -7,11 +7,7 @@ import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
-import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
-import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
-
-import "./HorizonFujiAssistant.sol";
+import "./HorizonFunctions.sol";
 import "./HorizonFujiS.sol";
 
 // Custom errors to provide more descriptive revert messages.
@@ -21,9 +17,8 @@ error FailedToWithdrawEth(address owner, address target, uint256 value);
 error DestinationChainNotWhitelisted(uint64 destinationChainSelector);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error SenderNotWhitelisted(address sender);
-error UnexpectedRequestID(bytes32 requestId);
 
-contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
+contract HorizonFujiR is CCIPReceiver {
 
     // Event emitted when a message is received from another chain.
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
@@ -31,17 +26,13 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
     event VerifyingRwaValue(uint _rwaId, string[] args);
     event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
     event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
-    event RWAPriceAtMoment(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
-    event PriceLowEvent(uint _contractId, ERC721 _colateralAddresses, int _rwaValue, uint _referenceValue);
-    event TitleCancelledTheRWAWillBeSold(uint _contractId, RwaMonitor[] rwaMonitors, uint rwaValue);
-    event Response( bytes32 indexed requestId, bytes response, bytes err);
+    event RWAPriceAtMoment(uint _contractId, uint _rwaValue, uint _referenceValue);
+    event PriceLowEvent(uint _contractId, uint _rwaValue, uint _referenceValue);
+    event TitleCancelledTheRWAWillBeSold(uint _contractId,  uint _rwaValue, uint rwaValue);
 
     //CCIP State Variables to store the last id, received text
     bytes32 private lastReceivedMessageId;
     bytes private lastReceivedText;
-    
-    // Functions State variables to store the last request ID, response, and error
-    bytes32 public s_lastRequestId;
     
     //State variable to store the polygon receiver address
     address private horizonR;
@@ -71,16 +62,6 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         bool isPermission;
     }
 
-    struct VehicleData {
-        string value;
-        uint uintValue;
-        uint requestTime;
-        uint responseTime;
-        bytes lastResponse;
-        bytes lastError;
-        bool isRequest;
-    }
-
     struct RwaMonitor{
         uint rwaId;
         bytes32 hashPermission;
@@ -91,46 +72,18 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
     RwaMonitor[] rwaMonitors;
     // Mapping to keep track of colateral permissions
     mapping(bytes32 => Permissions) public permissionsInfo;
-    //Mapping to store the requests from Functions
-    mapping(bytes32 requestId => VehicleData) public vehicleDataMapping;
 
     // Mapping to keep track of whitelisted source chains.
     mapping(uint64 => bool) public whitelistedSourceChains;
     // Mapping to keep track of whitelisted senders.
     mapping(address => bool) public whitelistedSenders;
 
-    
-    // JavaScript source code
-    // Fetch vehicle value from the FIPE API.
-    // Documentation: https://github.com/deividfortuna/fipe
-    string source =
-        "const tipoAutomovel = args[0];" //motos
-        "const idMarca = args[1];" //77
-        "const idModelo = args[2];" //5223
-        "const dataModelo = args[3];" //2015-1
-        "const apiResponse = await Functions.makeHttpRequest({"
-            "url: `https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}`"
-        "});"
-        "if (apiResponse.error) {"
-        "throw Error('Request failed');"
-        "}"
-        "const { data } = apiResponse;"
-        "return Functions.encodeString(data.Valor);";
+    HorizonFujiS sender = HorizonFujiS(payable(0x5FA769922a6428758fb44453815e2c436c57C3c7));//FALTA O ENDEREÇO
+    HorizonFunctions functions = HorizonFunctions(payable(0x5FA769922a6428758fb44453815e2c436c57C3c7));//FALTA O ENDEREÇO
+    ERC721 rwa = ERC721(payable(0x5FA769922a6428758fb44453815e2c436c57C3c7));//FALTA O ENDEREÇO
 
-    HorizonFujiS sender = HorizonFujiS(payable());//FALTA O ENDEREÇO
-    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable());//FALTA O ENDEREÇO
-    ERC721 rwa = ERC721(payable());//FALTA O ENDEREÇO
-
-    constructor(uint64 _subscriptionId, //770
-                address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
-                uint32 _gasLimit, // 300000
-                bytes32 _donID, // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
-                address _linkToken, // 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
+    constructor(address _linkToken, // 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
                 address _routerCCIP) CCIPReceiver(_routerCCIP) { //0x554472a2720e5e7d5d3c817529aba05eed5f82d8
-        subscriptionId = _subscriptionId;
-        router = _routerFunctions;
-        gasLimit = _gasLimit;
-        donID = _donID;
         LinkTokenInterface linkToken = LinkTokenInterface(_linkToken);
     }
 
@@ -158,6 +111,8 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
                               uint _ensuranceValueNeeded,
                               bool _colateralLocked) internal{
 
+        string[] memory emptyArray = new string[](0);
+
         Permissions memory permission = Permissions({
             idTitle: 0,
             contractId: 0,
@@ -166,7 +121,8 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
             ensuranceValueNeeded: (_ensuranceValueNeeded * 5),
             ensureValueNow: 0,
             colateralId: 0,
-            requstId: 0,
+            args: emptyArray,
+            lastRequestId: 0,
             lastRequestTime: 0,
             lastResponseTime: 0,
             colateralLocked: _colateralLocked,
@@ -197,60 +153,11 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
         permission.colateralId = _rwaId;
         permission.args = args;
 
+        bytes32 requestId = functions.sendRequest(args);
+
+        permission.lastRequestId = requestId;
+
         emit VerifyingRwaValue(_rwaId, args);
-
-        sendRequest(args, permissionHash);
-    }
-
-    function sendRequest(string[] calldata args, bytes32 permissionHash) external onlyOwner returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
-
-        FunctionsRequest.Request memory req;
-
-        req.initializeRequestForInlineJavaScript(source);
-
-        if (args.length > 0) req.setArgs(args);
-
-        s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
-
-        Permissions storage permission = permissionsInfo[permissionHash];
-
-        permission.lastRequestId = s_lastRequestId;
-        permission.lastRequestTime = block.timestamp;
-        
-        VehicleData memory vehicleInfo = VehicleData ({
-            value: "",
-            uintValue: 0,
-            requestTime: block.timestamp,
-            responseTime: 0,
-            lastResponse: 0,
-            lastError: 0,
-            isRequest: true
-        });
-
-        vehicleDataMapping[s_lastRequestId] = vehicleInfo;
-
-        return s_lastRequestId;
-    }
-
-    function fulfillRequest( bytes32 requestId, bytes memory response, bytes memory err) internal override {
-        VehicleData storage vehicle = vehicleDataMapping[requestId];
-
-        if (vehicle.isRequest == false) {
-            revert UnexpectedRequestID(requestId); // Check if request IDs match
-        }
-
-        // Update the vehicle mapping with the response and any errors
-        vehicle.lastResponse = response;
-        vehicle.lastError = err;
-        vehicle.value = string(response);
-        vehicle.responseTime = block.timestamp;
-
-        uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
-
-        vehicle.uintValue = (valueConverted / 5);
-
-        // Emit an event to log the response
-        emit Response(requestId, s_lastResponse, s_lastError);
     }
 
     function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId) public {
@@ -260,17 +167,16 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         require(permission.isPermission == true, "This permission didn't exists!");
 
-        VehicleData storage vehicle = vehicleDataMapping[permission.lastRequestId];
+        (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(permission.lastRequestId);
 
-        if(vehicle.uintValue >= permission.ensuranceValueNeeded){
+        if(vehicleValue >= permission.ensuranceValueNeeded){
             
-            permission.ensureValueNow = valueConverted;
-            permission.lastResponseTime = block.timestamp;
+            permission.ensureValueNow = vehicleValue;
+            permission.lastResponseTime = responseTime;
 
-            uint colateralPrice = valueConverted;
             uint targetPrice = permission.ensuranceValueNeeded;
 
-            require(colateralPrice >= targetPrice, "The ensurance must have at least 10 times the value of the value needed!");
+            require(vehicleValue >= targetPrice, "The ensurance must have at least 10 times the value of the value needed!");
             
             rwa.transferFrom(msg.sender, address(this), _rwaId);
 
@@ -284,11 +190,11 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
                 isActive: true
             }));
 
-            sender.sendMessagePayLINK(12532609583862916517, polygonReceiver, colateralAdded); //Destination chainId - 12532609583862916517
+            sender.sendMessagePayLINK(12532609583862916517, horizonR, colateralAdded); //Destination chainId - 12532609583862916517
 
             emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
         } else{
-            emit TheRwaValueIsLessThanTheMinimumNeeded(vehicle.rwaId, valueConverted);
+            emit TheRwaValueIsLessThanTheMinimumNeeded(_rwaId, vehicleValue);
         }
     }
 
@@ -297,7 +203,7 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
 
         Permissions storage permission = permissionsInfo[_permissionHash];
 
-        for(i = 0; rwaMonitors[i].hashPermission != _permissionHash; i++){
+        for(uint i = 0; rwaMonitors[i].hashPermission != _permissionHash; i++){
             if(rwaMonitors[i].hashPermission == _permissionHash){
                 rwaMonitors[i].isActive = false;
             }
@@ -314,25 +220,26 @@ contract HorizonFujiR is CCIPReceiver, FunctionsClient, ConfirmedOwner {
             if(rwaMonitors[i].isActive == true){
                 Permissions storage permission = permissionsInfo[rwaMonitors[i].hashPermission];
                 
-                sendRequest(permission.args, rwaMonitors[i].hashPermission);
+                bytes32 requestId = functions.sendRequest(permission.args);
 
-                VehicleData storage vehicle = vehicleDataMapping[permission.lastRequestId];
+                (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(requestId);
 
-                permission.ensureValueNow = vehicle.uintValue;
-                permission.lastResponseTime = vehicle.responseTime;
+                permission.ensureValueNow = vehicleValue;
+                permission.lastResponseTime = responseTime;
 
-                uint rwaValue = vehicle.uintValue;
-                uint referenceValue = permission.ensuranceValue;
+                uint id = rwaMonitors[i].rwaId;
+                uint rwaValue = vehicleValue;
+                uint referenceValue = permission.ensuranceValueNeeded;
 
                 if (rwaValue >= (referenceValue * 5)) {
-                    emit RWAPriceAtMoment(permission.contractId, rwaMonitors[i], rwaValue);
+                    emit RWAPriceAtMoment(permission.contractId, id, rwaValue);
 
                 } else if (rwaValue >= referenceValue * 4) {
-                    emit PriceLowEvent(permission.contractId, rwaMonitors[i], rwaValue); //ALERT
+                    emit PriceLowEvent(permission.contractId, id, rwaValue); //ALERT
 
                 } else if (rwaValue < referenceValue * 2) {
                     rwaMonitors[i].isActive = false;
-                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaMonitors[i], rwaValue);
+                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, id, rwaValue);
                 }
             }
         }
