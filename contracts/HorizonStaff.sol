@@ -37,6 +37,7 @@ contract HorizonStaff {
         bool isStable;
     }
     struct Deadlines {
+        uint titleId;
         uint installmentNumber;
         uint participants;
         uint dateOfPayment;
@@ -102,7 +103,7 @@ contract HorizonStaff {
         emit TokenRemoved(tokenToRemove.tokenSymbol, stablecoinAddress);
     }
 
-    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public returns(uint _scheduleId){//OK
+    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public returns(uint){//OK
         require(_numPayments > 0, "Number of payments must be greater than 0!");
         require(_closing > block.timestamp, "The closing of title selling must be in the future!");
 
@@ -114,6 +115,7 @@ contract HorizonStaff {
             require(nextDate > block.timestamp, "Payment date must be in the future!");
 
             Deadlines memory dates = Deadlines({
+                titleId: _titleId,
                 installmentNumber: i,
                 participants: 0,
                 dateOfPayment: nextDate,
@@ -122,7 +124,7 @@ contract HorizonStaff {
                 dailyInterestRate: dailyInterestRate
             });
 
-            schedule[_titleId][i] = dates;
+            schedule[scheduleId][i] = dates;
 
             nextDate = nextDate + intervalDays;
         }

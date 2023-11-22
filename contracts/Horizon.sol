@@ -288,6 +288,8 @@ contract Horizon is CCIPReceiver{
 
         if(myTitle.installmentsPaid > 0 ){
             _installment = (myTitle.installmentsPaid + 1);
+        } else {
+            _installment = 1;
         }
 
         uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, _installment);
@@ -325,7 +327,7 @@ contract Horizon is CCIPReceiver{
                 paid: true,
                 installmentsPaid: myTitle.installmentsPaid
             });
-            
+
             uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
 
             selectorVRF[_idTitle][_installment][nextDrawParticipants] = record;
