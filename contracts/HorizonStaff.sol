@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 error NothingToWithdraw();
 
 contract BellumStaff is Ownable {
+contract HorizonStaff {
 
     using SafeMath for uint256;
 
@@ -16,6 +17,7 @@ contract BellumStaff is Ownable {
     uint public baseInterestRate = 10;
     uint public dailyInterestRate = 3;
     uint oneDay = 60; //86400
+    address owner;
 
     /* Events */
     event AdminADD(address indexed _wallet);
@@ -55,6 +57,7 @@ contract BellumStaff is Ownable {
     IERC20 stablecoin;
 
     constructor (){
+        owner = msg.sender;
     }
 
     /**
@@ -258,6 +261,7 @@ contract BellumStaff is Ownable {
         }
         
         stablecoin.transfer(_owner, amount);
+        stablecoin.transfer(owner, amount);
     }
 
     /* GET FUNCTIONS */
@@ -272,6 +276,9 @@ contract BellumStaff is Ownable {
     function returnAvailableStablecoin(IERC20 _stablecoin) external view returns(string memory, IERC20, bool){//ok
         string symbol = allowedCrypto[_stablecoin].tokenSymbol;
         stablecoin = allowedCrypto[_stablecoin].stablecoin;
+    function returnAvailableStablecoin(IERC20 _stablecoin) external returns(string memory, IERC20, bool){//ok
+        string memory symbol = allowedCrypto[_stablecoin].tokenSymbol;
+        stablecoin = allowedCrypto[_stablecoin].stablecoin; 
         bool isStable = allowedCrypto[_stablecoin].isStable;
 
         return (symbol, stablecoin, isStable);
@@ -304,5 +311,10 @@ contract BellumStaff is Ownable {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 
         return deadline.participants;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner,"The caller must be the owner");
+        _;
     }
 }

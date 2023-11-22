@@ -4,19 +4,13 @@ pragma solidity 0.8.19;
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
+import "./HorizonFujiAssistant.sol";
 
-/**
- * @title GettingStartedFunctionsConsumer
- * @notice This is an example contract to show how to make HTTP requests using Chainlink
- * @dev This contract uses hardcoded values and should not be used in production.
- */
-contract GettingStartedFunctionsConsumer is FunctionsClient, ConfirmedOwner {
+contract HorizonFunctions is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
 
     // State variables to store the last request ID, response, and error
     bytes32 public s_lastRequestId;
-    bytes public s_lastResponse;
-    bytes public s_lastError;
 
     // Custom error type
     error UnexpectedRequestID(bytes32 requestId);
@@ -54,33 +48,37 @@ contract GettingStartedFunctionsConsumer is FunctionsClient, ConfirmedOwner {
         "const { data } = apiResponse;"
         "return Functions.encodeString(data.Valor);";
 
+    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable());//FALTA O ENDEREÇO
 
-    constructor(uint64 _subscriptionId, address _router, uint32 _gasLimit, bytes32 _donID) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(uint64 _subscriptionId, //770
+                address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
+                uint32 _gasLimit, // 300000
+                bytes32 _donID // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
+                ) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         subscriptionId = _subscriptionId; //770
-        router = _router; // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
+        router = _routerFunctions; // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
         gasLimit = _gasLimit; // 300000
         donID = _donID; // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
     }
 
+    function sendRequest(string[] calldata args, bytes32 permissionHash) external returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
 
-    function sendRequest(string[] calldata args) external onlyOwner returns (bytes32 requestId) {
         FunctionsRequest.Request memory req;
 
         req.initializeRequestForInlineJavaScript(source);
 
         if (args.length > 0) req.setArgs(args);
 
-        s_lastRequestId = _sendRequest(
-            req.encodeCBOR(),
-            subscriptionId,
-            gasLimit,
-            donID
-        );
+        s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
         
         VehicleData memory vehicleInfo = VehicleData ({
             value: "",
+            uintValue: 0,
             requestTime: block.timestamp,
-            responseTime: 0
+            responseTime: 0,
+            lastResponse: 0,
+            lastError: 0,
+            isRequest: true
         });
 
         vehicleDataMapping[s_lastRequestId] = vehicleInfo;
@@ -88,26 +86,32 @@ contract GettingStartedFunctionsConsumer is FunctionsClient, ConfirmedOwner {
         return s_lastRequestId;
     }
 
-    /**
-     * @notice Callback function for fulfilling a request
-     * @param requestId The ID of the request to fulfill
-     * @param response The HTTP response data
-     * @param err Any errors from the Functions request
-     */
     function fulfillRequest( bytes32 requestId, bytes memory response, bytes memory err) internal override {
+        VehicleData storage vehicle = vehicleDataMapping[requestId];
 
-        if (s_lastRequestId != requestId) {
+        if (vehicle.isRequest == false) {
             revert UnexpectedRequestID(requestId); // Check if request IDs match
         }
 
-        // Update the contract's state variables with the response and any errors
-        s_lastResponse = response;
-        s_lastError = err;
+        // Update the vehicle mapping with the response and any errors
+        vehicle.lastResponse = response;
+        vehicle.lastError = err;
+        vehicle.value = string(response);
+        vehicle.responseTime = block.timestamp;
 
-        vehicleDataMapping[requestId].value = string(response);
-        vehicleDataMapping[requestId].responseTime = block.timestamp;
+        uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
+
+        vehicle.uintValue = (valueConverted / 5);
 
         // Emit an event to log the response
         emit Response(requestId, s_lastResponse, s_lastError);
+    }
+
+    function returnFunctionsInfo(bytes requestId) external returns(uint, uint){
+        VehicleData storage vehicle = vehicleDataMapping[requestId];
+        uint vehicleValue = vehicle.uintValue;
+        uint responseTime = vehicle.responseTime;
+
+        return (vehicleValue, responseTime);
     }
 }

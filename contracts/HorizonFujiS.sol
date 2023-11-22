@@ -18,6 +18,8 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
     // Event emitted when a message is sent to another chain.
     event MessageSent(bytes32 indexed messageId, uint64 indexed destinationChainSelector, address receiver, bytes _data, address feeToken, uint256 fees);
     event MessageReceived(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text, address token, uint256 tokenAmount);
+    event CCIPReceiverAdded(string _blockchainName, address _receiverAddress);
+    event CCIPReceiverRemoved(address _receiverAddress);
 
     bytes32 private lastReceivedMessageId;
     string private lastReceivedText;
@@ -55,8 +57,8 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
     }
 
     function addReceiver(string memory _blockchainName, address _receiverAddress) public onlyOwner{
-        require(receiverAddress != address(0), "Enter a valid address!");
-        require(ccipReceicers[_receiverAddress].isReceiver == false, "Receiver is already registered!")
+        require(_receiverAddress != address(0), "Enter a valid address!");
+        require(ccipReceicers[_receiverAddress].isReceiver == false, "Receiver is already registered!");
 
         ReceiverInfo memory newReceiver = ReceiverInfo({
             blockchainName: _blockchainName,
@@ -64,7 +66,7 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
             isReceiver: true
         })
         
-        ccipReceicers[_receiverAddress].push(newReceiver);
+        ccipReceicers[_receiverAddress] = newReceiver;
 
         emit CCIPReceiverAdded(_blockchainName, _receiverAddress);
     }
@@ -78,11 +80,11 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
     }
 
     function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiver, bytes memory _data) external /*onlyOwner onlyWhitelistedDestinationChain(_destinationChainSelector)*/ returns (bytes32 messageId){
-        require(ccipReceicers[_receiverAddress].address != address(0), "Enter a valid receiver address!")
-        require(ccipReceicers[_receiverAddress].isReceiver == true, "This receiver is not whitelisted yet!")
+        require(ccipReceicers[_receiver].receiverAddress != address(0), "Enter a valid receiver address!");
+        require(ccipReceicers[_receiver].isReceiver == true, "This receiver is not whitelisted yet!");
         
         Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            ccipReceicers[_receiverAddress].receiverAddress,
+            ccipReceicers[_receiver].receiverAddress,
             _data,
             address(linkToken)
         );
