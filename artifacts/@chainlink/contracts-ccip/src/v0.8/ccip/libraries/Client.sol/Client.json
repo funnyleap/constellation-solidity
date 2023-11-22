@@ -1,0 +1,24 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Client",
+  "sourceName": "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "EVM_EXTRA_ARGS_V1_TAG",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60808060405234601857607b908161001e823930815050f35b600080fdfe6080806040526004361015601257600080fd5b60003560e01c633ab8c0d014602657600080fd5b60003660031901126040576397a657c960e01b8152602090f35b600080fdfea2646970667358221220115d398666361c1bc66c462a34635093b8601b12c382ece9aa150cff80bf251364736f6c63430008140033",
+  "deployedBytecode": "0x6080806040526004361015601257600080fd5b60003560e01c633ab8c0d014602657600080fd5b60003660031901126040576397a657c960e01b8152602090f35b600080fdfea2646970667358221220115d398666361c1bc66c462a34635093b8601b12c382ece9aa150cff80bf251364736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

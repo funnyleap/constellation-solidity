@@ -182,13 +182,13 @@ contract HorizonFujiR is CCIPReceiver {
 
             address provisoryOwner = rwa.ownerOf(_rwaId);
 
-            bytes memory colateralAdded = abi.encode(permissionHash, rwa, _rwaId);
-
             rwaMonitors.push(RwaMonitor({
                 rwaId: _rwaId,
                 hashPermission: permissionHash,
                 isActive: true
             }));
+            
+            bytes memory colateralAdded = abi.encode(permissionHash, rwa, _rwaId);
 
             sender.sendMessagePayLINK(12532609583862916517, horizonR, colateralAdded); //Destination chainId - 12532609583862916517
 

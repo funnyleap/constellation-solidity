@@ -14,10 +14,12 @@ contract HorizonReceipt is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         Ownable(initialOwner)
     {}
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to, string memory uri) public onlyOwner returns(uint){
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+
+        return tokenId;
     }
 
     // The following functions are overrides required by Solidity.
