@@ -143,7 +143,7 @@ contract Horizon is CCIPReceiver{
     IERC20 stablecoin;
     IERC721 nftToken;
 
-    HorizonStaff staff = HorizonStaff(0x29b8eF8f8062071C5323c37FB95D30111f198404);
+    HorizonStaff staff = HorizonStaff(0x3547951AAA367094AFABcaE24f123473fF502bFa);
     HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
     HorizonS sender = HorizonS(payable(0x55a5214740Ce71c80B9f91390276a0AE0e063911));
 
@@ -262,12 +262,6 @@ contract Horizon is CCIPReceiver{
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
 
-        if(title.numberOfTitlesSold > title.installments){
-            title.status = TitleStatus.Closed;
-
-            revert ThereIsNoTitlesAvailableAnymore(title.numberOfTitlesSold);
-        }
-
         staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
         payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
@@ -327,6 +321,8 @@ contract Horizon is CCIPReceiver{
                 paid: true,
                 installmentsPaid: myTitle.installmentsPaid
             });
+
+            staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
             uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
 
