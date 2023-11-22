@@ -160,15 +160,15 @@ contract HorizonStaff {
 
     /* INTERESTS */
 
-    function calculateDelayedPayment(uint _paymentDelay, uint _scheduleId, uint _inicialInstallment) external returns(uint) { //OK
+    function calculateDelayedPayment(uint _paymentDelay, uint _scheduleId, uint _inicialValue) external returns(uint) { //OK
 
-        uint inicialValue = _inicialInstallment;
+        uint inicialValue = _inicialValue;
         uint currentInterestRate;
         uint amountToPay;
 
 
         if(_paymentDelay < oneDay){
-            currentInterestRate = schedule[_scheduleId][_inicialInstallment].baseInterestRate;
+            currentInterestRate = schedule[_scheduleId][inicialValue].baseInterestRate;
 
             uint valueWithInterest = (inicialValue * currentInterestRate) / 100;
 
@@ -177,7 +177,7 @@ contract HorizonStaff {
             emit TheInstallmentIsOneDayLate(amountToPay);
         }else{
             //Calcula os juros a partir dos dias atrasados
-            uint daily = schedule[_scheduleId][_inicialInstallment].dailyInterestRate;
+            uint daily = schedule[_scheduleId][inicialValue].dailyInterestRate;
 
             uint totalDailyInterest = (_paymentDelay / oneDay) * daily;
 

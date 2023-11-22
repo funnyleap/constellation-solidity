@@ -24,7 +24,6 @@ contract Horizon is CCIPReceiver{
     mapping(address => bool) public whitelistedSenders;
 
     uint titleId = 0;
-    uint amountToPay;
     uint paymentDelay;
     address fujiReceiver;
     address owner;
@@ -143,7 +142,7 @@ contract Horizon is CCIPReceiver{
     IERC20 stablecoin;
     IERC721 nftToken;
 
-    HorizonStaff staff = HorizonStaff(0xe4e7E811D79877f6838C9fDee5A06aa1e1E263cA);
+    HorizonStaff staff = HorizonStaff(0x29b8eF8f8062071C5323c37FB95D30111f198404);
     HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
     HorizonS sender = HorizonS(payable(0x55a5214740Ce71c80B9f91390276a0AE0e063911));
 
@@ -266,7 +265,7 @@ contract Horizon is CCIPReceiver{
             title.status = TitleStatus.Closed;
         }
 
-        payInstallment(_titleId, titleSoldInfos[_titleId][title.numberOfTitlesSold].contractId, _tokenAddress);
+        payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
 
         emit NewTitleSold(title.numberOfTitlesSold, msg.sender);
     }
@@ -278,21 +277,23 @@ contract Horizon is CCIPReceiver{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         require(title.status == TitleStatus.Closed || title.status == TitleStatus.Open, "Check the title status!");
         require(myTitle.myTitleStatus == MyTitleWithdraw.OnSchedule || myTitle.myTitleStatus == MyTitleWithdraw.Late || myTitle.myTitleStatus == MyTitleWithdraw.Withdraw );
+        require(myTitle.installmentsPaid < title.installments, "You already paid all the installments!");
 
-        myTitle.installmentsPaid++;
+        uint _installment;
 
-        uint _installment = myTitle.installmentsPaid;
-
-        require(myTitle.installmentsPaid <= title.installments, "You already paid all the installments!");
+        if(myTitle.installmentsPaid > 0 ){
+            _installment = (myTitle.installmentsPaid + 1);
+        }
 
         uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, _installment);
+        uint amountToPay;
 
-        if(block.timestamp > paymentDate){
+        if(block.timestamp > paymentDate && myTitle.installmentsPaid > 0 ){
             paymentDelay = (block.timestamp - paymentDate);
 
             if(paymentDelay > 0){
 
-                amountToPay = staff.calculateDelayedPayment(paymentDelay, title.paymentSchedule, amountToPay);
+                amountToPay = staff.calculateDelayedPayment(paymentDelay, title.paymentSchedule, myTitle.monthlyValue);
 
                 emit AmountToPay(amountToPay);
 
@@ -362,6 +363,8 @@ contract Horizon is CCIPReceiver{
         //Valida se o contrato(esse), tem permissão para realizar a transferência do valor.
         require(stablecoin.allowance(msg.sender, address(this)) >= _amountToPay, "You must approve the contract to transfer the tokens");
 
+        myTitle.installmentsPaid++;
+
         if(myTitle.periodLocked == 0){
             title.totalValueReceived = title.totalValueReceived + title.monthlyInvestiment;
             
@@ -378,8 +381,6 @@ contract Horizon is CCIPReceiver{
                 stablecoin.transferFrom(msg.sender, address(this), _amountToPay);
             }
         }
-
-        myTitle.installmentsPaid++;
     }
 
     function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {//Working Nice
