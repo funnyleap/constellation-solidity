@@ -150,12 +150,10 @@ contract HorizonStaff {
         emit InstallmentDateUpdated(_installmentNumber, _dateOfPayment);
     }
     
-    function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) public returns(uint) {
+    function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) public {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 
         deadline.participants++;
-
-        return deadline.participants;
     }
 
     /* INTERESTS */

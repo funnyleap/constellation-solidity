@@ -11,6 +11,7 @@ import "./HorizonStaff.sol";
 import "./HorizonVRF.sol";
 import "./HorizonReceipt.sol";
 
+error ThereIsNoTitlesAvailableAnymore(uint _numberOfTitlesSold);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error FailedToWithdrawEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
@@ -65,8 +66,8 @@ contract Horizon is CCIPReceiver{
         Canceled, //0
         Late, //1
         OnSchedule, //2
-        Withdraw,
-        Finalized //3
+        Withdraw, //3
+        Finalized //4
     }
 
     MyTitleWithdraw myTitleStatus;
@@ -261,9 +262,13 @@ contract Horizon is CCIPReceiver{
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
 
-        if(title.numberOfTitlesSold > title.installments){
+        if(title.numberOfTitlesSold == title.installments){
             title.status = TitleStatus.Closed;
+
+            revert ThereIsNoTitlesAvailableAnymore(title.numberOfTitlesSold);
         }
+
+        staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
         payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
 
@@ -307,7 +312,7 @@ contract Horizon is CCIPReceiver{
             receiveInstallment(_idTitle, _contractId, amountToPay, _tokenAddress);
         }
 
-        if(myTitle.installmentsPaid >= title.nextDrawNumber && myTitle.drawSelected == 0){
+        if(myTitle.installmentsPaid >= title.nextDrawNumber && myTitle.drawSelected == 0 || title.nextDrawNumber == 1 && myTitle.installmentsPaid == 0 && myTitle.drawSelected == 0){
 
             TitleRecord memory record = TitleRecord({
                 contractId: _contractId,
@@ -321,7 +326,7 @@ contract Horizon is CCIPReceiver{
                 installmentsPaid: myTitle.installmentsPaid
             });
             
-            uint nextDrawParticipants = staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
+            uint nextDrawParticipants = staff.returnDrawParticipants(title.paymentSchedule, title.nextDrawNumber);
 
             selectorVRF[_idTitle][_installment][nextDrawParticipants] = record;
         }
@@ -552,6 +557,10 @@ contract Horizon is CCIPReceiver{
         require(msg.sender == myTitle.titleOwner || msg.sender == owner, "Msg.sender must be the contract Owner or the protocol owner!");
         require(address(_stablecoin) != address(0), "Token not allowed");
         require(myTitle.myTitleStatus == MyTitleWithdraw.Withdraw, "This title don't have the permission to withdraw");
+
+        if(myTitle.periodLocked > 0){
+            require(title.nextDrawNumber > myTitle.periodLocked, "You can't withdraw at this time. Your lock period ends on the 6 month!");
+        }
  
         if(myTitle.installmentsPaid == myTitle.installments ||
            myTitle.colateralId != 0 || myTitle.colateralRWAAddress != address(0) && myTitle.colateralId != 0) {
