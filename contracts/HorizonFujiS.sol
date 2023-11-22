@@ -2,14 +2,14 @@
 pragma solidity 0.8.20;
 
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
-import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 
-contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
-    
+contract HorizonFujiS is CCIPReceiver {
+
+    // Custom errors to provide more descriptive revert messages.    
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
     error NothingToWithdraw();
     error FailedToWithdrawEth(address owner, address target, uint256 value);
@@ -24,6 +24,8 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
     bytes32 private lastReceivedMessageId;
     string private lastReceivedText;
     uint private destinationChainSelector;
+
+    address owner;
 
     /* STRUCTS */
     struct ReceiverInfo {
@@ -43,6 +45,7 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
                 address _linkToken //0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
                ) CCIPReceiver(_router){  
         linkToken = LinkTokenInterface(_linkToken);
+        owner = msg.sender;
     }
 
     /// @dev Whitelists a chain for transactions.
@@ -155,6 +158,11 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator {
     modifier onlyWhitelistedDestinationChain(uint64 _destinationChainSelector) {
         if (!whitelistedDestinationChains[_destinationChainSelector])
             revert DestinationChainNotWhitelisted(_destinationChainSelector);
+        _;
+    }
+
+    modifier onlyOwner(){
+        require(msg.sender == owner, "Only Owner can call this function!");
         _;
     }
 }

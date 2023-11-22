@@ -6,9 +6,8 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract HorizonS is CCIPReceiver, Ownable {
+contract HorizonS is CCIPReceiver {
 
     // Custom errors to provide more descriptive revert messages.
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
@@ -26,6 +25,8 @@ contract HorizonS is CCIPReceiver, Ownable {
     string private lastReceivedText;
     uint private destinationChainSelector;
 
+    address owner;
+
     /* STRUCTS */
     struct ReceiverInfo {
         string blockchainName;
@@ -38,12 +39,13 @@ contract HorizonS is CCIPReceiver, Ownable {
     // Mapping to keep track of receivers.
     mapping(address receiverAddress => ReceiverInfo) public ccipReceicers;
 
-    LinkTokenInterface linkToken = LinkTokenInterface();  //
+    LinkTokenInterface linkToken = LinkTokenInterface(0x5FA769922a6428758fb44453815e2c436c57C3c7);  //
 
     constructor(address _router, //0x70499c328e1e2a3c41108bd3730f6670a44595d1
                 address _linkToken //0x326C977E6efc84E512bB9C30f76E30c160eD06FB
                ) CCIPReceiver(_router){ 
-    linkToken = LinkTokenInterface(_linkToken);
+        linkToken = LinkTokenInterface(_linkToken);
+        owner = msg.sender;
     }
 
     /// @dev Whitelists a chain for transactions.
@@ -70,7 +72,7 @@ contract HorizonS is CCIPReceiver, Ownable {
             isReceiver: true
         });
         
-        ccipReceicers[_receiverAddress].push(newReceiver);
+        ccipReceicers[_receiverAddress] = newReceiver;
 
         emit CCIPReceiverAdded(_blockchainName, _receiverAddress);
     }
@@ -84,7 +86,7 @@ contract HorizonS is CCIPReceiver, Ownable {
     }
 
     function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiverAddress, bytes memory _data) external /*onlyOwner*/ returns (bytes32 messageId){
-        require(ccipReceicers[_receiverAddress].address != address(0), "Enter a valid receiver address!");
+        require(ccipReceicers[_receiverAddress].receiverAddress != address(0), "Enter a valid receiver address!");
         require(ccipReceicers[_receiverAddress].isReceiver == true, "This receiver is not whitelisted yet!");
 
         Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
@@ -102,7 +104,7 @@ contract HorizonS is CCIPReceiver, Ownable {
 
         linkToken.approve(address(router), fees);
 
-        messageId = router.ccipSend(_receiverAddress, _destinationChainSelector, evm2AnyMessage);
+        messageId = router.ccipSend(_destinationChainSelector, evm2AnyMessage);
 
         emit MessageSent(messageId, _destinationChainSelector, _receiverAddress, _data, address(0), fees);
 
@@ -147,5 +149,10 @@ contract HorizonS is CCIPReceiver, Ownable {
         if (amount == 0) revert NothingToWithdraw();
 
         IERC20(_token).transfer(_beneficiary, amount);
+    }
+
+    modifier onlyOwner(){
+        require(msg.sender == owner, "Only Owner can call this function!");
+        _;
     }
 }
