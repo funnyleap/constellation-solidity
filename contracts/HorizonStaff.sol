@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <=0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 error NothingToWithdraw();
 
-contract BellumStaff is Ownable {
 contract HorizonStaff {
 
     using SafeMath for uint256;
@@ -260,22 +258,11 @@ contract HorizonStaff {
             revert NothingToWithdraw();
         }
         
-        stablecoin.transfer(_owner, amount);
         stablecoin.transfer(owner, amount);
     }
 
     /* GET FUNCTIONS */
 
-    /**
-     * 
-     * @param _stablecoin 
-     * @return _string
-     * @return _stablecoin
-     * @return _isStable
-     */
-    function returnAvailableStablecoin(IERC20 _stablecoin) external view returns(string memory, IERC20, bool){//ok
-        string symbol = allowedCrypto[_stablecoin].tokenSymbol;
-        stablecoin = allowedCrypto[_stablecoin].stablecoin;
     function returnAvailableStablecoin(IERC20 _stablecoin) external returns(string memory, IERC20, bool){//ok
         string memory symbol = allowedCrypto[_stablecoin].tokenSymbol;
         stablecoin = allowedCrypto[_stablecoin].stablecoin; 

@@ -5,7 +5,6 @@ import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {HorizonS} from "./HorizonS.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -17,7 +16,7 @@ error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error FailedToWithdrawEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
 
-contract Horizon is CCIPReceiver, Ownable{
+contract Horizon is CCIPReceiver{
 
     using SafeMath for uint256;
 
@@ -31,14 +30,7 @@ contract Horizon is CCIPReceiver, Ownable{
     uint amountToPay;
     uint paymentDelay;
     address fujiReceiver;
-
-    HorizonStaff staff = HorizonStaff(0xCd24c9696f2aA4bB15170B263E72642b5600B479); //FALTA ENDEREÇO
-    IERC20 stablecoin;
-    IERC721 nftToken;
-
-    HorizonReceipt receipt = HorizonReceipt(0x0203fc68dED882C7B669b4711C42fb7A27E119a9); //FALTA ENDEREÇO
-    HorizonVRF vrfv2consumer = HorizonVRF(0xE7d98f63EFCDD443549b64205B1A1d22Af8c1007); //FALTA ENDEREÇO
-    HorizonS sender = HorizonS(payable(0xC3e7E776227D34874f6082f2F8476DD150DEC2de)); //FALTA ENDEREÇO
+    address owner;
 
     event NewTitleCreated(uint _titleId, uint _scheduleId, uint _monthlyValue, uint _titleValue);
     event TitleStatusUpdated(TitleStatus status);
@@ -141,11 +133,27 @@ contract Horizon is CCIPReceiver, Ownable{
         uint winnerReceiptId;
     }
 
+    struct ColateralTitles {
+        uint colateralId;
+        address colateralAddress;
+        address colateralOwner;
+        uint titleIdOfColateral;
+        uint contractIdOfColateral;
+    }
+
     struct FujiPermissions{
         uint idTitle;
         uint contractId;
         uint drawNumber;
     }
+    
+    IERC20 stablecoin;
+    IERC721 nftToken;
+
+    HorizonStaff staff = HorizonStaff(0xCd24c9696f2aA4bB15170B263E72642b5600B479); //FALTA ENDEREÇO
+    HorizonVRF vrfv2consumer = HorizonVRF(0xE7d98f63EFCDD443549b64205B1A1d22Af8c1007); //FALTA ENDEREÇO
+    HorizonReceipt receipt = HorizonReceipt(0x0203fc68dED882C7B669b4711C42fb7A27E119a9); //FALTA ENDEREÇO
+    HorizonS sender = HorizonS(payable(0xC3e7E776227D34874f6082f2F8476DD150DEC2de)); //FALTA ENDEREÇO
 
     mapping(uint titleId => Titles) public allTitles; //ok
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos; //OK
@@ -155,6 +163,7 @@ contract Horizon is CCIPReceiver, Ownable{
     mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos; //OK
 
     constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1e2a3c41108bd3730f6670a44595d1
+        owner = msg.sender;
     }
 
     function createTitle(uint _opening, //OK
@@ -228,16 +237,18 @@ contract Horizon is CCIPReceiver, Ownable{
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
-        require(title.nextPurchaseId <= title.installments, "Title soldout!");
+        require(title.numberOfTitlesSold <= title.installments, "Title soldout!");
 
         title.numberOfTitlesSold++;
         //Se você deseja sacar o valor do titulo em menos de 5 meses, se sorteado. Marque como true.
+        uint fee;
+        uint lockPeriod;
         if(withdrawPeriod == true){
-            uint fee = title.protocolFee;
-            uint lockPeriod = 0;
+            fee = title.protocolFee;
+            lockPeriod = 0;
         } else {
-            uint fee = 0;
-            uint lockPeriod = 5;
+            fee = 0;
+            lockPeriod = 5;
         }
 
         TitlesSold memory myTitle = TitlesSold({
@@ -265,13 +276,14 @@ contract Horizon is CCIPReceiver, Ownable{
         }
         
         bytes memory myTitleReceipt = abi.encode(myTitle);
-        uint myTitleReceiptId = receipt.safeMint(winningTicket.user, string(myTitleReceipt));
+
+        uint myTitleReceiptId = receipt.safeMint(msg.sender, string(myTitleReceipt));
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold].withdrawToken = myTitleReceiptId;
 
         payInstallment(_titleId, titleSoldInfos[_titleId][title.numberOfTitlesSold].contractId, titleSoldInfos[_titleId][title.numberOfTitlesSold].installmentsPaid, _tokenAddress);
 
-        emit NewTitleSold(purchase, msg.sender);
+        emit NewTitleSold(title.numberOfTitlesSold, msg.sender);
     }
 
     function payInstallment(uint _idTitle, //OK
@@ -337,7 +349,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
         bytes memory paymentReceipt = abi.encode(record);
 
-        receiptB.mint(msg.sender, _idTitle, 1, paymentReceipt);
+        receipt.safeMint(msg.sender, paymentReceipt);
 
         if(myTitle.installmentsPaid == myTitle.installments){
             myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
@@ -357,7 +369,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
     function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //OK
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
-        Titles storage titles = allTitles[_idTitle];
+        Titles storage title = allTitles[_idTitle];
         require(myTitle.contractId <= title.numberOfTitlesSold, "Enter a valid contract Id for this Title!");
         require(myTitle.myTitleStatus != MyTitleWithdraw.Canceled || myTitle.myTitleStatus != MyTitleWithdraw.Finalized, "your title already have been finalized or canceled. Please check the status.")
         require(address(_tokenAddress) != address(0), "Enter a token address");
@@ -377,17 +389,17 @@ contract Horizon is CCIPReceiver, Ownable{
         require(stablecoin.allowance(msg.sender, address(this)) >= _amountToPay, "You must approve the contract to transfer the tokens");
 
         if(myTitle.periodLocked == 0){
-            titles.totalValueReceived = titles.totalValueReceived.add(titles.monthlyInvestiment);
+            title.totalValueReceived = title.totalValueReceived + title.monthlyInvestiment;
             
-            stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
-            stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+            stablecoin.transferFrom(msg.sender, address(this), title.monthlyInvestiment);
+            stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay - title.monthlyInvestiment));
         } else{
-            titles.totalValueReceived = titles.totalValueReceived.add(titles.monthlyInvestiment);
+            title.totalValueReceived = title.totalValueReceived + title.monthlyInvestiment;
 
-            if(_amountToPay.sub(titles.monthlyInvestiment) > 0){
+            if(_amountToPay - title.monthlyInvestiment > 0){
             
-                stablecoin.transferFrom(msg.sender, address(this), titles.monthlyInvestiment);
-                stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay.sub(titles.monthlyInvestiment)));
+                stablecoin.transferFrom(msg.sender, address(this), title.monthlyInvestiment);
+                stablecoin.transferFrom(msg.sender, address(staff), (_amountToPay - title.monthlyInvestiment));
             } else{
                 stablecoin.transferFrom(msg.sender, address(this), _amountToPay);
             }
@@ -471,22 +483,22 @@ contract Horizon is CCIPReceiver, Ownable{
 
         title.nextDrawNumber++;
 
-        emit MonthlyWinnerSelected(_idTitle, drawInfos.drawNumber, randomValue, winningTicket.contractId, winningTicket.user, receiptId);        
+        emit MonthlyWinnerSelected(_idTitle, drawInfos.drawNumber, randomValue, winningTicket.contractId, winningTicket.user);        
     }
 
     function addTitleAsColateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract) public{ //OK
         TitlesSold storage myColateralTitle = titleSoldInfos[_idOfColateralTitle][_idOfColateralContract];
+        TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId]; 
 
-        require(msg.sender == ERC721(receipt).ownerOf(myColateralTitle.withdrawToken), "The winner must have the receipt token to add the colateralTitle");
-
-        TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId];
-
-        require(myTitle.drawSelected != 0, "You haven't been selected yet!")
-
+        require(myTitle.drawSelected != 0, "You haven't been selected yet!");
         require(myColateralTitle.titleValue >= myTitle.valueOfEnsuranceNeeded, "The colateral total value must be greater than tue ensuranceValueNeeded");
 
-        uint colateralValuePaid = myColateralTitle.installmentsPaid.mul(myColateralTitle.monthlyInvestiment);
-        uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded.mul(2);
+        address tokenOwner = receipt.ownerOf(myColateralTitle.withdrawToken);
+
+        require(msg.sender == tokenOwner, "The winner must have the receipt token to add the colateralTitle");
+        
+        uint colateralValuePaid = myColateralTitle.installmentsPaid * myColateralTitle.monthlyInvestiment;
+        uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded * 2;
 
         require(myColateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= ensuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
 
@@ -496,7 +508,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
         ColateralTitles memory colateral = ColateralTitles ({
             colateralId: myColateralTitle.withdrawToken,
-            colateralAddress: address(receiptD),
+            colateralAddress: address(receipt),
             colateralOwner: msg.sender,
             titleIdOfColateral: _idOfColateralTitle,
             contractIdOfColateral: _idOfColateralContract
@@ -558,7 +570,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
     function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public { //OK
         Titles storage title = allTitles[_idTitle];
-        TitlesSold storage myTitle = titleSoldInfos[_idTitle][draw.selectedContractID];
+        TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Draw storage draw = drawInfos[_idTitle][myTitle.drawSelected];
 
         address protocolOwner = owner();
@@ -599,7 +611,7 @@ contract Horizon is CCIPReceiver, Ownable{
     function verifyLatePayments(uint _titleId, uint _contractId) public { //OK
         Titles storage title = allTitles[_titleId];
 
-        for(i = 1; i < title.numberOfTitlesSold; i++){
+        for(uint i = 1; i < title.numberOfTitlesSold; i++){
 
             TitlesSold storage clientTitle = titleSoldInfos[_titleId][i];
 
@@ -686,7 +698,7 @@ contract Horizon is CCIPReceiver, Ownable{
 
         (_permissionHash, _colectionAddress, _nftId) = abi.decode(lastReceivedText, (bytes32, address, uint));
 
-        EthereumPermissions storage permission = permissionInfo[_permissionHash];
+        FujiPermissions storage permission = permissionInfo[_permissionHash];
         TitlesSold storage myTitle = titleSoldInfos[permission.idTitle][permission.contractId];
 
         myTitle.colateralId = _nftId;
@@ -711,6 +723,11 @@ contract Horizon is CCIPReceiver, Ownable{
 
     modifier onlyWhitelistedSenders(address _sender) {
         if (!whitelistedSenders[_sender]) revert SenderNotWhitelisted(_sender);
+        _;
+    }
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "The caller must be the owner!");
         _;
     }
 }
