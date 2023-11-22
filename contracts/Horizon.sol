@@ -158,7 +158,7 @@ contract Horizon is CCIPReceiver{
         owner = msg.sender;
     }
 
-    function createTitle(uint _opening, //OK
+    function createTitle(uint _opening, //Working Nice
                          uint _closing,
                          uint _participants,
                          uint _value) public {
@@ -193,7 +193,7 @@ contract Horizon is CCIPReceiver{
         emit NewTitleCreated(titleId, scheduleId, monthlyValue, allTitles[titleId].titleValue);
     }
 
-    function updateTitleStatus(uint _titleId) public { //OK
+    function updateTitleStatus(uint _titleId) public { //Working Nice
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Waiting || title.status == TitleStatus.Open || title.status == TitleStatus.Closed, "This title already ended");
@@ -225,7 +225,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //OK
+    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //Working Nice
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
@@ -271,7 +271,7 @@ contract Horizon is CCIPReceiver{
         emit NewTitleSold(title.numberOfTitlesSold, msg.sender);
     }
 
-    function payInstallment(uint _idTitle, //OK
+    function payInstallment(uint _idTitle, //
                             uint _contractId,
                             uint _installmentNumber,
                             IERC20 _tokenAddress) public {
@@ -346,7 +346,7 @@ contract Horizon is CCIPReceiver{
         emit InstallmentPaid(_idTitle, _contractId, myTitle.installmentsPaid);
     }
 
-    function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //OK
+    function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //Working Nice
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Titles storage title = allTitles[_idTitle];
         require(myTitle.contractId <= title.numberOfTitlesSold, "Enter a valid contract Id for this Title!");
@@ -387,7 +387,7 @@ contract Horizon is CCIPReceiver{
         myTitle.installmentsPaid++;
     }
 
-    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {
+    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {//Working Nice
         Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
@@ -402,7 +402,7 @@ contract Horizon is CCIPReceiver{
         emit EnsuranceValueNeededUpdate(_idTitle, _contractId, myTitle.valueOfEnsuranceNeeded);
     }
 
-    function monthlyVRFWinner(uint _idTitle) public { //OK
+    function monthlyVRFWinner(uint _idTitle) public { //Working Nice
         Titles storage title = allTitles[_idTitle];
 
         require(title.nextDrawNumber <= title.installments, "All the draws already ocurred!");
@@ -437,7 +437,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function receiveVRFRandomNumber(uint256 _idTitle) public{ //OK
+    function receiveVRFRandomNumber(uint256 _idTitle) public{
         Titles storage title = allTitles[_idTitle];
         Draw storage draw = drawInfos[_idTitle][title.nextDrawNumber];
 
@@ -584,14 +584,16 @@ contract Horizon is CCIPReceiver{
     }
 
     // Function to check titles with overdue payments and apply rules
-    function verifyLatePayments(uint _titleId, uint _contractId) public { //OK
+    function verifyLatePayments(uint _titleId, uint _contractId) public { //MODIFIED
         Titles storage title = allTitles[_titleId];
 
         for(uint i = 1; i < title.numberOfTitlesSold; i++){
 
             TitlesSold storage clientTitle = titleSoldInfos[_titleId][i];
+            
+            uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, title.nextDrawNumber);
 
-            if(title.nextDrawNumber - clientTitle.installmentsPaid >= 2){
+            if(title.nextDrawNumber - clientTitle.installmentsPaid >= 2 || (block.timestamp - paymentDate) > 600){
                 clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
                 title.titleCanceled++;
 
@@ -605,7 +607,6 @@ contract Horizon is CCIPReceiver{
                     colateralTitle.titleCanceled++;
                 }
             }else{
-                uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, title.nextDrawNumber);
                 if(block.timestamp > paymentDate) {
                     clientTitle.myTitleStatus = MyTitleWithdraw.Late;
 
