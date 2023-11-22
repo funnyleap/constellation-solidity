@@ -266,29 +266,24 @@ contract Horizon is CCIPReceiver{
             title.status = TitleStatus.Closed;
         }
 
-        payInstallment(_titleId, titleSoldInfos[_titleId][title.numberOfTitlesSold].contractId, titleSoldInfos[_titleId][title.numberOfTitlesSold].installmentsPaid, _tokenAddress);
+        payInstallment(_titleId, titleSoldInfos[_titleId][title.numberOfTitlesSold].contractId, _tokenAddress);
 
         emit NewTitleSold(title.numberOfTitlesSold, msg.sender);
     }
 
     function payInstallment(uint _idTitle, //
                             uint _contractId,
-                            uint _installmentNumber,
                             IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         require(title.status == TitleStatus.Closed || title.status == TitleStatus.Open, "Check the title status!");
-        require(myTitle.installments >= _installmentNumber, "You don't have any installment left to pay!");
         require(myTitle.myTitleStatus == MyTitleWithdraw.OnSchedule || myTitle.myTitleStatus == MyTitleWithdraw.Late || myTitle.myTitleStatus == MyTitleWithdraw.Withdraw );
 
-        uint _installment;
+        myTitle.installmentsPaid++;
 
-        if(_installmentNumber == 0){
-            _installment = 1;
-        } else{
-            require(_installmentNumber > myTitle.installmentsPaid, "Already paid!");
-            _installment = _installmentNumber;
-        }
+        uint _installment = myTitle.installmentsPaid;
+
+        require(myTitle.installmentsPaid <= title.installments, "You already paid all the installments!");
 
         uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, _installment);
 
@@ -327,7 +322,7 @@ contract Horizon is CCIPReceiver{
             
             uint nextDrawParticipants = staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
-            selectorVRF[_idTitle][_installmentNumber][nextDrawParticipants] = record;
+            selectorVRF[_idTitle][_installment][nextDrawParticipants] = record;
         }
 
         if(myTitle.installmentsPaid == myTitle.installments){
