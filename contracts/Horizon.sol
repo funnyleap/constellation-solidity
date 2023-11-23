@@ -225,7 +225,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //
+    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //Working Nice
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
@@ -240,7 +240,7 @@ contract Horizon is CCIPReceiver{
             lockPeriod = 0;
         } else {
             fee = 0;
-            lockPeriod = 5;
+            lockPeriod = 2;
         }
 
         TitlesSold memory myTitle = TitlesSold({
@@ -267,7 +267,7 @@ contract Horizon is CCIPReceiver{
         emit NewTitleSold(title.numberOfTitlesSold, msg.sender);
     }
 
-    function payInstallment(uint _idTitle, //
+    function payInstallment(uint _idTitle, //Working Nice
                             uint _contractId,
                             IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_idTitle];
@@ -463,7 +463,7 @@ contract Horizon is CCIPReceiver{
         emit MonthlyWinnerSelected(_idTitle, draw.drawNumber, randomValue, winningTicket.contractId, winningTicket.user);
     }
 
-    function addTitleAsColateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract) public{ //OK
+    function addTitleAsColateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract) public{ //Working Nice
         TitlesSold storage myColateralTitle = titleSoldInfos[_idOfColateralTitle][_idOfColateralContract];
         TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId]; 
 
@@ -488,12 +488,13 @@ contract Horizon is CCIPReceiver{
         colateralInfos[_titleId][_contractId] = colateral;
         
         myTitle.colateralTitleAddress = address(this);
-        myColateralTitle.titleOwner = address(this);        
+        myTitle.colateralId = myColateralTitle.contractId;
+        myColateralTitle.titleOwner = address(this);
 
         emit ColateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfColateralTitle, _idOfColateralContract);
     }
 
-    function addRWAColateral(uint _idTitle, uint _contractId) public { //OK
+    function addRWAColateral(uint _idTitle, uint _contractId) public { //
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
         require(myTitle.drawSelected != 0, "You haven't been selected yet!");
@@ -618,7 +619,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //OK
+    function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //
         Titles storage title = allTitles[_idTitle];
 
         require(title.status == TitleStatus.Finalized || title.status == TitleStatus.Canceled);
