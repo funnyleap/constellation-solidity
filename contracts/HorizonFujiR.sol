@@ -79,7 +79,7 @@ contract HorizonFujiR is CCIPReceiver {
     mapping(address => bool) public whitelistedSenders;
 
     HorizonFujiS sender = HorizonFujiS(payable(0x0f6c640867E4A3850Dcbc9f9c1A5f17E0654f28F));
-    HorizonFunctions functions = HorizonFunctions(payable(0x80eEb0c87308eD4f88e57924715F0ba83B5521bC));
+    HorizonFunctions functions = HorizonFunctions(payable(0x317383204E6406B61258cB53D535AE770B7a984F));
     ERC721 rwa = ERC721(payable(0xD7ECF0bbe82717eAd041eeF0B9E777e1A7D577a0));
 
     constructor(address _linkToken, // 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
@@ -160,7 +160,7 @@ contract HorizonFujiR is CCIPReceiver {
         emit VerifyingRwaValue(_rwaId, args);
     }
 
-    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId) public {
+    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId) public {//Não pode add sem ter o valor verificado antes
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
 
         Permissions storage permission = permissionsInfo[permissionHash];
@@ -169,14 +169,17 @@ contract HorizonFujiR is CCIPReceiver {
 
         (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(permission.lastRequestId);
 
-        if(vehicleValue >= permission.ensuranceValueNeeded){
+        require(responseTime > 0, "You must wait the response to be received!");
+        require(vehicleValue > permission.ensuranceValueNeeded,"The value of the RWA needs to be greater than the ensuranceValueNeeded!");
+
+        if(vehicleValue > permission.ensuranceValueNeeded){
             
             permission.ensureValueNow = vehicleValue;
             permission.lastResponseTime = responseTime;
 
             uint targetPrice = permission.ensuranceValueNeeded;
 
-            require(vehicleValue >= targetPrice, "The ensurance must have at least 10 times the value of the value needed!");
+            require(vehicleValue >= targetPrice, "The ensurance must have at least 5 times the value of the value needed!");
             
             rwa.transferFrom(msg.sender, address(this), _rwaId);
 

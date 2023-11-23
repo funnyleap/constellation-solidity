@@ -1573,8 +1573,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFujiR.sol": {
-      "lastModificationDate": 1700747219345,
-      "contentHash": "1a2e22d950c6589db0025a9aeea44264",
+      "lastModificationDate": 1700758019443,
+      "contentHash": "ac2ccf97b10e21a62cd5786bb50f7798",
       "sourceName": "contracts/HorizonFujiR.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1626,8 +1626,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFunctions.sol": {
-      "lastModificationDate": 1700651205242,
-      "contentHash": "9b90806088c648f63e2084723fd45e20",
+      "lastModificationDate": 1700757613989,
+      "contentHash": "afe8cac0bdb6587018639b08539b94d6",
       "sourceName": "contracts/HorizonFunctions.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1666,7 +1666,9 @@
         "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol",
         "./HorizonFujiAssistant.sol"
       ],
-      "versionPragmas": [],
+      "versionPragmas": [
+        "0.8.20"
+      ],
       "artifacts": [
         "HorizonFunctions"
       ]

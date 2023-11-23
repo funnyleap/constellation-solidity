@@ -1,5 +1,5 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity 0.8.19;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
 
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
@@ -34,16 +34,18 @@ contract HorizonFunctions is FunctionsClient{
     uint32 gasLimit;
     bytes32 donID;
 
+    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable(0xF5A428c3E5dD31d6474F58Bb64F779216c11a11C));//FALTA O ENDEREÇO
+
     // JavaScript source code
     // Fetch vehicle value from the FIPE API.
     // Documentation: https://github.com/deividfortuna/fipe
     string source =
-        "const tipoAutomovel = args[0];" //motos
-        "const idMarca = args[1];" //77
-        "const idModelo = args[2];" //5223
-        "const dataModelo = args[3];" //2015-1
+        "const tipoAutomovel = args[0];"
+        "const idMarca = args[1];"
+        "const idModelo = args[2];"
+        "const dataModelo = args[3];"
         "const apiResponse = await Functions.makeHttpRequest({"
-            "url: `https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}`"
+        "url: `https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}`,"
         "});"
         "if (apiResponse.error) {"
         "throw Error('Request failed');"
@@ -51,17 +53,15 @@ contract HorizonFunctions is FunctionsClient{
         "const { data } = apiResponse;"
         "return Functions.encodeString(data.Valor);";
 
-    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable(0x5FA769922a6428758fb44453815e2c436c57C3c7));//FALTA O ENDEREÇO
-
-    constructor(uint64 _subscriptionId, //770
+    constructor(uint64 _subscriptionId, //1212
                 address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
                 uint32 _gasLimit, // 300000
                 bytes32 _donID // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
                 ) FunctionsClient(_routerFunctions) {
-        subscriptionId = _subscriptionId; //770
-        router = _routerFunctions; // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
-        gasLimit = _gasLimit; // 300000
-        donID = _donID; // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
+        subscriptionId = _subscriptionId; 
+        router = _routerFunctions;
+        gasLimit = _gasLimit;
+        donID = _donID;
     }
 
     function sendRequest(string[] calldata args) external returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
@@ -104,7 +104,7 @@ contract HorizonFunctions is FunctionsClient{
 
         uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
 
-        vehicle.uintValue = (valueConverted / 5);
+        vehicle.uintValue = ((valueConverted / 5) * 10 ** 16);
 
         // Emit an event to log the response
         emit Response(requestId, response, err);
