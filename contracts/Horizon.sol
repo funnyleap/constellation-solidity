@@ -225,7 +225,7 @@ contract Horizon is CCIPReceiver{
         }
     }
 
-    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //Working Nice
+    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
@@ -261,8 +261,6 @@ contract Horizon is CCIPReceiver{
         });
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
-
-        staff.addParticipantsToDraw(title.paymentSchedule, title.nextDrawNumber);
 
         payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
 
