@@ -84,7 +84,7 @@ contract HorizonFujiR is CCIPReceiver {
 
     constructor(address _linkToken, // 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
                 address _routerCCIP) CCIPReceiver(_routerCCIP) { //0x554472a2720e5e7d5d3c817529aba05eed5f82d8
-        LinkTokenInterface linkToken = LinkTokenInterface(_linkToken);
+        linkToken = LinkTokenInterface(_linkToken);
     }
 
     function addReceiver(address _receiverAddress) public {

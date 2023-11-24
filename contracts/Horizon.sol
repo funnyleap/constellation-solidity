@@ -18,17 +18,13 @@ error SenderNotWhitelisted(address sender);
 
 contract Horizon is CCIPReceiver{
 
-    /* CCIP */
+    /* CCIP variables and storages */
     bytes32 private lastReceivedMessageId;
     bytes private lastReceivedText;
     mapping(uint64 => bool) public whitelistedSourceChains;
     mapping(address => bool) public whitelistedSenders;
 
-    uint titleId = 0;
-    uint paymentDelay;
-    address fujiReceiver;
-    address owner;
-
+    //Events
     event NewTitleCreated(uint _titleId, uint _scheduleId, uint _monthlyValue, uint _titleValue);
     event TitleStatusUpdated(TitleStatus status);
     event NewTitleSold(uint _contractId, address _owner);
@@ -46,12 +42,19 @@ contract Horizon is CCIPReceiver{
     event PaymentLateNumber(uint _i);
     event AmountLateWithInterest(uint totalAmountLate);
     event PaymentIsLate(uint lateInstallments);
+    event ColateralRefunded(uint _idTitle, uint _contractId, uint _colateralId);
     event ThereAreSomePendencies(uint _installmentsPaid, uint _colateralTitleId, address _colateralTitleAddress, address colateralRWAAddress, MyTitleWithdraw myTitleStatus);
     event LastInstallmentPaid(uint _installmentsPaid);
     event NewInvestmentCreated(uint _investmentValue, address _protocolAddress);
     event ThisTitleHasBeenCanceled(uint _titlesAvailableForNextDraw);
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
 
+    //Common state variables
+    uint titleId = 0;
+    address fujiReceiver;
+    address owner;
+
+    // ENUMS
     enum TitleStatus{
         Canceled, //0
         Closed, //1
@@ -72,6 +75,7 @@ contract Horizon is CCIPReceiver{
 
     MyTitleWithdraw myTitleStatus;
 
+    // STRUCTS
     struct Titles {
         uint openSellingDate;
         uint closeSellingDate;
@@ -139,20 +143,21 @@ contract Horizon is CCIPReceiver{
         uint contractId;
         uint drawNumber;
     }
-    
-    IERC20 stablecoin;
-    IERC721 nftToken;
 
-    HorizonStaff staff = HorizonStaff(0x3547951AAA367094AFABcaE24f123473fF502bFa);
-    HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
-    HorizonS sender = HorizonS(payable(0xdED9E0F0D9274A74CC5506f80802781dDe6b7E11));
-
+    //Mappings
     mapping(uint titleId => Titles) public allTitles;
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos;
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
     mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrderOrRandomValue => TitleRecord))) public selectorVRF;
-    mapping(bytes32 permissionHash => FujiPermissions) permissionInfo;
+    mapping(bytes32 permissionHash => FujiPermissions) public permissionInfo;
     mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos;
+    
+    //Instances
+    IERC20 stablecoin;
+    IERC721 nftToken;
+    HorizonStaff staff = HorizonStaff(0x3547951AAA367094AFABcaE24f123473fF502bFa);
+    HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
+    HorizonS sender = HorizonS(payable(0xdED9E0F0D9274A74CC5506f80802781dDe6b7E11));
 
     constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1e2a3c41108bd3730f6670a44595d1
         owner = msg.sender;
@@ -277,6 +282,7 @@ contract Horizon is CCIPReceiver{
         require(myTitle.installmentsPaid < title.installments, "You already paid all the installments!");
 
         uint _installment;
+        uint paymentDelay;
 
         if(myTitle.installmentsPaid > 0 ){
             _installment = (myTitle.installmentsPaid + 1);
@@ -532,7 +538,11 @@ contract Horizon is CCIPReceiver{
 
             bytes memory updatePermission = abi.encode(permissionHash, myTitle.valueOfEnsuranceNeeded, false);
 
+            myTitle.myTitleStatus = MyTitleWithdraw.Finalized;
+
             sender.sendMessagePayLINK(14767482510784806043, fujiReceiver, updatePermission); // Chain - 14767482510784806043
+
+            emit ColateralRefunded(_idTitle, _contractId, myTitle.colateralId);
         }else{
             if(myTitle.installmentsPaid == myTitle.installments && myTitle.colateralId != 0){
                 
@@ -543,6 +553,8 @@ contract Horizon is CCIPReceiver{
                 myColateralTitle.titleOwner = colateral.colateralOwner;
 
                 myTitle.myTitleStatus = MyTitleWithdraw.Finalized;
+
+                emit ColateralRefunded(_idTitle, _contractId, myTitle.colateralId);
             }
         }
     }
