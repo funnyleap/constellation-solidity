@@ -112,6 +112,7 @@ contract HorizonFunctions is FunctionsClient{
 
     function returnFunctionsInfo(bytes32 requestId) external view returns(uint, uint){
         VehicleData storage vehicle = vehicleDataMapping[requestId];
+        
         uint vehicleValue = vehicle.uintValue;
         uint responseTime = vehicle.responseTime;
 

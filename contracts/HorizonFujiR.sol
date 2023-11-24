@@ -138,8 +138,9 @@ contract HorizonFujiR is CCIPReceiver {
         }
     }
 
-    function verifyColateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public { //["motos",77,5223,"2015-1"]
+    function verifyColateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public { //["motos","77","5223","2015-1"]
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
+        bytes32 requestId = functions.sendRequest(args);
 
         require(permissionsInfo[permissionHash].isPermission == true, "This permission didn't exists!");
         require(msg.sender == rwa.ownerOf(_rwaId), "You must be the owner of the informed RWA!");
@@ -152,9 +153,6 @@ contract HorizonFujiR is CCIPReceiver {
         permission.rwaOwner = msg.sender;
         permission.colateralId = _rwaId;
         permission.args = args;
-
-        bytes32 requestId = functions.sendRequest(args);
-
         permission.lastRequestId = requestId;
 
         emit VerifyingRwaValue(_rwaId, args);
@@ -165,9 +163,11 @@ contract HorizonFujiR is CCIPReceiver {
 
         Permissions storage permission = permissionsInfo[permissionHash];
 
+        bytes32 requestId = permission.lastRequestId;
+
         require(permission.isPermission == true, "This permission didn't exists!");
 
-        (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(permission.lastRequestId);
+        (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(requestId);
 
         require(responseTime > 0, "You must wait the response to be received!");
         require(vehicleValue > permission.ensuranceValueNeeded,"The value of the RWA needs to be greater than the ensuranceValueNeeded!");
