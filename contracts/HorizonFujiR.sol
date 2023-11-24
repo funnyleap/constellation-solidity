@@ -26,9 +26,9 @@ contract HorizonFujiR is CCIPReceiver {
     event VerifyingRwaValue(uint _rwaId, string[] args);
     event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
     event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
-    event RWAPriceAtMoment(uint _contractId, uint _rwaValue, uint _referenceValue);
-    event PriceLowEvent(uint _contractId, uint _rwaValue, uint _referenceValue);
-    event TitleCancelledTheRWAWillBeSold(uint _contractId,  uint _rwaValue, uint rwaValue);
+    event RWAPriceAtMoment(uint _contractId, uint _rwaId, uint _rwaValue);
+    event PriceLowEvent(uint _contractId, uint _rwaId, uint _rwaValue);
+    event TitleCancelledTheRWAWillBeSold(uint _contractId,  uint _rwaId, uint _rwaValue);
 
     //CCIP State Variables to store the last id, received text
     bytes32 private lastReceivedMessageId;
@@ -65,6 +65,8 @@ contract HorizonFujiR is CCIPReceiver {
     struct RwaMonitor{
         uint rwaId;
         bytes32 hashPermission;
+        string[] args;
+        bytes32 lastRequestId;
         bool isActive;
     }
 
@@ -188,6 +190,8 @@ contract HorizonFujiR is CCIPReceiver {
             rwaMonitors.push(RwaMonitor({
                 rwaId: _rwaId,
                 hashPermission: permissionHash,
+                args: permission.args,
+                lastRequestId: 0,
                 isActive: true
             }));
             
@@ -221,28 +225,44 @@ contract HorizonFujiR is CCIPReceiver {
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
 
             if(rwaMonitors[i].isActive == true){
-                Permissions storage permission = permissionsInfo[rwaMonitors[i].hashPermission];
+                string[] memory args = rwaMonitors[i].args;
                 
-                bytes32 requestId = functions.sendRequest(permission.args);
+                bytes32 requestId = functions.sendRequest(args);
 
-                (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(requestId);
+                rwaMonitors[i].lastRequestId = requestId;
+            }
+        }
+    }
+
+    function getColateralPrice() public {
+
+        for (uint256 i = 0; i < rwaMonitors.length; i++) {
+            if(rwaMonitors[i].isActive == true){
+
+                bytes32 lastRequest = rwaMonitors[i].lastRequestId;
+
+                (uint vehicleValue, uint responseTime) = functions.returnFunctionsInfo(lastRequest);
+
+                bytes32 permissionHash = rwaMonitors[i].hashPermission;
+
+                Permissions storage permission = permissionsInfo[permissionHash];
 
                 permission.ensureValueNow = vehicleValue;
                 permission.lastResponseTime = responseTime;
 
-                uint id = rwaMonitors[i].rwaId;
+                uint rwaId = rwaMonitors[i].rwaId;
                 uint rwaValue = vehicleValue;
                 uint referenceValue = permission.ensuranceValueNeeded;
 
                 if (rwaValue >= (referenceValue * 5)) {
-                    emit RWAPriceAtMoment(permission.contractId, id, rwaValue);
+                    emit RWAPriceAtMoment(permission.contractId, rwaId, rwaValue);
 
                 } else if (rwaValue >= referenceValue * 4) {
-                    emit PriceLowEvent(permission.contractId, id, rwaValue); //ALERT
+                    emit PriceLowEvent(permission.contractId, rwaId, rwaValue);
 
                 } else if (rwaValue < referenceValue * 2) {
                     rwaMonitors[i].isActive = false;
-                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, id, rwaValue);
+                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaId, rwaValue);
                 }
             }
         }
