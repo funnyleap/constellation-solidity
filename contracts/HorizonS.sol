@@ -27,17 +27,8 @@ contract HorizonS is CCIPReceiver {
 
     address owner;
 
-    /* STRUCTS */
-    struct ReceiverInfo {
-        string blockchainName;
-        address receiverAddress;
-        bool isReceiver;
-    }
-
     // Mapping to keep track of whitelisted destination chains.
     mapping(uint64 => bool) public whitelistedDestinationChains;
-    // Mapping to keep track of receivers.
-    mapping(address receiverAddress => ReceiverInfo) public ccipReceicers;
 
     LinkTokenInterface linkToken = LinkTokenInterface(0x5FA769922a6428758fb44453815e2c436c57C3c7);  //
 
@@ -62,35 +53,10 @@ contract HorizonS is CCIPReceiver {
         whitelistedDestinationChains[_destinationChainSelector] = false;
     }
 
-    function addReceiver(string memory _blockchainName, address _receiverAddress) public onlyOwner{
-        require(_receiverAddress != address(0), "Enter a valid address!");
-        require(ccipReceicers[_receiverAddress].isReceiver == false, "Receiver is already registered!");
-
-        ReceiverInfo memory newReceiver = ReceiverInfo({
-            blockchainName: _blockchainName,
-            receiverAddress: _receiverAddress,
-            isReceiver: true
-        });
-        
-        ccipReceicers[_receiverAddress] = newReceiver;
-
-        emit CCIPReceiverAdded(_blockchainName, _receiverAddress);
-    }
-
-    function removeReceiver(address _receiverAddress) public onlyOwner {
-        require(ccipReceicers[_receiverAddress].isReceiver == true, "Receiver is already registered!");
-
-        delete ccipReceicers[_receiverAddress];
-
-        emit CCIPReceiverRemoved(_receiverAddress);
-    }
-
     function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiverAddress, bytes memory _data) external /*onlyOwner*/ returns (bytes32 messageId){
-        require(ccipReceicers[_receiverAddress].receiverAddress != address(0), "Enter a valid receiver address!");
-        require(ccipReceicers[_receiverAddress].isReceiver == true, "This receiver is not whitelisted yet!");
 
         Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            ccipReceicers[_receiverAddress].receiverAddress,
+            _receiverAddress,
             _data,
             address(linkToken)
         );
