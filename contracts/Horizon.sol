@@ -600,35 +600,37 @@ contract Horizon is CCIPReceiver{
     // Function to check titles with overdue payments and apply rules
     function verifyLatePayments(uint _titleId, uint _contractId) public { //Working Nice
         Titles storage title = allTitles[_titleId];
+        TitlesSold storage clientTitle = titleSoldInfos[_titleId][_contractId];
+        
+        uint lastInstallmentPaid = clientTitle.installmentsPaid;
 
-        for(uint i = 1; i < title.numberOfTitlesSold; i++){
+        uint delayedPaymentDate = staff.returnPaymentDeadline(title.paymentSchedule, (lastInstallmentPaid + 1));
+        uint cancellationLimit = 600;
 
-            TitlesSold storage clientTitle = titleSoldInfos[_titleId][i];
-            
-            uint paymentDate = staff.returnPaymentDeadline(title.paymentSchedule, title.nextDrawNumber);
+        if((block.timestamp - delayedPaymentDate) > cancellationLimit ){
+            clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
+            title.titleCanceled++;
 
-            if(title.nextDrawNumber - clientTitle.installmentsPaid >= 2 || (block.timestamp - paymentDate) > 600){
-                clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
-                title.titleCanceled++;
-
-                if(clientTitle.colateralId != 0 || clientTitle.colateralRWAAddress != address(0) && clientTitle.colateralId != 0){
+            if(clientTitle.colateralTitleAddress != address(0) || clientTitle.colateralRWAAddress != address(0)){
                             
-                    ColateralTitles storage colateral = colateralInfos[_titleId][_contractId];
-                    Titles storage colateralTitle = allTitles[colateral.titleIdOfColateral];
-                    TitlesSold storage colateralContract = titleSoldInfos[colateral.titleIdOfColateral][colateral.contractIdOfColateral];
+                ColateralTitles storage colateral = colateralInfos[_titleId][_contractId];
 
-                    colateralContract.myTitleStatus = MyTitleWithdraw.Canceled;
-                    colateralTitle.titleCanceled++;
-                }
-            }else{
-                if(block.timestamp > paymentDate) {
-                    clientTitle.myTitleStatus = MyTitleWithdraw.Late;
+                Titles storage colateralTitle = allTitles[colateral.titleIdOfColateral];
 
-                    emit MyTitleStatusUpdated(clientTitle.myTitleStatus);
+                TitlesSold storage colateralContract = titleSoldInfos[colateral.titleIdOfColateral][colateral.contractIdOfColateral];
 
-                }
-            }    
-        }
+                colateralTitle.titleCanceled++;
+                colateralContract.myTitleStatus = MyTitleWithdraw.Canceled;
+            }
+        }else{
+            if(block.timestamp > delayedPaymentDate && (block.timestamp - delayedPaymentDate) < cancellationLimit) {
+
+                clientTitle.myTitleStatus = MyTitleWithdraw.Late;
+                emit MyTitleStatusUpdated(clientTitle.myTitleStatus);
+
+            }
+        }    
+        
     }
 
     function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //
@@ -657,28 +659,7 @@ contract Horizon is CCIPReceiver{
     }
 
     /* FUNÇÕES CCIP */
-    //Add source chains
-    function addSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
-        whitelistedSourceChains[_sourceChainSelector] = true;
-    }
-    //removesource chains
-    function removelistSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
-        whitelistedSourceChains[_sourceChainSelector] = false;
-    }
-    //add senders
-    function addSender(address _sender) external onlyOwner { //OK
-        whitelistedSenders[_sender] = true;
-    }
-    //remove senders
-    function removeSender(address _sender) external onlyOwner {//OK
-        whitelistedSenders[_sender] = false;
-    }
 
-    function addReceiver(address _receiverAddress) public { //OK
-        fujiReceiver = _receiverAddress;
-    }
-
-    /* handle a received message*/
     function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override /*onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address)))*/ {
         lastReceivedMessageId = any2EvmMessage.messageId;
         lastReceivedText = abi.decode(any2EvmMessage.data, (bytes));
@@ -700,6 +681,27 @@ contract Horizon is CCIPReceiver{
         }
 
         emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));
+    }
+
+    //Add source chains
+    function addSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
+        whitelistedSourceChains[_sourceChainSelector] = true;
+    }
+    //removesource chains
+    function removelistSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
+        whitelistedSourceChains[_sourceChainSelector] = false;
+    }
+    //add senders
+    function addSender(address _sender) external onlyOwner { //OK
+        whitelistedSenders[_sender] = true;
+    }
+    //remove senders
+    function removeSender(address _sender) external onlyOwner {//OK
+        whitelistedSenders[_sender] = false;
+    }
+
+    function addReceiver(address _receiverAddress) public { //OK
+        fujiReceiver = _receiverAddress;
     }
 
     function getLastReceivedMessageDetails() external view returns (bytes32 messageId, bytes memory text) {

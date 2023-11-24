@@ -69,7 +69,7 @@ contract HorizonFujiR is CCIPReceiver {
     }
 
     //Array to keep track of RWA's prices
-    RwaMonitor[] rwaMonitors;
+    RwaMonitor[] public rwaMonitors;
     // Mapping to keep track of colateral permissions
     mapping(bytes32 => Permissions) public permissionsInfo;
 
@@ -217,7 +217,7 @@ contract HorizonFujiR is CCIPReceiver {
         emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
     }
         
-    function checkColateralPrice() internal { //Triggered by Automation
+    function checkColateralPrice() public { //Triggered by Automation
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
 
             if(rwaMonitors[i].isActive == true){
