@@ -145,7 +145,7 @@ contract Horizon is CCIPReceiver{
 
     HorizonStaff staff = HorizonStaff(0x3547951AAA367094AFABcaE24f123473fF502bFa);
     HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
-    HorizonS sender = HorizonS(payable(0x55a5214740Ce71c80B9f91390276a0AE0e063911));
+    HorizonS sender = HorizonS(payable(0xdED9E0F0D9274A74CC5506f80802781dDe6b7E11));
 
     mapping(uint titleId => Titles) public allTitles;
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos;

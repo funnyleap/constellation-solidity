@@ -878,8 +878,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\Horizon.sol": {
-      "lastModificationDate": 1700746722170,
-      "contentHash": "526bb95ef29a85c2778c057ece165a02",
+      "lastModificationDate": 1700791657737,
+      "contentHash": "6382de75b4e8f7f42c4d377c009e374e",
       "sourceName": "contracts/Horizon.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -932,8 +932,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonS.sol": {
-      "lastModificationDate": 1700617142198,
-      "contentHash": "c258745650b5b80b50362f8fc6df36df",
+      "lastModificationDate": 1700790721457,
+      "contentHash": "4b2985073b30a3548ed5df14edee9943",
       "sourceName": "contracts/HorizonS.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1523,8 +1523,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFujiS.sol": {
-      "lastModificationDate": 1700617243398,
-      "contentHash": "b3c2cf2a50c646374904732fe7f906bb",
+      "lastModificationDate": 1700789816852,
+      "contentHash": "421151ae749e99285a2ebd0b8e8a9c08",
       "sourceName": "contracts/HorizonFujiS.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1573,8 +1573,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFujiR.sol": {
-      "lastModificationDate": 1700780259849,
-      "contentHash": "65f8a63dea3356d42de9e0d9a7c79137",
+      "lastModificationDate": 1700791074914,
+      "contentHash": "fc5917bf3e097d3a531495c893741349",
       "sourceName": "contracts/HorizonFujiR.sol",
       "solcConfig": {
         "version": "0.8.20",

@@ -78,7 +78,7 @@ contract HorizonFujiR is CCIPReceiver {
     // Mapping to keep track of whitelisted senders.
     mapping(address => bool) public whitelistedSenders;
 
-    HorizonFujiS sender = HorizonFujiS(payable(0x0f6c640867E4A3850Dcbc9f9c1A5f17E0654f28F));
+    HorizonFujiS sender = HorizonFujiS(payable(0x14c9188071620Abcd778A20f5b344c515AB9c0f9));
     HorizonFunctions functions = HorizonFunctions(payable(0x317383204E6406B61258cB53D535AE770B7a984F));
     ERC721 rwa = ERC721(payable(0xD7ECF0bbe82717eAd041eeF0B9E777e1A7D577a0));
 
