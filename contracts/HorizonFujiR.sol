@@ -26,6 +26,8 @@ contract HorizonFujiR is CCIPReceiver {
     event VerifyingRwaValue(uint _rwaId, string[] args);
     event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
     event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
+    event RwaValueUpdated(bytes32 requestId, string[] args);
+    event UpkeepPerformed( uint value);
     event RWAPriceAtMoment(uint _contractId, uint _rwaId, uint _rwaValue);
     event PriceLowEvent(uint _contractId, uint _rwaId, uint _rwaValue);
     event TitleCancelledTheRWAWillBeSold(uint _contractId,  uint _rwaId, uint _rwaValue);
@@ -230,12 +232,13 @@ contract HorizonFujiR is CCIPReceiver {
                 bytes32 requestId = functions.sendRequest(args);
 
                 rwaMonitors[i].lastRequestId = requestId;
+
+                emit RwaValueUpdated(requestId, args);
             }
         }
     }
 
     function getColateralPrice() public {
-
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
             if(rwaMonitors[i].isActive == true){
 
@@ -251,18 +254,17 @@ contract HorizonFujiR is CCIPReceiver {
                 permission.lastResponseTime = responseTime;
 
                 uint rwaId = rwaMonitors[i].rwaId;
-                uint rwaValue = vehicleValue;
                 uint referenceValue = permission.ensuranceValueNeeded;
 
-                if (rwaValue >= (referenceValue * 5)) {
-                    emit RWAPriceAtMoment(permission.contractId, rwaId, rwaValue);
+                if (vehicleValue >= (referenceValue * 5)) {
+                    emit RWAPriceAtMoment(permission.contractId, rwaId, vehicleValue);
 
-                } else if (rwaValue >= referenceValue * 4) {
-                    emit PriceLowEvent(permission.contractId, rwaId, rwaValue);
+                } else if (vehicleValue >= referenceValue * 4) {
+                    emit PriceLowEvent(permission.contractId, rwaId, vehicleValue);
 
-                } else if (rwaValue < referenceValue * 2) {
+                } else if (vehicleValue < referenceValue * 2) {
                     rwaMonitors[i].isActive = false;
-                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaId, rwaValue);
+                    emit TitleCancelledTheRWAWillBeSold(permission.contractId, rwaId, vehicleValue);
                 }
             }
         }

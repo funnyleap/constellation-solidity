@@ -1573,8 +1573,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFujiR.sol": {
-      "lastModificationDate": 1700862146858,
-      "contentHash": "22119c6d9938c03ace40f5eda65fd567",
+      "lastModificationDate": 1700953483797,
+      "contentHash": "c180aac7d4810f4d059443aa12ec452d",
       "sourceName": "contracts/HorizonFujiR.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1622,12 +1622,13 @@
         "0.8.20"
       ],
       "artifacts": [
-        "HorizonFujiR"
+        "HorizonFujiR",
+        "ILogAutomation"
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFunctions.sol": {
-      "lastModificationDate": 1700778718540,
-      "contentHash": "4c861de281db95e1e940803e52712f2d",
+      "lastModificationDate": 1700929965626,
+      "contentHash": "a20cc2e1043c4589d423c0968b9e1cee",
       "sourceName": "contracts/HorizonFunctions.sol",
       "solcConfig": {
         "version": "0.8.20",

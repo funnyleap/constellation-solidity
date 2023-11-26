@@ -15,7 +15,7 @@ contract HorizonFunctions is FunctionsClient{
     error UnexpectedRequestID(bytes32 requestId);
 
     // Event to log responses
-    event Response( bytes32 indexed requestId, bytes response, bytes err);
+    event Response( bytes32 indexed requestId, uint indexed value, bytes err);
 
     struct VehicleData {
         string value;
@@ -104,10 +104,12 @@ contract HorizonFunctions is FunctionsClient{
 
         uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
 
-        vehicle.uintValue = ((valueConverted / 5) * 10 ** 16);
+        uint value = ((valueConverted / 5) * 10 ** 16);
+
+        vehicle.uintValue = value;
 
         // Emit an event to log the response
-        emit Response(requestId, response, err);
+        emit Response(requestId, value, err);
     }
 
     function returnFunctionsInfo(bytes32 requestId) external view returns(uint, uint){
