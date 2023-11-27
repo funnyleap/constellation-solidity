@@ -4,11 +4,9 @@ Repositório destinado ao Hackathon Constellation da Chainlink
 
 Sobre o Protocolo
 
-Horizon é um protocolo DEFI que tem por objetivo simplificar o acesso, principalmente, de pessoas de média-baixa renda ao ecossistema Web3, tornando o processo mais seguro, transparente e auditável. E, com o iminente avanço dos Bens Tokenizados, vamos além implementando uma lógica para que esses Bens possam ser usados como garantias de saque do valor dos Títulos adquiridos. Para tornar isso possível e permitir que seja utilizado em diversas regiões do planeta.
-Além da confiabilidade das ferramentas da Chainlink que serão usadas, a principal barreira que precisa ser derrubada é o onboarding que até pouco tempo atrás era restritivo devido às opções de Carteiras que estavam disponíveis.
-Hoje, temos um grande aliado que é o ERC-4337. E esse é o primeiro passo para a mudança nas vidas de muitas pessoas!
+Horizon é um protocolo DEFI que tem por objetivo simplificar o acesso principalmente de pessoas de média-baixa renda ao ecossistema Web3, tornando o processo mais seguro, transparente e auditável. E, com o iminente avanço dos Bens Tokenizados, vamos além implementando uma lógica para que esses Bens possam ser usados como garantias de saque do valor dos Títulos adquiridos. Para tornar isso possível e permitir que seja utilizado em diversas regiões do planeta, além da confiabilidade das ferramentas da Chainlink que serão usadas, a principal barreira que precisa ser derrubada é o onboarding que até pouco tempo atrás era restritivo devido às opções de Carteiras disponíveis. Hoje temos um grande aliado que é o ERC-4337. E esse é o primeiro passo para a mudança nas vidas de muitas pessoas!
 
-Caso deseje entender um pouco mais sobre Bens Tokenizados e sobre o ERC-4337, basta acessar os links abaixo:
+Gostaria de entender um pouco mais sobre Bens Tokenizados e sobre o ERC-4337? Acessae os links abaixo:
 Bens Tokenizados [RWA] -
 Account Abstraction [ERC-4337] -
 
@@ -181,6 +179,8 @@ O desenvolvimento de novas parcerias pode gerar inúmeros benefícios estratégi
 - Gerar liquidez para o mercado de Bens Tokenizados;
 - Crescimento do protocolo a medida que mais bens são Tokenizados ao redor do mundo.
 
+Chainlink Data Streams seria uma ferramenta crucial para o correto funcionamento do protocolo. Assim como poderá ser usado com para monitoramento dos Bens Tokenizados.
+
 4 - Financiamentos utilizando os Bens Tokenizados como Garantia.
 
 - Acesso fácil e rápido a capital principalmente para empreendedores;
@@ -188,6 +188,8 @@ O desenvolvimento de novas parcerias pode gerar inúmeros benefícios estratégi
 - Devido a natureza garantida, podemos oferecer condições de financiamento favoráveis como taxas de juros mais baixas e prazos de pagamento dinâmicos à necessidade.
 
 Todos os possíveis cenários apresentados convergem para processos eficientes e transparentes a partir da tecnologia empregada e geram inclusão financeira para pessoas e empresas que não tem acesso à empréstimos em instituições tradicionais, mas dispõe de bens e precisam gerar valor a partir deles.
+
+Em resumo, o produto inicial e seus possíveis desdobramentos não só é útil para investidores, como também será para pessoas que em momento de necessidade podem atender demandas específicas como questões de saúde adquirindo empréstimos, financiamentos de forma rápida e prática utilizando seus bens como garantia.
 
 Conclusão
 
@@ -209,6 +211,10 @@ HorizonFujiS[]
 HorizonFunctions[]
 HorizonFujiAssistant[]
 FakeRWA[]
+
+Blockchains
+Polygon[]
+Avalanche[]
 
 Tools
 Chainlink Automation[https://docs.chain.link/chainlink-automation]
