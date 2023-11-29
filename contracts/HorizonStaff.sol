@@ -166,7 +166,6 @@ contract HorizonStaff {
         uint currentInterestRate;
         uint amountToPay;
 
-
         if(_paymentDelay < oneDay){
             currentInterestRate = schedule[_scheduleId][inicialValue].baseInterestRate;
 

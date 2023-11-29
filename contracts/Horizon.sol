@@ -25,14 +25,14 @@ contract Horizon is CCIPReceiver{
     mapping(address => bool) public whitelistedSenders;
 
     //Events
-    event NewTitleCreated(uint _titleId, uint _scheduleId, uint _monthlyValue, uint _titleValue);
+    event NewTitleCreated(uint _titleId, uint _scheduleId, uint _titleValue, uint _monthlyValue, uint _installments);
     event TitleStatusUpdated(TitleStatus status);
-    event NewTitleSold(uint _contractId, address _owner);
+    event NewTitleSold(uint titleId, uint _contractId, address _owner);
     event AmountToPay(uint amountWithInterests);
-    event InstallmentPaid(uint _idTitle, uint _contractId, uint _installmentsPaid);
+    event InstallmentPaid(uint _idTitle, uint _contractId, uint _amount, uint _installmentsPaid);
     event EnsuranceValueNeededUpdate(uint _idTitle, uint _contractId, uint _valueOfEnsurance);
     event EnsuranceUpdated(address _temporaryEnsurance);
-    event NextDraw(uint _nextDraw);
+    event DrawHasStarted(uint _titleId, uint title.nextDrawNumber, uint nextDrawParticipants);
     event VRFAnswer(bool fulfilled, uint256[] randomWords, uint randomValue);
     event MonthlyWinnerSelected(uint _idTitle, uint _drawNumber, uint _randomValue, uint _selectedContractId, address _winner);
     event ColateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfColateralTitle, uint _idOfColateralContract);
@@ -45,8 +45,8 @@ contract Horizon is CCIPReceiver{
     event ColateralRefunded(uint _idTitle, uint _contractId, uint _colateralId);
     event ThereAreSomePendencies(uint _installmentsPaid, uint _colateralTitleId, address _colateralTitleAddress, address colateralRWAAddress, MyTitleWithdraw myTitleStatus);
     event LastInstallmentPaid(uint _installmentsPaid);
-    event NewInvestmentCreated(uint _investmentValue, address _protocolAddress);
     event ThisTitleHasBeenCanceled(uint _titlesAvailableForNextDraw);
+    event TitleCanceled(uint _titleId, uint _contractId, uint _lastInstallmentPaid);
     event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
 
     //Common state variables
@@ -195,7 +195,7 @@ contract Horizon is CCIPReceiver{
 
         uint monthlyValue = (allTitles[titleId].monthlyInvestiment + (allTitles[titleId].protocolFee));
 
-        emit NewTitleCreated(titleId, scheduleId, monthlyValue, allTitles[titleId].titleValue);
+        emit NewTitleCreated(titleId, scheduleId, allTitles[titleId].titleValue, _participants, monthlyValue );
     }
 
     function updateTitleStatus(uint _titleId) public { //Working Nice
@@ -269,7 +269,7 @@ contract Horizon is CCIPReceiver{
 
         payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
 
-        emit NewTitleSold(title.numberOfTitlesSold, msg.sender);
+        emit NewTitleSold(_titleId, title.numberOfTitlesSold, msg.sender);
     }
 
     function payInstallment(uint _idTitle, //Working Nice
@@ -346,7 +346,7 @@ contract Horizon is CCIPReceiver{
 
         updateValueOfEnsurance(_idTitle, _contractId);
 
-        emit InstallmentPaid(_idTitle, _contractId, myTitle.installmentsPaid);
+        emit InstallmentPaid(_idTitle, _contractId, amountToPay, myTitle.installmentsPaid);
     }
 
     function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //Working Nice
@@ -438,6 +438,8 @@ contract Horizon is CCIPReceiver{
         if(title.nextDrawNumber > title.installments){
             title.status = TitleStatus.Finalized;
         }
+
+        emit DrawHasStarted(_titleId, title.nextDrawNumber, nextDrawParticipants);
     }
 
     function receiveVRFRandomNumber(uint256 _idTitle) public{ //Working Nice
@@ -611,6 +613,8 @@ contract Horizon is CCIPReceiver{
             clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
             title.titleCanceled++;
 
+            emit TitleCanceled(_titleId, _contractId, lastInstallmentPaid);
+            
             if(clientTitle.colateralTitleAddress != address(0) || clientTitle.colateralRWAAddress != address(0)){
                             
                 ColateralTitles storage colateral = colateralInfos[_titleId][_contractId];
