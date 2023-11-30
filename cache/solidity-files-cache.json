@@ -829,57 +829,9 @@
       ],
       "artifacts": []
     },
-    "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonReceipt.sol": {
-      "lastModificationDate": 1700651455311,
-      "contentHash": "964952020c1f23e4203ac7bee19b7b49",
-      "sourceName": "contracts/HorizonReceipt.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "viaIR": true,
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "HorizonReceipt"
-      ]
-    },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\Horizon.sol": {
-      "lastModificationDate": 1700846882507,
-      "contentHash": "4c563863313f99a53b6c9133144a28e4",
+      "lastModificationDate": 1701370419196,
+      "contentHash": "e4809cff0728262959b8fcc17aca3fa0",
       "sourceName": "contracts/Horizon.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -921,8 +873,7 @@
         "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "@openzeppelin/contracts/token/ERC721/IERC721.sol",
         "./HorizonStaff.sol",
-        "./HorizonVRF.sol",
-        "./HorizonReceipt.sol"
+        "./HorizonVRF.sol"
       ],
       "versionPragmas": [
         ">=0.8.9 <=0.8.20"
@@ -1029,8 +980,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonStaff.sol": {
-      "lastModificationDate": 1700679783177,
-      "contentHash": "44e82698cb66e63e6ebf96c071512dc4",
+      "lastModificationDate": 1701255972474,
+      "contentHash": "26051a82b638167455b731030efc3f9d",
       "sourceName": "contracts/HorizonStaff.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1573,8 +1524,8 @@
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFujiR.sol": {
-      "lastModificationDate": 1700953483797,
-      "contentHash": "c180aac7d4810f4d059443aa12ec452d",
+      "lastModificationDate": 1700957422126,
+      "contentHash": "9db74486b2306395bec0d91c2abe28b9",
       "sourceName": "contracts/HorizonFujiR.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -1622,8 +1573,7 @@
         "0.8.20"
       ],
       "artifacts": [
-        "HorizonFujiR",
-        "ILogAutomation"
+        "HorizonFujiR"
       ]
     },
     "C:\\Users\\patri\\OneDrive\\Área de Trabalho\\constellation-bg\\contracts\\HorizonFunctions.sol": {

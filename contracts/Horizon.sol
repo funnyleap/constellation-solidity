@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./HorizonStaff.sol";
 import "./HorizonVRF.sol";
-import "./HorizonReceipt.sol";
 
 error ThereIsNoTitlesAvailableAnymore(uint _numberOfTitlesSold);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
@@ -32,7 +31,7 @@ contract Horizon is CCIPReceiver{
     event InstallmentPaid(uint _idTitle, uint _contractId, uint _amount, uint _installmentsPaid);
     event EnsuranceValueNeededUpdate(uint _idTitle, uint _contractId, uint _valueOfEnsurance);
     event EnsuranceUpdated(address _temporaryEnsurance);
-    event DrawHasStarted(uint _titleId, uint title.nextDrawNumber, uint nextDrawParticipants);
+    event DrawHasStarted(uint _titleId, uint _nextDrawNumber, uint nextDrawParticipants);
     event VRFAnswer(bool fulfilled, uint256[] randomWords, uint randomValue);
     event MonthlyWinnerSelected(uint _idTitle, uint _drawNumber, uint _randomValue, uint _selectedContractId, address _winner);
     event ColateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfColateralTitle, uint _idOfColateralContract);
@@ -147,6 +146,7 @@ contract Horizon is CCIPReceiver{
     //Mappings
     mapping(uint titleId => Titles) public allTitles;
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos;
+    mapping(address owner => TitlesSold) public titleOwner;
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
     mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrderOrRandomValue => TitleRecord))) public selectorVRF;
     mapping(bytes32 permissionHash => FujiPermissions) public permissionInfo;
@@ -266,6 +266,7 @@ contract Horizon is CCIPReceiver{
         });
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
+        titleOwner[msg.sender] = myTitle;
 
         payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
 
@@ -439,7 +440,7 @@ contract Horizon is CCIPReceiver{
             title.status = TitleStatus.Finalized;
         }
 
-        emit DrawHasStarted(_titleId, title.nextDrawNumber, nextDrawParticipants);
+        emit DrawHasStarted(_idTitle, title.nextDrawNumber, nextDrawParticipants);
     }
 
     function receiveVRFRandomNumber(uint256 _idTitle) public{ //Working Nice
