@@ -93,6 +93,7 @@ contract Horizon is CCIPReceiver{
 
     struct TitlesSold {
         uint contractId;
+        uint schedule;
         uint titleValue;
         uint installments;
         uint monthlyValue;
@@ -146,7 +147,6 @@ contract Horizon is CCIPReceiver{
     //Mappings
     mapping(uint titleId => Titles) public allTitles;
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos;
-    mapping(address owner => TitlesSold) public titleOwner;
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
     mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrderOrRandomValue => TitleRecord))) public selectorVRF;
     mapping(bytes32 permissionHash => FujiPermissions) public permissionInfo;
@@ -250,6 +250,7 @@ contract Horizon is CCIPReceiver{
 
         TitlesSold memory myTitle = TitlesSold({
             contractId: title.numberOfTitlesSold,
+            schedule: title.paymentSchedule,
             titleValue: title.titleValue,
             installments: title.installments,
             monthlyValue: ((title.monthlyInvestiment) + (fee)),
@@ -266,7 +267,6 @@ contract Horizon is CCIPReceiver{
         });
 
         titleSoldInfos[_titleId][title.numberOfTitlesSold] = myTitle;
-        titleOwner[msg.sender] = myTitle;
 
         payInstallment(_titleId, title.numberOfTitlesSold, _tokenAddress);
 
