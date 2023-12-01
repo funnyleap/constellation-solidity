@@ -51,7 +51,7 @@ contract Horizon is CCIPReceiver{
     //Common state variables
     uint titleId = 0;
     address fujiReceiver;
-    address owner;
+    address public owner;
 
     // ENUMS
     enum TitleStatus{
