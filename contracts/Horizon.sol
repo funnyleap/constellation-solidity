@@ -24,7 +24,7 @@ contract Horizon is CCIPReceiver{
     mapping(address => bool) public whitelistedSenders;
 
     //Events
-    event NewTitleCreated(uint _titleId, uint _scheduleId, uint _titleValue, uint _monthlyValue, uint _installments);
+    event NewTitleCreated(uint _titleId, uint _scheduleId, uint _titleValue, uint _installments, uint _monthlyValue);
     event TitleStatusUpdated(TitleStatus status);
     event NewTitleSold(uint titleId, uint _contractId, address _owner);
     event AmountToPay(uint amountWithInterests);
