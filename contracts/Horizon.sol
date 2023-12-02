@@ -34,15 +34,15 @@ contract Horizon is CCIPReceiver{
     event DrawHasStarted(uint _titleId, uint _nextDrawNumber, uint nextDrawParticipants);
     event VRFAnswer(bool fulfilled, uint256[] randomWords, uint randomValue);
     event MonthlyWinnerSelected(uint _idTitle, uint _drawNumber, uint _randomValue, uint _selectedContractId, address _winner);
-    event ColateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfColateralTitle, uint _idOfColateralContract);
+    event ColateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfCollateralTitle, uint _idOfCollateralContract);
     event CreatingPermission(uint _idTitle, uint _contractId, uint _drawSelected, address _fujiReceiver);
     event MonthlyWinnerPaid(uint _idTitle, uint _drawNumber, address _winner, uint _titleValue);
     event MyTitleStatusUpdated(MyTitleWithdraw myTitleStatus);
     event PaymentLateNumber(uint _i);
     event AmountLateWithInterest(uint totalAmountLate);
     event PaymentIsLate(uint lateInstallments);
-    event ColateralRefunded(uint _idTitle, uint _contractId, uint _colateralId);
-    event ThereAreSomePendencies(uint _installmentsPaid, uint _colateralTitleId, address _colateralTitleAddress, address colateralRWAAddress, MyTitleWithdraw myTitleStatus);
+    event ColateralRefunded(uint _idTitle, uint _contractId, uint _collateralId);
+    event ThereAreSomePendencies(uint _installmentsPaid, uint _collateralTitleId, address _collateralTitleAddress, address collateralRWAAddress, MyTitleWithdraw myTitleStatus);
     event LastInstallmentPaid(uint _installmentsPaid);
     event ThisTitleHasBeenCanceled(uint _titlesAvailableForNextDraw);
     event TitleCanceled(uint _titleId, uint _contractId, uint _lastInstallmentPaid);
