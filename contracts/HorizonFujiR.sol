@@ -223,7 +223,7 @@ contract HorizonFujiR is CCIPReceiver {
         emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
     }
         
-    function checkColateralPrice() public { //Triggered by Automation
+    function checkCollateralPrice() public { //Triggered by Automation
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
 
             if(rwaMonitors[i].isActive == true){
@@ -238,7 +238,7 @@ contract HorizonFujiR is CCIPReceiver {
         }
     }
 
-    function getColateralPrice() public {
+    function getCollateralPrice() public {
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
             if(rwaMonitors[i].isActive == true){
 

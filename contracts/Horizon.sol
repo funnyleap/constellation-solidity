@@ -338,7 +338,7 @@ contract Horizon is CCIPReceiver{
             myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
 
             if(myTitle.colateralId != 0 ){
-                refundColateral(_idTitle, _contractId);
+                refundCollateral(_idTitle, _contractId);
             }
         }
         if(myTitle.installmentsPaid == title.nextDrawNumber &&  myTitle.myTitleStatus == MyTitleWithdraw.Late){
@@ -472,7 +472,7 @@ contract Horizon is CCIPReceiver{
         emit MonthlyWinnerSelected(_idTitle, draw.drawNumber, randomValue, winningTicket.contractId, winningTicket.user);
     }
 
-    function addTitleAsColateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract) public{ //Working Nice
+    function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract) public{ //Working Nice
         TitlesSold storage myColateralTitle = titleSoldInfos[_idOfColateralTitle][_idOfColateralContract];
         TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId]; 
 
@@ -503,7 +503,7 @@ contract Horizon is CCIPReceiver{
         emit ColateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfColateralTitle, _idOfColateralContract);
     }
 
-    function addRWAColateral(uint _idTitle, uint _contractId) public { //
+    function addRWACollateral(uint _idTitle, uint _contractId) public { //
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
         require(myTitle.drawSelected != 0, "You haven't been selected yet!");
@@ -529,7 +529,7 @@ contract Horizon is CCIPReceiver{
         emit CreatingPermission(_idTitle, _contractId, myTitle.drawSelected, fujiReceiver);
     }
 
-    function refundColateral(uint _idTitle, uint _contractId) public { //OK
+    function refundCollateral(uint _idTitle, uint _contractId) public { //OK
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(myTitle.installmentsPaid == myTitle.installments, "All the installments must have been paid!");
