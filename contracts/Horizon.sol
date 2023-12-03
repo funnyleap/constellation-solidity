@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./HorizonStaff.sol";
 import "./HorizonVRF.sol";
 
-error ThereIsNoTitlesAvailableAnymore(uint _numberOfTitlesSold);
+error ThereIsNoTitlesAvailableAnymore(uint numberOfTitlesSold);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error FailedToWithdrawEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
@@ -25,28 +25,28 @@ contract Horizon is CCIPReceiver{
 
     //Events
     event NewTitleCreated(uint _titleId, uint _scheduleId, uint _titleValue, uint _installments, uint _monthlyValue);
-    event TitleStatusUpdated(TitleStatus status);
-    event NewTitleSold(uint titleId, uint _contractId, address _owner);
-    event AmountToPay(uint amountWithInterests);
+    event TitleStatusUpdated(TitleStatus _status);
+    event NewTitleSold(uint _titleId, uint _contractId, address _owner);
+    event AmountToPay(uint _amountWithInterests);
     event InstallmentPaid(uint _idTitle, uint _contractId, uint _amount, uint _installmentsPaid);
     event EnsuranceValueNeededUpdate(uint _idTitle, uint _contractId, uint _valueOfEnsurance);
     event EnsuranceUpdated(address _temporaryEnsurance);
-    event DrawHasStarted(uint _titleId, uint _nextDrawNumber, uint nextDrawParticipants);
-    event VRFAnswer(bool fulfilled, uint256[] randomWords, uint randomValue);
+    event DrawHasStarted(uint _titleId, uint _nextDrawNumber, uint _nextDrawParticipants);
+    event VRFAnswer(bool _fulfilled, uint256[] _randomWords, uint _randomValue);
     event MonthlyWinnerSelected(uint _idTitle, uint _drawNumber, uint _randomValue, uint _selectedContractId, address _winner);
-    event ColateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfCollateralTitle, uint _idOfCollateralContract);
+    event CollateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfCollateralTitle, uint _idOfCollateralContract);
     event CreatingPermission(uint _idTitle, uint _contractId, uint _drawSelected, address _fujiReceiver);
     event MonthlyWinnerPaid(uint _idTitle, uint _drawNumber, address _winner, uint _titleValue);
-    event MyTitleStatusUpdated(MyTitleWithdraw myTitleStatus);
+    event MyTitleStatusUpdated(MyTitleWithdraw _myTitleStatus);
     event PaymentLateNumber(uint _i);
-    event AmountLateWithInterest(uint totalAmountLate);
-    event PaymentIsLate(uint lateInstallments);
-    event ColateralRefunded(uint _idTitle, uint _contractId, uint _collateralId);
-    event ThereAreSomePendencies(uint _installmentsPaid, uint _collateralTitleId, address _collateralTitleAddress, address collateralRWAAddress, MyTitleWithdraw myTitleStatus);
+    event AmountLateWithInterest(uint _totalAmountLate);
+    event PaymentIsLate(uint _lateInstallments);
+    event CollateralRefunded(uint _idTitle, uint _contractId, uint _collateralId);
+    event ThereAreSomePendencies(uint _installmentsPaid, uint _collateralTitleId, address _collateralTitleAddress, address _collateralRWAAddress, MyTitleWithdraw _myTitleStatus);
     event LastInstallmentPaid(uint _installmentsPaid);
     event ThisTitleHasBeenCanceled(uint _titlesAvailableForNextDraw);
     event TitleCanceled(uint _titleId, uint _contractId, uint _lastInstallmentPaid);
-    event MessageReceived( bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, string text);
+    event MessageReceived( bytes32 indexed _messageId, uint64 indexed _sourceChainSelector, address _sender, string _text);
 
     //Common state variables
     uint titleId = 0;
@@ -101,9 +101,9 @@ contract Horizon is CCIPReceiver{
         address titleOwner;
         uint installmentsPaid;
         uint drawSelected;
-        uint colateralId;
-        address colateralTitleAddress;
-        address colateralRWAAddress;
+        uint collateralId;
+        address collateralTitleAddress;
+        address collateralRWAAddress;
         uint valueOfEnsuranceNeeded;
         MyTitleWithdraw myTitleStatus;
         bool paid;
@@ -132,10 +132,10 @@ contract Horizon is CCIPReceiver{
         address winner;
     }
 
-    struct ColateralTitles {
-        address colateralOwner;
-        uint titleIdOfColateral;
-        uint contractIdOfColateral;
+    struct CollateralTitles {
+        address collateralOwner;
+        uint titleIdOfCollateral;
+        uint contractIdOfCollateral;
     }
 
     struct FujiPermissions{
@@ -150,7 +150,7 @@ contract Horizon is CCIPReceiver{
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
     mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrderOrRandomValue => TitleRecord))) public selectorVRF;
     mapping(bytes32 permissionHash => FujiPermissions) public permissionInfo;
-    mapping(uint titleId => mapping(uint contractId => ColateralTitles)) public colateralInfos;
+    mapping(uint titleId => mapping(uint contractId => CollateralTitles)) public collateralInfos;
     
     //Instances
     IERC20 stablecoin;
@@ -245,7 +245,7 @@ contract Horizon is CCIPReceiver{
             lockPeriod = 0;
         } else {
             fee = 0;
-            lockPeriod = 2;
+            lockPeriod = (title.installments / 2);
         }
 
         TitlesSold memory myTitle = TitlesSold({
@@ -258,9 +258,9 @@ contract Horizon is CCIPReceiver{
             titleOwner: msg.sender,
             installmentsPaid: 0,
             drawSelected: 0,
-            colateralId: 0,
-            colateralTitleAddress: address(0),
-            colateralRWAAddress: address(0),
+            collateralId: 0,
+            collateralTitleAddress: address(0),
+            collateralRWAAddress: address(0),
             valueOfEnsuranceNeeded: 0,
             myTitleStatus: MyTitleWithdraw.OnSchedule,
             paid: false
@@ -337,7 +337,7 @@ contract Horizon is CCIPReceiver{
         if(myTitle.installmentsPaid == myTitle.installments){
             myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
 
-            if(myTitle.colateralId != 0 ){
+            if(myTitle.collateralId != 0 ){
                 refundCollateral(_idTitle, _contractId);
             }
         }
@@ -472,35 +472,35 @@ contract Horizon is CCIPReceiver{
         emit MonthlyWinnerSelected(_idTitle, draw.drawNumber, randomValue, winningTicket.contractId, winningTicket.user);
     }
 
-    function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfColateralTitle, uint _idOfColateralContract) public{ //Working Nice
-        TitlesSold storage myColateralTitle = titleSoldInfos[_idOfColateralTitle][_idOfColateralContract];
+    function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfCollateralTitle, uint _idOfCollateralContract) public{ //Working Nice
+        TitlesSold storage myCollateralTitle = titleSoldInfos[_idOfCollateralTitle][_idOfCollateralContract];
         TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId]; 
 
         require(myTitle.drawSelected != 0, "You haven't been selected yet!");
-        require(myTitle.titleOwner == msg.sender, "Only the owner can add a colateral!");
-        require(myColateralTitle.titleOwner == msg.sender, "Only the owner can add a colateral!");
-        require(myColateralTitle.titleValue >= myTitle.valueOfEnsuranceNeeded, "The colateral total value must be greater than tue ensuranceValueNeeded");
+        require(myTitle.titleOwner == msg.sender, "Only the owner can add a collateral!");
+        require(myCollateralTitle.titleOwner == msg.sender, "Only the owner can add a collateral!");
+        require(myCollateralTitle.titleValue >= myTitle.valueOfEnsuranceNeeded, "The collateral total value must be greater than tue ensuranceValueNeeded");
         
-        uint colateralValuePaid = myColateralTitle.installmentsPaid * myColateralTitle.monthlyValue;
+        uint colateralValuePaid = myCollateralTitle.installmentsPaid * myCollateralTitle.monthlyValue;
         uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded * 2;
 
-        require(myColateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= ensuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
+        require(myCollateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= ensuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
 
         myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
 
-        ColateralTitles memory colateral = ColateralTitles ({
-            colateralOwner: msg.sender,
-            titleIdOfColateral: _idOfColateralTitle,
-            contractIdOfColateral: _idOfColateralContract
+        CollateralTitles memory collateral = CollateralTitles ({
+            collateralOwner: msg.sender,
+            titleIdOfCollateral: _idOfCollateralTitle,
+            contractIdOfCollateral: _idOfCollateralContract
         });
 
-        colateralInfos[_titleId][_contractId] = colateral;
+        collateralInfos[_titleId][_contractId] = collateral;
         
-        myTitle.colateralTitleAddress = address(this);
-        myTitle.colateralId = myColateralTitle.contractId;
-        myColateralTitle.titleOwner = address(this);
+        myTitle.collateralTitleAddress = address(this);
+        myTitle.collateralId = myCollateralTitle.contractId;
+        myCollateralTitle.titleOwner = address(this);
 
-        emit ColateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfColateralTitle, _idOfColateralContract);
+        emit CollateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfCollateralTitle, _idOfCollateralContract);
     }
 
     function addRWACollateral(uint _idTitle, uint _contractId) public { //
@@ -533,9 +533,9 @@ contract Horizon is CCIPReceiver{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(myTitle.installmentsPaid == myTitle.installments, "All the installments must have been paid!");
-        require(myTitle.paid == true, "You can't retrieve the colateral before the withdraw!");
+        require(myTitle.paid == true, "You can't retrieve the collateral before the withdraw!");
 
-        if(myTitle.installmentsPaid == myTitle.installments && myTitle.colateralRWAAddress != address(0)){
+        if(myTitle.installmentsPaid == myTitle.installments && myTitle.collateralRWAAddress != address(0)){
 
             bytes32 permissionHash = keccak256(abi.encodePacked(_idTitle, _contractId, myTitle.drawSelected));
 
@@ -545,19 +545,19 @@ contract Horizon is CCIPReceiver{
 
             sender.sendMessagePayLINK(14767482510784806043, fujiReceiver, updatePermission); // Chain - 14767482510784806043
 
-            emit ColateralRefunded(_idTitle, _contractId, myTitle.colateralId);
+            emit CollateralRefunded(_idTitle, _contractId, myTitle.collateralId);
         }else{
-            if(myTitle.installmentsPaid == myTitle.installments && myTitle.colateralId != 0){
+            if(myTitle.installmentsPaid == myTitle.installments && myTitle.collateralId != 0){
                 
-                ColateralTitles memory colateral = colateralInfos[_idTitle][_contractId];
+                CollateralTitles memory collateral = collateralInfos[_idTitle][_contractId];
                 
-                TitlesSold storage myColateralTitle = titleSoldInfos[colateral.titleIdOfColateral][colateral.contractIdOfColateral];
+                TitlesSold storage myCollateralTitle = titleSoldInfos[collateral.titleIdOfCollateral][collateral.contractIdOfCollateral];
 
-                myColateralTitle.titleOwner = colateral.colateralOwner;
+                myCollateralTitle.titleOwner = collateral.collateralOwner;
 
                 myTitle.myTitleStatus = MyTitleWithdraw.Finalized;
 
-                emit ColateralRefunded(_idTitle, _contractId, myTitle.colateralId);
+                emit CollateralRefunded(_idTitle, _contractId, myTitle.collateralId);
             }
         }
     }
@@ -575,7 +575,7 @@ contract Horizon is CCIPReceiver{
         }
  
         if(myTitle.installmentsPaid == myTitle.installments ||
-           myTitle.colateralId != 0 || myTitle.colateralRWAAddress != address(0) && myTitle.colateralId != 0) {
+           myTitle.collateralId != 0 || myTitle.collateralRWAAddress != address(0) && myTitle.collateralId != 0) {
 
             (, , bool isStable) = staff.returnAvailableStablecoin(_stablecoin);
 
@@ -591,9 +591,9 @@ contract Horizon is CCIPReceiver{
             emit MonthlyWinnerPaid(_idTitle, myTitle.drawSelected, myTitle.titleOwner, myTitle.titleValue);
         }else{
             emit ThereAreSomePendencies(myTitle.installmentsPaid,
-                                        myTitle.colateralId,
-                                        myTitle.colateralTitleAddress,
-                                        myTitle.colateralRWAAddress,
+                                        myTitle.collateralId,
+                                        myTitle.collateralTitleAddress,
+                                        myTitle.collateralRWAAddress,
                                         myTitle.myTitleStatus);
         }
         myTitle.paid = true;
@@ -616,16 +616,16 @@ contract Horizon is CCIPReceiver{
 
             emit TitleCanceled(_titleId, _contractId, lastInstallmentPaid);
             
-            if(clientTitle.colateralTitleAddress != address(0) || clientTitle.colateralRWAAddress != address(0)){
+            if(clientTitle.collateralTitleAddress != address(0) || clientTitle.collateralRWAAddress != address(0)){
                             
-                ColateralTitles storage colateral = colateralInfos[_titleId][_contractId];
+                CollateralTitles storage collateral = collateralInfos[_titleId][_contractId];
 
-                Titles storage colateralTitle = allTitles[colateral.titleIdOfColateral];
+                Titles storage collateralTitle = allTitles[collateral.titleIdOfCollateral];
 
-                TitlesSold storage colateralContract = titleSoldInfos[colateral.titleIdOfColateral][colateral.contractIdOfColateral];
+                TitlesSold storage collateralContract = titleSoldInfos[collateral.titleIdOfCollateral][collateral.contractIdOfCollateral];
 
-                colateralTitle.titleCanceled++;
-                colateralContract.myTitleStatus = MyTitleWithdraw.Canceled;
+                collateralTitle.titleCanceled++;
+                collateralContract.myTitleStatus = MyTitleWithdraw.Canceled;
             }
         }else{
             if(block.timestamp > delayedPaymentDate && (block.timestamp - delayedPaymentDate) < cancellationLimit) {
@@ -670,18 +670,18 @@ contract Horizon is CCIPReceiver{
         lastReceivedText = abi.decode(any2EvmMessage.data, (bytes));
 
         bytes32 _permissionHash;
-        address _colectionAddress;
+        address _collectionAddress;
         uint _nftId;
 
-        (_permissionHash, _colectionAddress, _nftId) = abi.decode(lastReceivedText, (bytes32, address, uint));
+        (_permissionHash, _collectionAddress, _nftId) = abi.decode(lastReceivedText, (bytes32, address, uint));
 
         FujiPermissions storage permission = permissionInfo[_permissionHash];
         TitlesSold storage myTitle = titleSoldInfos[permission.idTitle][permission.contractId];
 
-        myTitle.colateralId = _nftId;
-        myTitle.colateralRWAAddress = _colectionAddress;
+        myTitle.collateralId = _nftId;
+        myTitle.collateralRWAAddress = _collectionAddress;
 
-        if(myTitle.colateralId != 0 && myTitle.colateralRWAAddress != address(0)) {
+        if(myTitle.collateralId != 0 && myTitle.collateralRWAAddress != address(0)) {
             myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
         }
 
