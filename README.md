@@ -1,10 +1,50 @@
-# constellation-bg
+# <p align="center"> HORIZON
+</p>
 
-Repositório destinado ao Hackathon Constellation da Chainlink
+<p align="center"> Chainlink Constellation Hackathon
+</p>
+</br>
 
-Sobre o Protocolo
+1. Introduction
+   - What is _consórcio_?
+   - Why it is relevant?
+   - How does _consórcio_ works
+2. About the protocol
+3. How does it works
+</br>
 
-Horizon é um protocolo DEFI que tem por objetivo simplificar o acesso principalmente de pessoas de média-baixa renda ao ecossistema Web3, tornando o processo mais seguro, transparente e auditável. E, com o iminente avanço dos Bens Tokenizados, vamos além implementando uma lógica para que esses Bens possam ser usados como garantias de saque do valor dos Títulos adquiridos. Para tornar isso possível e permitir que seja utilizado em diversas regiões do planeta, além da confiabilidade das ferramentas da Chainlink que serão usadas, a principal barreira que precisa ser derrubada é o onboarding que até pouco tempo atrás era restritivo devido às opções de Carteiras disponíveis. Hoje temos um grande aliado que é o ERC-4337. E esse é o primeiro passo para a mudança nas vidas de muitas pessoas!
+---
+</br>
+
+## 1. Introduction
+We, humans, have one thing in common: we have dreams! We dream of owning a house, buying a new car, pursuing a degree or specialization to boost our professional career, and we dream of the warm, crystal-clear waters of the Caribbean. But, we wake up to reality when we open our online account and check our balance.
+How many dreams have you failed to realize due to lack of money?
+To overcome this, Brazilians have created the _consórcio_!
+
+</br>
+
+### What is _consórcio_?
+The _consórcio_, created in 1962, is a tool for collective self-financing through which people come together to acquire something they desire, such as a car, a property, or even services. It is managed by an administrative entity, which, in the case of Brazil, is regulated and supervised by the government. This tool has become popular and has even been adopted by other countries such as Argentina, Uruguay, Paraguay, Peru, Mexico, and Venezuela (Source: [ABAC](https://abac.org.br/o-consorcio/historia)).
+
+</br>
+
+### Why it is relevant?
+
+<br/>
+
+### How does _consórcio_ works
+
+</br>
+
+## 2. About the protocol
+Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of acquired Securities. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
+</br>
+
+
+# How does it works
+
+
+---
 
 Gostaria de entender um pouco mais sobre Bens Tokenizados e sobre o ERC-4337? Acessae os links abaixo:
 Bens Tokenizados [RWA] -
