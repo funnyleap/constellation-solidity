@@ -158,19 +158,22 @@ Evolução do Protocolo
 
 Tendo em vista a estrutura apresentada, o protocolo possui um vasto potencial de crescimento e evolução. Entre os pontos que foram discutidos, temos:
 
-1 - Criação do Mercado Secundário para comercialização dos Títulos;
+1 - Otimização da Fase 1.
+Com o intuito dar passos maiores, precisamos reforçar nossa estrutura. Para isso serão necessários estudos aprofundados quanto à gestão de custos, processamento de garantias, UI/UX e estudos mais abrangentes de modo à expandir nosso público alvo. Sempre objetivando uma melhor experiência e maiores oportunidades para o usuário final.
+
+2 - Criação do Mercado Secundário para comercialização dos Títulos;
 A partir da Criação do Mercado Secundario, os detentores dos Títulos terão a liberdade para comercializá-los. Podendo ocorrer o deságio do título para uma venda rápida em caso de necessidade ou até mesmo o àgio na comercialização de um título que foi sorteado. A partir disso o protocolo ganha com crescimento da liquidez, o mercado poderá precificar os Títulos de forma dinâmica a partir da oferta e demanda, tornando o processo mais justo e transparente.
 Além disso, abre se uma porta para que clientes diversifiquem seu portfólio de investimento, reduz a inadimplência, facilita o acesso a novos participantes e estimula a participação uma vez que, apesar de ter assumido o compromisso, o participante poderá repassar o seu título se necessário.
 Por fim, a introdução de um mercado secundário pode levar a inovações adicionais e ao crescimento do ecossistema Horizon, atraindo mais usuários e investidores e aumentando a robustez e a resiliência do sistema.
 
-2 - Fomento de parcerias para criação de novas pools para rendimento dos valores bloqueados;
+3 - Fomento de parcerias para criação de novas pools para rendimento dos valores bloqueados;
 O desenvolvimento de novas parcerias pode gerar inúmeros benefícios estratégicos e operacionais, ampliando o alcance do Protocolo. Entre elas, temos:
 
 - O acesso a novos mercados a partir de outros protocolos de DeFi ou finanças tradicionais aumentando considerávelmente o número de usuários.
 - Expansão de Recursos e Diversificação de Investimentos adequando a ofertas e demandas regionais.
 - Sustentabilidade a Longo Prazo fornecendo estabilidade e inovação contínua.
 
-3 - Serviços de Empréstimo utilizando os Bens Tokenizados como Garantia
+4 - Serviços de Empréstimo utilizando os Bens Tokenizados como Garantia
 
 - Amplia a área de atuação da Horizon para países com taxas de juros mais baixas onde, inicialmente, o consórcio não seria uma opção viável;
 - Facilita o acesso a liquidez de Curto prazo a partir do Bens Tokenizados;
@@ -181,7 +184,7 @@ O desenvolvimento de novas parcerias pode gerar inúmeros benefícios estratégi
 
 Chainlink Data Streams seria uma ferramenta crucial para o correto funcionamento do protocolo. Assim como poderá ser usado com para monitoramento dos Bens Tokenizados.
 
-4 - Financiamentos utilizando os Bens Tokenizados como Garantia.
+5 - Financiamentos utilizando os Bens Tokenizados como Garantia.
 
 - Acesso fácil e rápido a capital principalmente para empreendedores;
 - Acesso a Financiamentos para grandes compras como imóveis, móveis, equipamentos no geral.
