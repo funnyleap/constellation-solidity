@@ -25,7 +25,7 @@ contract HorizonFujiR is CCIPReceiver {
     event TheRwaValueIsLessThanTheMinimumNeeded(uint _rwaId, uint _rwaValue);
     event VerifyingRwaValue(uint _rwaId, string[] args);
     event EnsuranceAdd(address provisoryOwner, uint _rwaId, uint _titleId, uint _drawNumber);
-    event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _colateralId);
+    event RWARefunded(uint _titleId, uint _drawNumber, address _rwaOwner, uint _collateralId);
     event RwaValueUpdated(bytes32 requestId, string[] args);
     event UpkeepPerformed( uint value);
     event RWAPriceAtMoment(uint _contractId, uint _rwaId, uint _rwaValue);
@@ -55,12 +55,12 @@ contract HorizonFujiR is CCIPReceiver {
         address rwaOwner;
         uint ensuranceValueNeeded;
         uint ensureValueNow;
-        uint colateralId;
+        uint collateralId;
         string[] args;
         bytes32 lastRequestId;
         uint lastRequestTime;
         uint lastResponseTime;
-        bool colateralLocked;
+        bool collateralLocked;
         bool isPermission;
     }
 
@@ -74,7 +74,7 @@ contract HorizonFujiR is CCIPReceiver {
 
     //Array to keep track of RWA's prices
     RwaMonitor[] public rwaMonitors;
-    // Mapping to keep track of colateral permissions
+    // Mapping to keep track of collateral permissions
     mapping(bytes32 => Permissions) public permissionsInfo;
 
     // Mapping to keep track of whitelisted source chains.
@@ -102,18 +102,18 @@ contract HorizonFujiR is CCIPReceiver {
 
         bytes32 permissionHash;
         uint _ensuranceValueNeeded;
-        bool _colateralLocked;
+        bool _collateralLocked;
 
-        (permissionHash, _ensuranceValueNeeded, _colateralLocked) = abi.decode(lastReceivedText, (bytes32, uint, bool));
+        (permissionHash, _ensuranceValueNeeded, _collateralLocked) = abi.decode(lastReceivedText, (bytes32, uint, bool));
 
-        handlePermission(permissionHash, _ensuranceValueNeeded, _colateralLocked);
+        handlePermission(permissionHash, _ensuranceValueNeeded, _collateralLocked);
 
         emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));
     }
 
     function handlePermission(bytes32 _permissionHash,
                               uint _ensuranceValueNeeded,
-                              bool _colateralLocked) internal{
+                              bool _collateralLocked) internal{
 
         string[] memory emptyArray = new string[](0);
 
@@ -124,25 +124,25 @@ contract HorizonFujiR is CCIPReceiver {
             rwaOwner: address(0),
             ensuranceValueNeeded: (_ensuranceValueNeeded * 5),
             ensureValueNow: 0,
-            colateralId: 0,
+            collateralId: 0,
             args: emptyArray,
             lastRequestId: 0,
             lastRequestTime: 0,
             lastResponseTime: 0,
-            colateralLocked: _colateralLocked,
+            collateralLocked: _collateralLocked,
             isPermission: true
         });
 
-        if(_colateralLocked == true){
+        if(_collateralLocked == true){
             permissionsInfo[_permissionHash] = permission;
         }else{
-            if(_colateralLocked == false){
+            if(_collateralLocked == false){
                 sendRwaBackToOwner(_permissionHash);
             }
         }
     }
 
-    function verifyColateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public { //["motos","77","5223","2015-1"]
+    function verifyCollateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public { //["motos","77","5223","2015-1"]
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
         bytes32 requestId = functions.sendRequest(args);
 
@@ -155,7 +155,7 @@ contract HorizonFujiR is CCIPReceiver {
         permission.contractId = _contractId;
         permission.drawNumber = _drawNumber;
         permission.rwaOwner = msg.sender;
-        permission.colateralId = _rwaId;
+        permission.collateralId = _rwaId;
         permission.args = args;
         permission.lastRequestId = requestId;
 
@@ -197,9 +197,9 @@ contract HorizonFujiR is CCIPReceiver {
                 isActive: true
             }));
             
-            bytes memory colateralAdded = abi.encode(permissionHash, rwa, _rwaId);
+            bytes memory collateralAdded = abi.encode(permissionHash, rwa, _rwaId);
 
-            sender.sendMessagePayLINK(12532609583862916517, horizonR, colateralAdded); //Destination chainId - 12532609583862916517
+            sender.sendMessagePayLINK(12532609583862916517, horizonR, collateralAdded); //Destination chainId - 12532609583862916517
 
             emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
         } else{
@@ -218,9 +218,9 @@ contract HorizonFujiR is CCIPReceiver {
             }
         }
 
-        rwa.safeTransferFrom(address(this), permission.rwaOwner, permission.colateralId);
+        rwa.safeTransferFrom(address(this), permission.rwaOwner, permission.collateralId);
 
-        emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.colateralId);
+        emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.collateralId);
     }
         
     function checkCollateralPrice() public { //Triggered by Automation
