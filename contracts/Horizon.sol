@@ -16,49 +16,76 @@ error FailedToWithdrawEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
 
 /**
- * @title 
- * @author 
- * @notice 
+ * @title Horizon Financial Products
+ * @author Barba
+ * @notice This contract is the foundation of the protocol structure. Consortium Titles are created, sold, and their prizes are paid through it.
+ * @dev This contract integrates with Chainlink CCIP and VRF.
  */
 contract Horizon is CCIPReceiver{
 
-    /* CCIP variables and storages */
+    /// CCIP VARIABLES AND STORAGES
     bytes32 private lastReceivedMessageId;
     bytes private lastReceivedText;
     mapping(uint64 => bool) public whitelistedSourceChains;
     mapping(address => bool) public whitelistedSenders;
 
-    //Events
+    /// EVENTS
+    
+    /// @notice Event emitted when a new Title is created!
     event NewTitleCreated(uint _titleId, uint _scheduleId, uint _titleValue, uint _installments, uint _monthlyValue);
+    /// @notice Event emitted when the Title's status changes.
     event TitleStatusUpdated(TitleStatus _status);
+    /// @notice Event emitted when a share of the Title is sold.
     event NewTitleSold(uint _titleId, uint _contractId, address _owner);
+    /// @notice Event emitted when the value changes due to late interest.
     event AmountToPay(uint _amountWithInterests);
+    /// @notice Event emitted when an installment is paid.
     event InstallmentPaid(uint _idTitle, uint _contractId, uint _amount, uint _installmentsPaid);
-    event EnsuranceValueNeededUpdate(uint _idTitle, uint _contractId, uint _valueOfEnsurance);
-    event EnsuranceUpdated(address _temporaryEnsurance);
+    /// @notice Event emitted when an installment is paid and the value of the necessary insurance for withdrawal is reduced.
+    event InsuranceValueNeededUpdate(uint _idTitle, uint _contractId, uint _valueOfInsurance);
+    /// @notice Event emitted when collateral is allocated and the owner's address changes.
+    event InsuranceUpdated(address _temporaryInsurance);
+    /// @notice Event emitted when a draw starts.
     event DrawHasStarted(uint _titleId, uint _nextDrawNumber, uint _nextDrawParticipants);
+    /// @notice Event emitted when the VRF returns the drawn number.
     event VRFAnswer(bool _fulfilled, uint256[] _randomWords, uint _randomValue);
+    /// @notice Event emitted when the winner is revealed.
     event MonthlyWinnerSelected(uint _idTitle, uint _drawNumber, uint _randomValue, uint _selectedContractId, address _winner);
+    /// @notice Event emitted when a Consórcio Quota is added as Collateral in another Title.
     event CollateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfCollateralTitle, uint _idOfCollateralContract);
+    /// @notice Event emitted when sending permission to allocate RWA to another network.
     event CreatingPermission(uint _idTitle, uint _contractId, uint _drawSelected, address _fujiReceiver);
+    /// @notice Event emitted when the drawn winner withdraws the Consórcio amount.
     event MonthlyWinnerPaid(uint _idTitle, uint _drawNumber, address _winner, uint _titleValue);
+    /// @notice Event emitted when the status of a Consórcio Quota is updated.
     event MyTitleStatusUpdated(MyTitleWithdraw _myTitleStatus);
+    /// @notice Event emitted to report the number of late payments.
     event PaymentLateNumber(uint _i);
+    /// @notice Event emitted to report the updated amount with late interest. 
     event AmountLateWithInterest(uint _totalAmountLate);
+    /// @notice Event emitted to inform the owner of the Consórcio Letter that has late payments.
     event PaymentIsLate(uint _lateInstallments);
+    /// @notice Event emitted when the allocated Collateral is returned to the owner.
     event CollateralRefunded(uint _idTitle, uint _contractId, uint _collateralId);
+    /// @notice Event emitted when the owner of the Consórcio Quota tries to withdraw, but the Quota has pending issues.
     event ThereAreSomePendencies(uint _installmentsPaid, uint _collateralTitleId, address _collateralTitleAddress, address _collateralRWAAddress, MyTitleWithdraw _myTitleStatus);
+    /// @notice Event emitted to report the last installment paid.
     event LastInstallmentPaid(uint _installmentsPaid);
+    /// @notice Event emitted when a Consórcio Quota is canceled due to delay.
     event ThisTitleHasBeenCanceled(uint _titlesAvailableForNextDraw);
+    /// @notice Event emitted when a Consórcio is canceled.
     event TitleCanceled(uint _titleId, uint _contractId, uint _lastInstallmentPaid);
+    /// @notice Event emitted when the CCIP receives a message.
     event MessageReceived( bytes32 indexed _messageId, uint64 indexed _sourceChainSelector, address _sender, string _text);
 
-    //Common state variables
+    /// COMMON STATE VARIABLES
     uint titleId = 0;
     address fujiReceiver;
     address public owner;
 
-    // ENUMS
+    /// ENUMS
+
+    ///@notice Enum for the overall status of the Title
     enum TitleStatus{
         Canceled, //0
         Closed, //1
@@ -68,7 +95,8 @@ contract Horizon is CCIPReceiver{
     }
 
     TitleStatus status;
-
+    
+    ///@notice Enum for the Status of the Consórcio Quotas
     enum MyTitleWithdraw{
         Canceled, //0
         Late, //1
@@ -76,10 +104,12 @@ contract Horizon is CCIPReceiver{
         Withdraw, //3
         Finalized //4
     }
-
+    
     MyTitleWithdraw myTitleStatus;
 
-    // STRUCTS
+    /// STRUCTS
+    
+    ///@notice Consórcio Title Structure
     struct Titles {
         uint openSellingDate;
         uint closeSellingDate;
@@ -96,6 +126,7 @@ contract Horizon is CCIPReceiver{
         TitleStatus status;
     }
 
+    ///@notice Structure of the Purchased Share of the Consórcio Title
     struct TitlesSold {
         uint contractId;
         uint schedule;
@@ -109,11 +140,11 @@ contract Horizon is CCIPReceiver{
         uint collateralId;
         address collateralTitleAddress;
         address collateralRWAAddress;
-        uint valueOfEnsuranceNeeded;
+        uint valueOfInsuranceNeeded;
         MyTitleWithdraw myTitleStatus;
         bool paid;
     }
-
+    ///@notice Payment Structure
     struct TitleRecord {
         uint contractId;
         uint256 installmentNumber;
@@ -125,7 +156,7 @@ contract Horizon is CCIPReceiver{
         bool paid;
         uint installmentsPaid;
     }
-
+    ///@notice Draw Structure
     struct Draw {
         uint idTitle;
         uint drawNumber;
@@ -136,30 +167,35 @@ contract Horizon is CCIPReceiver{
         uint selectedContractID;
         address winner;
     }
-
+    ///@notice Structure for Allocating Titles as Collateral
     struct CollateralTitles {
         address collateralOwner;
         uint titleIdOfCollateral;
         uint contractIdOfCollateral;
     }
-
+    ///@notice Structure for Creating RWA Allocation Permissions
     struct FujiPermissions{
         uint idTitle;
         uint contractId;
         uint drawNumber;
     }
 
-    //Mappings
+    /// MAPPINGS
+
+    ///@notice storage for all created Contracts
     mapping(uint titleId => Titles) public allTitles;
+    ///@notice storage for the Consórcio Quotas
     mapping(uint titleId => mapping(uint contractId => TitlesSold)) public titleSoldInfos;
+    ///@notice storage for draw information
     mapping(uint titleId => mapping(uint drawNumber => Draw)) public drawInfos;
+    ///@notice storage for winner selection
     mapping(uint titleId => mapping(uint drawNumber => mapping(uint paymentOrderOrRandomValue => TitleRecord))) public selectorVRF;
+    ///@notice storage for RWA allocation permissions
     mapping(bytes32 permissionHash => FujiPermissions) public permissionInfo;
+    ///@notice storage for Title Quotas used as collateral
     mapping(uint titleId => mapping(uint contractId => CollateralTitles)) public collateralInfos;
     
-    /**
-     * @dev Instances
-     */
+    /// Instantiation of Dependencies
     IERC20 stablecoin;
     IERC721 nftToken;
     HorizonStaff staff = HorizonStaff(0x3547951AAA367094AFABcaE24f123473fF502bFa);
@@ -172,10 +208,11 @@ contract Horizon is CCIPReceiver{
 
     /**
      * 
-     * @param _opening 
-     * @param _closing 
-     * @param _participants 
-     * @param _value 
+     * @param _opening the time when the sale of shares should start
+     * @param _closing the time when the sale of shares should end, if all the Quotas have not been sold.
+     * @param _participants the maximum number of Quotas to be sold for this Consórcio Title
+     * @param _value total value of the Consórcio Quota.
+     * @notice _value is divided by _participants and from this, we have the monthly value of the Consórcio Title.
      */
     function createTitle(uint _opening,
                          uint _closing,
@@ -214,7 +251,8 @@ contract Horizon is CCIPReceiver{
     
     /**
      * 
-     * @param _titleId 
+     * @param _titleId Identifier of the Consórcio Title that should be updated
+     * @notice if the Title does not meet the established parameters, nothing will occur.
      */
     function updateTitleStatus(uint _titleId) public {
         Titles storage title = allTitles[_titleId];
@@ -250,9 +288,10 @@ contract Horizon is CCIPReceiver{
 
     /**
      * 
-     * @param _titleId 
-     * @param withdrawPeriod 
-     * @param _tokenAddress 
+     * @param _titleId Identifier of the Consórcio Title for which the client wishes to purchase a Quota
+     * @param withdrawPeriod withdrawal modality that the client desires
+     * @param _tokenAddress the stablecoin that will be used for payment.
+     * @dev on the mainnet, the stablecoin will be dynamic.
      */
     function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_titleId];
@@ -285,7 +324,7 @@ contract Horizon is CCIPReceiver{
             collateralId: 0,
             collateralTitleAddress: address(0),
             collateralRWAAddress: address(0),
-            valueOfEnsuranceNeeded: 0,
+            valueOfInsuranceNeeded: 0,
             myTitleStatus: MyTitleWithdraw.OnSchedule,
             paid: false
         });
@@ -298,10 +337,11 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _contractId 
-     * @param _tokenAddress 
+     * @notice This function is responsible for receiving payment information, checking for delays, and processing Interest.
+     * @param _idTitle Identifier of the Consortium Title for which the client wishes to pay the installment
+     * @param _contractId Identifier of the Consortium Quota for which the client wishes to pay the installment
+     * @param _tokenAddress the stablecoin that will be used for payment.
+     * @dev on the mainnet, the stablecoin will be dynamic.
      */
     function payInstallment(uint _idTitle,
                             uint _contractId,
@@ -375,17 +415,18 @@ contract Horizon is CCIPReceiver{
             myTitle.myTitleStatus = MyTitleWithdraw.OnSchedule;
         }
 
-        updateValueOfEnsurance(_idTitle, _contractId);
+        updateValueOfInsurance(_idTitle, _contractId);
 
         emit InstallmentPaid(_idTitle, _contractId, amountToPay, myTitle.installmentsPaid);
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _contractId 
-     * @param _amountToPay 
-     * @param _tokenAddress 
+     * @notice This function is internal and will be called by the payInstallment function to process the payment.
+     * @param _idTitle Identifier of the Consortium Title for which the client wishes to pay the installment
+     * @param _contractId Identifier of the Consortium Quota for which the client wishes to pay the installment
+     * @param _amountToPay is the amount to be paid, with or without the incidence of interest.
+     * @param _tokenAddress the stablecoin that will be used for payment.
+     * @dev on the mainnet, the stablecoin will be dynamic.
      */
     function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
@@ -429,28 +470,28 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _contractId 
+     * @notice This function is internal and will be called by the payInstallment function to update the value of the necessary insurance.
+     * @param _idTitle Identifier of the Consortium Title for which the client wishes to pay the installment
+     * @param _contractId Identifier of the Consortium Quota for which the client wishes to pay the installment
      */
-    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {
+    function updateValueOfInsurance(uint _idTitle, uint _contractId) internal {
         Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
         uint valueAlreadyPaid = (myTitle.installmentsPaid * titles.monthlyInvestiment);
 
         if(valueAlreadyPaid >= myTitle.titleValue){
-            myTitle.valueOfEnsuranceNeeded = 0;
+            myTitle.valueOfInsuranceNeeded = 0;
         }else{
-            myTitle.valueOfEnsuranceNeeded = myTitle.titleValue - valueAlreadyPaid;
+            myTitle.valueOfInsuranceNeeded = myTitle.titleValue - valueAlreadyPaid;
         }
 
-        emit EnsuranceValueNeededUpdate(_idTitle, _contractId, myTitle.valueOfEnsuranceNeeded);
+        emit InsuranceValueNeededUpdate(_idTitle, _contractId, myTitle.valueOfInsuranceNeeded);
     }
 
     /**
-     * 
-     * @param _idTitle 
+     * @notice this function sends the request for a random number to the vrfv2consumer contract so that the draw can be carried out
+     * @param _idTitle Identifier of the Consortium Title that will be drawn
      */
     function monthlyVRFWinner(uint _idTitle) public {
         Titles storage title = allTitles[_idTitle];
@@ -490,8 +531,8 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
+     * @notice this function processes the drawn number with the selectorVRF mapping to reveal the winner
+     * @param _idTitle Identifier of the Consortium Title that will have the winner revealed
      */
     function receiveVRFRandomNumber(uint256 _idTitle) public{
         Titles storage title = allTitles[_idTitle];
@@ -513,7 +554,7 @@ contract Horizon is CCIPReceiver{
 
         myTitle.drawSelected = draw.drawNumber;
 
-        updateValueOfEnsurance(_idTitle, winningTicket.contractId);
+        updateValueOfInsurance(_idTitle, winningTicket.contractId);
 
         title.status = TitleStatus.Closed;
 
@@ -523,11 +564,11 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _titleId 
-     * @param _contractId 
-     * @param _idOfCollateralTitle 
-     * @param _idOfCollateralContract 
+     * @notice This function is responsible for checking values, status, and adding Consortium Title Quotas as collateral.
+     * @param _titleId The ID of the Consortium Title in which the Collateral will be allocated.
+     * @param _contractId The ID of the Consortium Quota where the Collateral will be allocated.
+     * @param _idOfCollateralTitle The ID of the Consortium Title that will be used as Collateral.
+     * @param _idOfCollateralContract The ID of the Consortium Quota that will be used as Collateral.
      */
     function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfCollateralTitle, uint _idOfCollateralContract) public{
         TitlesSold storage myCollateralTitle = titleSoldInfos[_idOfCollateralTitle][_idOfCollateralContract];
@@ -536,12 +577,12 @@ contract Horizon is CCIPReceiver{
         require(myTitle.drawSelected != 0, "You haven't been selected yet!");
         require(myTitle.titleOwner == msg.sender, "Only the owner can add a collateral!");
         require(myCollateralTitle.titleOwner == msg.sender, "Only the owner can add a collateral!");
-        require(myCollateralTitle.titleValue >= myTitle.valueOfEnsuranceNeeded, "The collateral total value must be greater than tue ensuranceValueNeeded");
+        require(myCollateralTitle.titleValue >= myTitle.valueOfInsuranceNeeded, "The collateral total value must be greater than tue insuranceValueNeeded");
         
         uint colateralValuePaid = myCollateralTitle.installmentsPaid * myCollateralTitle.monthlyValue;
-        uint ensuranceNeeded = myTitle.valueOfEnsuranceNeeded * 2;
+        uint insuranceNeeded = myTitle.valueOfInsuranceNeeded * 2;
 
-        require(myCollateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= ensuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
+        require(myCollateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= insuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
 
         myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
 
@@ -561,9 +602,9 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _contractId 
+     * @notice This function is responsible for creating the RWA allocation permission and sending it through the CCIP.
+     * @param _idTitle The ID of the Consortium Title in which the Collateral will be allocated.
+     * @param _contractId The ID of the Consortium Quota where the Collateral will be allocated.
      */
     function addRWACollateral(uint _idTitle, uint _contractId) public {
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
@@ -582,7 +623,7 @@ contract Horizon is CCIPReceiver{
 
         permissionInfo[permissionHash] = fuji;
 
-        uint rwaValueNeeded = myTitle.valueOfEnsuranceNeeded;
+        uint rwaValueNeeded = myTitle.valueOfInsuranceNeeded;
 
         bytes memory permission = abi.encode(permissionHash, rwaValueNeeded, true);
     
@@ -592,11 +633,11 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _contractId 
+     * @notice this function is responsible for the return of the collateral, whether it is RWA or Title, and is called internally.
+     * @param _idTitle The ID of the Consortium Title that the client holds the Quota of.
+     * @param _contractId The ID of the Consortium Quota that has been fully paid and will receive the return of the Collateral.
      */
-    function refundCollateral(uint _idTitle, uint _contractId) public {
+    function refundCollateral(uint _idTitle, uint _contractId) internal {
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(myTitle.installmentsPaid == myTitle.installments, "All the installments must have been paid!");
@@ -606,7 +647,7 @@ contract Horizon is CCIPReceiver{
 
             bytes32 permissionHash = keccak256(abi.encodePacked(_idTitle, _contractId, myTitle.drawSelected));
 
-            bytes memory updatePermission = abi.encode(permissionHash, myTitle.valueOfEnsuranceNeeded, false);
+            bytes memory updatePermission = abi.encode(permissionHash, myTitle.valueOfInsuranceNeeded, false);
 
             myTitle.myTitleStatus = MyTitleWithdraw.Finalized;
 
@@ -630,10 +671,11 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _contractId 
-     * @param _stablecoin 
+     * @notice This function is responsible for paying the total value of the Quota to clients.
+     * @param _idTitle The ID of the Consortium Title that the client holds the Quota of.
+     * @param _contractId The ID of the Consortium Quota that has been paid off or received collateral for withdrawal release.
+     * @param _stablecoin The address of the currency that will be used to pay the winner.
+     * @dev on the mainnet, the stablecoin will be dynamic.
      */
     function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public {
         Titles storage title = allTitles[_idTitle];
@@ -673,9 +715,9 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _titleId 
-     * @param _contractId 
+     * @notice This function is responsible for verifying late payments
+     * @param _titleId The ID of the Consortium Title that the client holds the Quota of.
+     * @param _contractId The ID of the Consortium Quota that is overdue.
      */
     function verifyLatePayments(uint _titleId, uint _contractId) public { 
         Titles storage title = allTitles[_titleId];
@@ -715,9 +757,11 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _idTitle 
-     * @param _tokenAddress 
+     * @notice This function is responsible for the withdrawal of potential cancellation penalties.
+     * @notice Nothing can be withdrawn until the Title has been finalized or closed.
+     * @param _idTitle The ID of the Consortium Title that the client holds the Quota of.
+     * @param _tokenAddress The address of the currency that will be used for withdrawal.
+     * @dev on the mainnet, the stablecoin will be dynamic.
      */
     function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{
         Titles storage title = allTitles[_idTitle];
@@ -744,10 +788,11 @@ contract Horizon is CCIPReceiver{
         stablecoin.transfer(address(staff), amount);
     }
 
-    /* CCIP FUNCTIONS */
+    /// CCIP FUNCTIONS
+
     /**
-     * 
-     * @param any2EvmMessage 
+     * @notice responsible for receiving and processing the message
+     * @param any2EvmMessage CCIP message
      */
     function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address))) {
         lastReceivedMessageId = any2EvmMessage.messageId;
@@ -773,62 +818,63 @@ contract Horizon is CCIPReceiver{
     }
 
     /**
-     * 
-     * @param _sourceChainSelector 
+     * @notice Adds a chain
+     * @param _sourceChainSelector ID of the permitted chains
      */
     function addSourceChain( uint64 _sourceChainSelector) external onlyOwner {
         whitelistedSourceChains[_sourceChainSelector] = true;
     }
 
     /**
-     * 
-     * @param _sourceChainSelector 
+     * @notice Removes a chain
+     * @param _sourceChainSelector ID of the permitted chains
      */
     function removelistSourceChain( uint64 _sourceChainSelector) external onlyOwner {
         whitelistedSourceChains[_sourceChainSelector] = false;
     }
     
     /**
-     * 
-     * @param _sender 
+     * @notice Adds the address that has permission to send messages
+     * @param _sender CCIP sender address
      */
     function addSender(address _sender) external onlyOwner {
         whitelistedSenders[_sender] = true;
     }
     
     /**
-     * 
-     * @param _sender 
+     * @notice Removes the address that has permission to send messages
+     * @param _sender CCIP sender address
      */
     function removeSender(address _sender) external onlyOwner {
         whitelistedSenders[_sender] = false;
     }
 
     /**
-     * 
-     * @param _receiverAddress 
+     * @notice This function is responsible for registering the CCIP Receiver in the networks where Horizon operates.
+     * @param _receiverAddress Address of the contract on the Avalanche network
      */
-    function addReceiver(address _receiverAddress) public {
+    function addReceiver(address _receiverAddress) public onlyOwner {
         fujiReceiver = _receiverAddress;
     }
 
     /**
-     * 
-     * @return messageId 
-     * @return text 
-     */
+    * @notice Fetches the details of the last received message.
+    * @return messageId The ID of the last received message.
+    * @return text The last received text.
+    */
     function getLastReceivedMessageDetails() external view returns (bytes32 messageId, bytes memory text) {
         return (lastReceivedMessageId, lastReceivedText);
     }
 
-    /* MODIFIERS */
-    modifier onlyWhitelistedSourceChain(uint64 _sourceChainSelector) {
+    /// MODIFIERS
+
+    modifier onlyWhitelistedSourceChain(uint64 _sourceChainSelector){
         if (!whitelistedSourceChains[_sourceChainSelector])
             revert SourceChainNotWhitelisted(_sourceChainSelector);
         _;
     }
 
-    modifier onlyWhitelistedSenders(address _sender) {
+    modifier onlyWhitelistedSenders(address _sender){
         if (!whitelistedSenders[_sender]) revert SenderNotWhitelisted(_sender);
         _;
     }
