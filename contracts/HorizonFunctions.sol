@@ -5,6 +5,11 @@ import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 import "./HorizonFujiAssistant.sol";
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract HorizonFunctions is FunctionsClient{
     using FunctionsRequest for FunctionsRequest.Request;
 
@@ -17,6 +22,9 @@ contract HorizonFunctions is FunctionsClient{
     // Event to log responses
     event Response( bytes32 indexed requestId, uint indexed value, bytes err);
 
+    /**
+     * @notice 
+     */
     struct VehicleData {
         string value;
         uint uintValue;
@@ -26,7 +34,9 @@ contract HorizonFunctions is FunctionsClient{
         bytes lastError;
         bool isRequest;
     }
-
+    /**
+     * @notice 
+     */
     mapping(bytes32 requestId => VehicleData) public vehicleDataMapping;
 
     uint64 private subscriptionId;
@@ -34,7 +44,7 @@ contract HorizonFunctions is FunctionsClient{
     uint32 gasLimit;
     bytes32 donID;
 
-    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable(0xF5A428c3E5dD31d6474F58Bb64F779216c11a11C));//FALTA O ENDEREÇO
+    HorizonFujiAssistant assistant = HorizonFujiAssistant(payable(0xF5A428c3E5dD31d6474F58Bb64F779216c11a11C));
 
     // JavaScript source code
     // Fetch vehicle value from the FIPE API.
@@ -53,10 +63,10 @@ contract HorizonFunctions is FunctionsClient{
         "const { data } = apiResponse;"
         "return Functions.encodeString(data.Valor);";
 
-    constructor(uint64 _subscriptionId, //1212
-                address _routerFunctions, // 0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0 - Fuji
-                uint32 _gasLimit, // 300000
-                bytes32 _donID // 0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000 - Fuji
+    constructor(uint64 _subscriptionId,
+                address _routerFunctions,
+                uint32 _gasLimit,
+                bytes32 _donID
                 ) FunctionsClient(_routerFunctions) {
         subscriptionId = _subscriptionId; 
         router = _routerFunctions;
@@ -64,7 +74,11 @@ contract HorizonFunctions is FunctionsClient{
         donID = _donID;
     }
 
-    function sendRequest(string[] calldata args) external returns (bytes32 requestId) { //["motos",77,5223,"2015-1"]
+    /**
+     * 
+     * @param args 
+     */
+    function sendRequest(string[] calldata args) external returns (bytes32 requestId) {
 
         FunctionsRequest.Request memory req;
 
@@ -88,30 +102,39 @@ contract HorizonFunctions is FunctionsClient{
 
         return s_lastRequestId;
     }
-
+    /**
+     * 
+     * @param requestId 
+     * @param response 
+     * @param err 
+     */
     function fulfillRequest( bytes32 requestId, bytes memory response, bytes memory err) internal override {
         VehicleData storage vehicle = vehicleDataMapping[requestId];
 
         if (vehicle.isRequest == false) {
-            revert UnexpectedRequestID(requestId); // Check if request IDs match
+            revert UnexpectedRequestID(requestId);
         }
 
-        // Update the vehicle mapping with the response and any errors
         vehicle.lastResponse = response;
         vehicle.lastError = err;
         vehicle.value = string(response);
         vehicle.responseTime = block.timestamp;
 
-        uint valueConverted = assistant.stringToUint(vehicle.value); //I need convert into USdolars
+        uint valueConverted = assistant.stringToUint(vehicle.value);
 
         uint value = ((valueConverted / 5) * 10 ** 16);
 
         vehicle.uintValue = value;
 
-        // Emit an event to log the response
         emit Response(requestId, value, err);
     }
 
+    /**
+     * 
+     * @param requestId 
+     * @return 
+     * @return 
+     */
     function returnFunctionsInfo(bytes32 requestId) external view returns(uint, uint){
         VehicleData storage vehicle = vehicleDataMapping[requestId];
         

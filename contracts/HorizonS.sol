@@ -7,6 +7,11 @@ import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract HorizonS is CCIPReceiver {
 
     // Custom errors to provide more descriptive revert messages.
@@ -21,6 +26,9 @@ contract HorizonS is CCIPReceiver {
     event CCIPReceiverAdded(string blockchainName, address receiverAddress);
     event CCIPReceiverRemoved(address _receiverAddress);
 
+    /**
+     * @dev CCIP variables
+     */
     bytes32 private lastReceivedMessageId;
     string private lastReceivedText;
     uint private destinationChainSelector;
@@ -30,8 +38,13 @@ contract HorizonS is CCIPReceiver {
     // Mapping to keep track of whitelisted destination chains.
     mapping(uint64 => bool) public whitelistedDestinationChains;
 
-    LinkTokenInterface linkToken = LinkTokenInterface(0x5FA769922a6428758fb44453815e2c436c57C3c7);  //
+    LinkTokenInterface linkToken = LinkTokenInterface(0x5FA769922a6428758fb44453815e2c436c57C3c7);
 
+    /**
+     * 
+     * @param _router 
+     * @param _linkToken 
+     */
     constructor(address _router, //0x70499c328e1e2a3c41108bd3730f6670a44595d1
                 address _linkToken //0x326C977E6efc84E512bB9C30f76E30c160eD06FB
                ) CCIPReceiver(_router){ 
@@ -53,6 +66,12 @@ contract HorizonS is CCIPReceiver {
         whitelistedDestinationChains[_destinationChainSelector] = false;
     }
 
+    /**
+     * 
+     * @param _destinationChainSelector 
+     * @param _receiverAddress 
+     * @param _data 
+     */
     function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiverAddress, bytes memory _data) external /*onlyOwner*/ returns (bytes32 messageId){
 
         Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
@@ -77,6 +96,12 @@ contract HorizonS is CCIPReceiver {
         return messageId;
     }
 
+    /**
+     * 
+     * @param _receiver 
+     * @param _data 
+     * @param _feeTokenAddress 
+     */
     function _buildCCIPMessage(address _receiver, bytes memory _data, address _feeTokenAddress) internal pure returns (Client.EVM2AnyMessage memory) {
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
@@ -90,6 +115,10 @@ contract HorizonS is CCIPReceiver {
         return evm2AnyMessage;
     }
 
+    /**
+     * 
+     * @param any2EvmMessage 
+     */
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override{
         lastReceivedMessageId = any2EvmMessage.messageId;
         lastReceivedText = abi.decode(any2EvmMessage.data, (string));
@@ -99,6 +128,10 @@ contract HorizonS is CCIPReceiver {
 
     receive() external payable {}
 
+    /**
+     * 
+     * @param _beneficiary 
+     */
     function withdraw(address _beneficiary) public /*onlyOwner*/ {
         uint256 amount = address(this).balance;
 
@@ -109,6 +142,11 @@ contract HorizonS is CCIPReceiver {
         if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
     }
 
+    /**
+     * 
+     * @param _beneficiary 
+     * @param _token 
+     */
     function withdrawToken( address _beneficiary, address _token) public /*onlyOwner*/ {
         uint256 amount = IERC20(_token).balanceOf(address(this));
 
@@ -117,6 +155,7 @@ contract HorizonS is CCIPReceiver {
         IERC20(_token).transfer(_beneficiary, amount);
     }
 
+    /* MODIFIER */
     modifier onlyOwner(){
         require(msg.sender == owner, "Only Owner can call this function!");
         _;

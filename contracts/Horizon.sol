@@ -15,6 +15,11 @@ error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error FailedToWithdrawEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract Horizon is CCIPReceiver{
 
     /* CCIP variables and storages */
@@ -152,7 +157,9 @@ contract Horizon is CCIPReceiver{
     mapping(bytes32 permissionHash => FujiPermissions) public permissionInfo;
     mapping(uint titleId => mapping(uint contractId => CollateralTitles)) public collateralInfos;
     
-    //Instances
+    /**
+     * @dev Instances
+     */
     IERC20 stablecoin;
     IERC721 nftToken;
     HorizonStaff staff = HorizonStaff(0x3547951AAA367094AFABcaE24f123473fF502bFa);
@@ -163,6 +170,13 @@ contract Horizon is CCIPReceiver{
         owner = msg.sender;
     }
 
+    /**
+     * 
+     * @param _opening 
+     * @param _closing 
+     * @param _participants 
+     * @param _value 
+     */
     function createTitle(uint _opening, //Working Nice
                          uint _closing,
                          uint _participants,
@@ -183,7 +197,7 @@ contract Horizon is CCIPReceiver{
         titleValue: _value * 10 ** 18,
         installments: _participants,
         monthlyInvestiment: (_value * 10 ** 18) / (_participants),
-        protocolFee: (((_value * 10 ** 18) / _participants) * 5) / 100,
+        protocolFee: (((_value * 10 ** 18) / _participants) * 10) / 100,
         numberOfTitlesSold: 0,
         totalValueReceived: 0,
         totalValuePaid: 0,
@@ -197,7 +211,11 @@ contract Horizon is CCIPReceiver{
 
         emit NewTitleCreated(titleId, scheduleId, allTitles[titleId].titleValue, _participants, monthlyValue );
     }
-
+    
+    /**
+     * 
+     * @param _titleId 
+     */
     function updateTitleStatus(uint _titleId) public { //Working Nice
         Titles storage title = allTitles[_titleId];
 
@@ -230,6 +248,12 @@ contract Horizon is CCIPReceiver{
         }
     }
 
+    /**
+     * 
+     * @param _titleId 
+     * @param withdrawPeriod 
+     * @param _tokenAddress 
+     */
     function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //Working Nice
         Titles storage title = allTitles[_titleId];
 
@@ -273,6 +297,12 @@ contract Horizon is CCIPReceiver{
         emit NewTitleSold(_titleId, title.numberOfTitlesSold, msg.sender);
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _contractId 
+     * @param _tokenAddress 
+     */
     function payInstallment(uint _idTitle, //Working Nice
                             uint _contractId,
                             IERC20 _tokenAddress) public {
@@ -350,6 +380,13 @@ contract Horizon is CCIPReceiver{
         emit InstallmentPaid(_idTitle, _contractId, amountToPay, myTitle.installmentsPaid);
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _contractId 
+     * @param _amountToPay 
+     * @param _tokenAddress 
+     */
     function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //Working Nice
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Titles storage title = allTitles[_idTitle];
@@ -391,6 +428,11 @@ contract Horizon is CCIPReceiver{
         }
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _contractId 
+     */
     function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {//Working Nice
         Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
@@ -406,6 +448,10 @@ contract Horizon is CCIPReceiver{
         emit EnsuranceValueNeededUpdate(_idTitle, _contractId, myTitle.valueOfEnsuranceNeeded);
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     */
     function monthlyVRFWinner(uint _idTitle) public { //Working Nice
         Titles storage title = allTitles[_idTitle];
 
@@ -443,6 +489,10 @@ contract Horizon is CCIPReceiver{
         emit DrawHasStarted(_idTitle, title.nextDrawNumber, nextDrawParticipants);
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     */
     function receiveVRFRandomNumber(uint256 _idTitle) public{ //Working Nice
         Titles storage title = allTitles[_idTitle];
         Draw storage draw = drawInfos[_idTitle][title.nextDrawNumber];
@@ -472,6 +522,13 @@ contract Horizon is CCIPReceiver{
         emit MonthlyWinnerSelected(_idTitle, draw.drawNumber, randomValue, winningTicket.contractId, winningTicket.user);
     }
 
+    /**
+     * 
+     * @param _titleId 
+     * @param _contractId 
+     * @param _idOfCollateralTitle 
+     * @param _idOfCollateralContract 
+     */
     function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfCollateralTitle, uint _idOfCollateralContract) public{ //Working Nice
         TitlesSold storage myCollateralTitle = titleSoldInfos[_idOfCollateralTitle][_idOfCollateralContract];
         TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId]; 
@@ -503,6 +560,11 @@ contract Horizon is CCIPReceiver{
         emit CollateralTitleAdded(_titleId, _contractId, myTitle.drawSelected, _idOfCollateralTitle, _idOfCollateralContract);
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _contractId 
+     */
     function addRWACollateral(uint _idTitle, uint _contractId) public { //
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
@@ -529,6 +591,11 @@ contract Horizon is CCIPReceiver{
         emit CreatingPermission(_idTitle, _contractId, myTitle.drawSelected, fujiReceiver);
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _contractId 
+     */
     function refundCollateral(uint _idTitle, uint _contractId) public { //OK
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
@@ -562,6 +629,12 @@ contract Horizon is CCIPReceiver{
         }
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _contractId 
+     * @param _stablecoin 
+     */
     function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public { //Working Nice
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
@@ -600,7 +673,11 @@ contract Horizon is CCIPReceiver{
         title.totalValuePaid = title.totalValuePaid + myTitle.titleValue;
     }
 
-    // Function to check titles with overdue payments and apply rules
+    /**
+     * 
+     * @param _titleId 
+     * @param _contractId 
+     */
     function verifyLatePayments(uint _titleId, uint _contractId) public { //Working Nice
         Titles storage title = allTitles[_titleId];
         TitlesSold storage clientTitle = titleSoldInfos[_titleId][_contractId];
@@ -638,6 +715,11 @@ contract Horizon is CCIPReceiver{
         
     }
 
+    /**
+     * 
+     * @param _idTitle 
+     * @param _tokenAddress 
+     */
     function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //
         Titles storage title = allTitles[_idTitle];
 
@@ -663,9 +745,12 @@ contract Horizon is CCIPReceiver{
         stablecoin.transfer(address(staff), amount);
     }
 
-    /* FUNÇÕES CCIP */
-
-    function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override /*onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address)))*/ {
+    /* CCIP FUNCTIONS */
+    /**
+     * 
+     * @param any2EvmMessage 
+     */
+    function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address))) {
         lastReceivedMessageId = any2EvmMessage.messageId;
         lastReceivedText = abi.decode(any2EvmMessage.data, (bytes));
 
@@ -688,31 +773,56 @@ contract Horizon is CCIPReceiver{
         emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));
     }
 
-    //Add source chains
+    /**
+     * 
+     * @param _sourceChainSelector 
+     */
     function addSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
         whitelistedSourceChains[_sourceChainSelector] = true;
     }
-    //removesource chains
+
+    /**
+     * 
+     * @param _sourceChainSelector 
+     */
     function removelistSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
         whitelistedSourceChains[_sourceChainSelector] = false;
     }
-    //add senders
+    
+    /**
+     * 
+     * @param _sender 
+     */
     function addSender(address _sender) external onlyOwner { //OK
         whitelistedSenders[_sender] = true;
     }
-    //remove senders
+    
+    /**
+     * 
+     * @param _sender 
+     */
     function removeSender(address _sender) external onlyOwner {//OK
         whitelistedSenders[_sender] = false;
     }
 
+    /**
+     * 
+     * @param _receiverAddress 
+     */
     function addReceiver(address _receiverAddress) public { //OK
         fujiReceiver = _receiverAddress;
     }
 
+    /**
+     * 
+     * @return messageId 
+     * @return text 
+     */
     function getLastReceivedMessageDetails() external view returns (bytes32 messageId, bytes memory text) {
         return (lastReceivedMessageId, lastReceivedText);
     }
 
+    /* MODIFIERS */
     modifier onlyWhitelistedSourceChain(uint64 _sourceChainSelector) {
         if (!whitelistedSourceChains[_sourceChainSelector])
             revert SourceChainNotWhitelisted(_sourceChainSelector);

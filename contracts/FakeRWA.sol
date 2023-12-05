@@ -5,6 +5,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract FakeRWA is ERC721, ERC721URIStorage, ERC721Burnable {
     uint256 private _nextTokenId;
 
@@ -17,8 +22,6 @@ contract FakeRWA is ERC721, ERC721URIStorage, ERC721Burnable {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
     }
-
-    // The following functions are overrides required by Solidity.
 
     function tokenURI(uint256 tokenId)
         public

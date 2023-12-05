@@ -7,6 +7,11 @@ import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract HorizonFujiS is CCIPReceiver {
 
     // Custom errors to provide more descriptive revert messages.    
@@ -51,7 +56,13 @@ contract HorizonFujiS is CCIPReceiver {
         whitelistedDestinationChains[_destinationChainSelector] = false;
     }
 
-    function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiver, bytes memory _data) external /*onlyOwner onlyWhitelistedDestinationChain(_destinationChainSelector)*/ returns (bytes32 messageId){
+    /**
+     * 
+     * @param _destinationChainSelector 
+     * @param _receiver 
+     * @param _data 
+     */
+    function sendMessagePayLINK(uint64 _destinationChainSelector, address _receiver, bytes memory _data) external onlyOwner onlyWhitelistedDestinationChain(_destinationChainSelector) returns (bytes32 messageId){
         
         Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
             _receiver,
@@ -75,6 +86,12 @@ contract HorizonFujiS is CCIPReceiver {
         return messageId;
     }
 
+    /**
+     * 
+     * @param _receiver 
+     * @param _data 
+     * @param _feeTokenAddress 
+     */
     function _buildCCIPMessage(address _receiver, bytes memory _data, address _feeTokenAddress) internal pure returns (Client.EVM2AnyMessage memory) {
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
@@ -88,6 +105,10 @@ contract HorizonFujiS is CCIPReceiver {
         return evm2AnyMessage;
     }
 
+    /**
+     * 
+     * @param any2EvmMessage 
+     */
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage) internal override{
         lastReceivedMessageId = any2EvmMessage.messageId;
         lastReceivedText = abi.decode(any2EvmMessage.data, (string));
@@ -97,7 +118,11 @@ contract HorizonFujiS is CCIPReceiver {
 
     receive() external payable {}
 
-    function withdraw(address _beneficiary) public /*onlyOwner*/ {
+    /**
+     * 
+     * @param _beneficiary 
+     */
+    function withdraw(address _beneficiary) public onlyOwner {
         uint256 amount = address(this).balance;
 
         if (amount == 0) revert NothingToWithdraw();
@@ -107,7 +132,12 @@ contract HorizonFujiS is CCIPReceiver {
         if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
     }
 
-    function withdrawToken( address _beneficiary, address _token) public /*onlyOwner*/ {
+    /**
+     * 
+     * @param _beneficiary 
+     * @param _token 
+     */
+    function withdrawToken( address _beneficiary, address _token) public onlyOwner {
         uint256 amount = IERC20(_token).balanceOf(address(this));
 
         if (amount == 0) revert NothingToWithdraw();

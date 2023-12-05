@@ -1,9 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract HorizonFujiAssistant {
 
-    /*CONVERTER FUNCTION */
+    /**
+     * 
+     * @param s 
+     */
     function stringToUint(string memory s) public pure returns (uint) {
         bytes memory b = bytes(s);
         uint result = 0;

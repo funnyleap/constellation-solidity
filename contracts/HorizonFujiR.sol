@@ -18,6 +18,11 @@ error DestinationChainNotWhitelisted(uint64 destinationChainSelector);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error SenderNotWhitelisted(address sender);
 
+/**
+ * @title 
+ * @author 
+ * @notice 
+ */
 contract HorizonFujiR is CCIPReceiver {
 
     // Event emitted when a message is received from another chain.
@@ -47,7 +52,10 @@ contract HorizonFujiR is CCIPReceiver {
 
     //State variables to store the CCIP params
     LinkTokenInterface linkToken;
-    
+
+    /**
+     * @notice 
+     */
     struct Permissions {
         uint idTitle;
         uint drawNumber;
@@ -64,6 +72,9 @@ contract HorizonFujiR is CCIPReceiver {
         bool isPermission;
     }
 
+    /**
+     * @notice 
+     */
     struct RwaMonitor{
         uint rwaId;
         bytes32 hashPermission;
@@ -76,7 +87,6 @@ contract HorizonFujiR is CCIPReceiver {
     RwaMonitor[] public rwaMonitors;
     // Mapping to keep track of collateral permissions
     mapping(bytes32 => Permissions) public permissionsInfo;
-
     // Mapping to keep track of whitelisted source chains.
     mapping(uint64 => bool) public whitelistedSourceChains;
     // Mapping to keep track of whitelisted senders.
@@ -86,19 +96,26 @@ contract HorizonFujiR is CCIPReceiver {
     HorizonFunctions functions = HorizonFunctions(payable(0x317383204E6406B61258cB53D535AE770B7a984F));
     ERC721 rwa = ERC721(payable(0xD7ECF0bbe82717eAd041eeF0B9E777e1A7D577a0));
 
-    constructor(address _linkToken, // 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846
-                address _routerCCIP) CCIPReceiver(_routerCCIP) { //0x554472a2720e5e7d5d3c817529aba05eed5f82d8
+    constructor(address _linkToken,
+                address _routerCCIP) CCIPReceiver(_routerCCIP) {
         linkToken = LinkTokenInterface(_linkToken);
     }
 
+    /**
+     * 
+     * @param _receiverAddress 
+     */
     function addReceiver(address _receiverAddress) public {
         horizonR = _receiverAddress;
     }
 
-    /* handle a received message*/
-    function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override /*onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address)))*/ {
-        lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
-        lastReceivedText = abi.decode(any2EvmMessage.data, (bytes)); // abi-decoding of the sent text
+    /**
+     * 
+     * @param any2EvmMessage 
+     */
+    function _ccipReceive( Client.Any2EVMMessage memory any2EvmMessage) internal override onlyWhitelistedSourceChain(any2EvmMessage.sourceChainSelector) onlyWhitelistedSenders(abi.decode(any2EvmMessage.sender, (address))) {
+        lastReceivedMessageId = any2EvmMessage.messageId;
+        lastReceivedText = abi.decode(any2EvmMessage.data, (bytes));
 
         bytes32 permissionHash;
         uint _ensuranceValueNeeded;
@@ -111,6 +128,12 @@ contract HorizonFujiR is CCIPReceiver {
         emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));
     }
 
+    /**
+     * 
+     * @param _permissionHash 
+     * @param _ensuranceValueNeeded 
+     * @param _collateralLocked 
+     */
     function handlePermission(bytes32 _permissionHash,
                               uint _ensuranceValueNeeded,
                               bool _collateralLocked) internal{
@@ -142,7 +165,15 @@ contract HorizonFujiR is CCIPReceiver {
         }
     }
 
-    function verifyCollateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public { //["motos","77","5223","2015-1"]
+    /**
+     * 
+     * @param _titleId 
+     * @param _contractId 
+     * @param _drawNumber 
+     * @param _rwaId 
+     * @param args 
+     */ */
+    function verifyCollateralValue(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId, string[] calldata args) public {
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
         bytes32 requestId = functions.sendRequest(args);
 
@@ -162,7 +193,14 @@ contract HorizonFujiR is CCIPReceiver {
         emit VerifyingRwaValue(_rwaId, args);
     }
 
-    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId) public {//Não pode add sem ter o valor verificado antes
+    /**
+     * 
+     * @param _titleId 
+     * @param _contractId 
+     * @param _drawNumber 
+     * @param _rwaId 
+     */ 
+    function addCollateral(uint256 _titleId, uint _contractId, uint _drawNumber, uint _rwaId) public {
         bytes32 permissionHash = keccak256(abi.encodePacked(_titleId, _contractId, _drawNumber));
 
         Permissions storage permission = permissionsInfo[permissionHash];
@@ -199,7 +237,7 @@ contract HorizonFujiR is CCIPReceiver {
             
             bytes memory collateralAdded = abi.encode(permissionHash, rwa, _rwaId);
 
-            sender.sendMessagePayLINK(12532609583862916517, horizonR, collateralAdded); //Destination chainId - 12532609583862916517
+            sender.sendMessagePayLINK(12532609583862916517, horizonR, collateralAdded);
 
             emit EnsuranceAdd(provisoryOwner, _rwaId, _titleId, _drawNumber);
         } else{
@@ -207,6 +245,10 @@ contract HorizonFujiR is CCIPReceiver {
         }
     }
 
+    /**
+     * 
+     * @param _permissionHash 
+     */
     function sendRwaBackToOwner(bytes32 _permissionHash) internal{
         require(permissionsInfo[_permissionHash].isPermission == true, "This permission didnt exists!");
 
@@ -222,8 +264,11 @@ contract HorizonFujiR is CCIPReceiver {
 
         emit RWARefunded(permission.idTitle, permission.drawNumber, permission.rwaOwner, permission.collateralId);
     }
-        
-    function checkCollateralPrice() public { //Triggered by Automation
+    
+    /**
+     * Triggered by Automation
+     */
+    function checkCollateralPrice() public {
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
 
             if(rwaMonitors[i].isActive == true){
@@ -238,6 +283,9 @@ contract HorizonFujiR is CCIPReceiver {
         }
     }
 
+    /**
+     * 
+     */
     function getCollateralPrice() public {
         for (uint256 i = 0; i < rwaMonitors.length; i++) {
             if(rwaMonitors[i].isActive == true){
@@ -302,31 +350,27 @@ contract HorizonFujiR is CCIPReceiver {
     /*Withdraw - Receive*/
     receive() external payable {}
 
-    function withdraw(address _beneficiary) public /*onlyOwner*/ {
-        // Retrieve the balance of this contract
+    function withdraw(address _beneficiary) public onlyOwner {
+        
         uint256 amount = address(this).balance;
 
-        // Revert if there is nothing to withdraw
         if (amount == 0) revert NothingToWithdraw();
-
-        // Attempt to send the funds, capturing the success status and discarding any return data
+        
         (bool sent, ) = _beneficiary.call{value: amount}("");
 
-        // Revert if the send failed, with information about the attempted transfer
         if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
     }
 
-    function withdrawToken( address _beneficiary, address _token) public /*onlyOwner*/ {
-        // Retrieve the balance of this contract
+    function withdrawToken( address _beneficiary, address _token) public onlyOwner {
+        
         uint256 amount = IERC20(_token).balanceOf(address(this));
 
-        // Revert if there is nothing to withdraw
         if (amount == 0) revert NothingToWithdraw();
 
         IERC20(_token).transfer(_beneficiary, amount);
     }
 
-    /*MODIFIERS    */
+    /* MODIFIERS    */
     modifier onlyWhitelistedSourceChain(uint64 _sourceChainSelector) {
         if (!whitelistedSourceChains[_sourceChainSelector])
             revert SourceChainNotWhitelisted(_sourceChainSelector);
