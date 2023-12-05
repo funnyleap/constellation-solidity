@@ -166,7 +166,7 @@ contract Horizon is CCIPReceiver{
     HorizonVRF vrfv2consumer = HorizonVRF(0xA75447C1A6dD04dA5cEB791023fa7192cc577CFa);
     HorizonS sender = HorizonS(payable(0xdED9E0F0D9274A74CC5506f80802781dDe6b7E11));
 
-    constructor(address _router) CCIPReceiver(_router){ //0x70499c328e1e2a3c41108bd3730f6670a44595d1
+    constructor(address _router) CCIPReceiver(_router){
         owner = msg.sender;
     }
 
@@ -177,7 +177,7 @@ contract Horizon is CCIPReceiver{
      * @param _participants 
      * @param _value 
      */
-    function createTitle(uint _opening, //Working Nice
+    function createTitle(uint _opening,
                          uint _closing,
                          uint _participants,
                          uint _value) public {
@@ -216,7 +216,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _titleId 
      */
-    function updateTitleStatus(uint _titleId) public { //Working Nice
+    function updateTitleStatus(uint _titleId) public {
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Waiting || title.status == TitleStatus.Open || title.status == TitleStatus.Closed, "This title already ended");
@@ -254,22 +254,22 @@ contract Horizon is CCIPReceiver{
      * @param withdrawPeriod 
      * @param _tokenAddress 
      */
-    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public { //Working Nice
+    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
         require(title.numberOfTitlesSold <= title.installments, "Title soldout!");
 
         title.numberOfTitlesSold++;
-        //Se você deseja sacar o valor do titulo em menos de 5 meses, se sorteado. Marque como true.
+
         uint fee;
         uint lockPeriod;
         if(withdrawPeriod == true){
             fee = title.protocolFee;
             lockPeriod = 0;
         } else {
-            fee = 0;
-            lockPeriod = (title.installments / 2);
+            fee = (title.protocolFee / 2);
+            lockPeriod = ((title.installments / 2) + 1);
         }
 
         TitlesSold memory myTitle = TitlesSold({
@@ -303,7 +303,7 @@ contract Horizon is CCIPReceiver{
      * @param _contractId 
      * @param _tokenAddress 
      */
-    function payInstallment(uint _idTitle, //Working Nice
+    function payInstallment(uint _idTitle,
                             uint _contractId,
                             IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_idTitle];
@@ -387,7 +387,7 @@ contract Horizon is CCIPReceiver{
      * @param _amountToPay 
      * @param _tokenAddress 
      */
-    function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{ //Working Nice
+    function receiveInstallment(uint _idTitle, uint _contractId, uint _amountToPay, IERC20 _tokenAddress) internal{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Titles storage title = allTitles[_idTitle];
         require(myTitle.contractId <= title.numberOfTitlesSold, "Enter a valid contract Id for this Title!");
@@ -433,7 +433,7 @@ contract Horizon is CCIPReceiver{
      * @param _idTitle 
      * @param _contractId 
      */
-    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {//Working Nice
+    function updateValueOfEnsurance(uint _idTitle, uint _contractId) internal {
         Titles storage titles = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
@@ -452,7 +452,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _idTitle 
      */
-    function monthlyVRFWinner(uint _idTitle) public { //Working Nice
+    function monthlyVRFWinner(uint _idTitle) public {
         Titles storage title = allTitles[_idTitle];
 
         require(title.nextDrawNumber <= title.installments, "All the draws already ocurred!");
@@ -493,7 +493,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _idTitle 
      */
-    function receiveVRFRandomNumber(uint256 _idTitle) public{ //Working Nice
+    function receiveVRFRandomNumber(uint256 _idTitle) public{
         Titles storage title = allTitles[_idTitle];
         Draw storage draw = drawInfos[_idTitle][title.nextDrawNumber];
 
@@ -529,7 +529,7 @@ contract Horizon is CCIPReceiver{
      * @param _idOfCollateralTitle 
      * @param _idOfCollateralContract 
      */
-    function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfCollateralTitle, uint _idOfCollateralContract) public{ //Working Nice
+    function addTitleAsCollateral(uint _titleId, uint _contractId, uint _idOfCollateralTitle, uint _idOfCollateralContract) public{
         TitlesSold storage myCollateralTitle = titleSoldInfos[_idOfCollateralTitle][_idOfCollateralContract];
         TitlesSold storage myTitle = titleSoldInfos[_titleId][_contractId]; 
 
@@ -565,7 +565,7 @@ contract Horizon is CCIPReceiver{
      * @param _idTitle 
      * @param _contractId 
      */
-    function addRWACollateral(uint _idTitle, uint _contractId) public { //
+    function addRWACollateral(uint _idTitle, uint _contractId) public {
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
 
         require(myTitle.drawSelected != 0, "You haven't been selected yet!");
@@ -586,7 +586,7 @@ contract Horizon is CCIPReceiver{
 
         bytes memory permission = abi.encode(permissionHash, rwaValueNeeded, true);
     
-        sender.sendMessagePayLINK(14767482510784806043, fujiReceiver,  permission); // CHAIN -14767482510784806043
+        sender.sendMessagePayLINK(14767482510784806043, fujiReceiver,  permission);
 
         emit CreatingPermission(_idTitle, _contractId, myTitle.drawSelected, fujiReceiver);
     }
@@ -596,7 +596,7 @@ contract Horizon is CCIPReceiver{
      * @param _idTitle 
      * @param _contractId 
      */
-    function refundCollateral(uint _idTitle, uint _contractId) public { //OK
+    function refundCollateral(uint _idTitle, uint _contractId) public {
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(myTitle.installmentsPaid == myTitle.installments, "All the installments must have been paid!");
@@ -635,7 +635,7 @@ contract Horizon is CCIPReceiver{
      * @param _contractId 
      * @param _stablecoin 
      */
-    function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public { //Working Nice
+    function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public {
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
@@ -656,9 +656,8 @@ contract Horizon is CCIPReceiver{
 
             stablecoin = _stablecoin;
 
-            //Valida se o endereço tem o valor da parcela na carteira.
             require(stablecoin.balanceOf(address(this))>= myTitle.titleValue);
-            //Transfere o valor correspondente a parcela para o contrato.
+
             stablecoin.transfer(myTitle.titleOwner, myTitle.titleValue);
 
             emit MonthlyWinnerPaid(_idTitle, myTitle.drawSelected, myTitle.titleOwner, myTitle.titleValue);
@@ -678,7 +677,7 @@ contract Horizon is CCIPReceiver{
      * @param _titleId 
      * @param _contractId 
      */
-    function verifyLatePayments(uint _titleId, uint _contractId) public { //Working Nice
+    function verifyLatePayments(uint _titleId, uint _contractId) public { 
         Titles storage title = allTitles[_titleId];
         TitlesSold storage clientTitle = titleSoldInfos[_titleId][_contractId];
         
@@ -720,7 +719,7 @@ contract Horizon is CCIPReceiver{
      * @param _idTitle 
      * @param _tokenAddress 
      */
-    function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{ //
+    function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{
         Titles storage title = allTitles[_idTitle];
 
         require(title.status == TitleStatus.Finalized || title.status == TitleStatus.Canceled);
@@ -777,7 +776,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _sourceChainSelector 
      */
-    function addSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
+    function addSourceChain( uint64 _sourceChainSelector) external onlyOwner {
         whitelistedSourceChains[_sourceChainSelector] = true;
     }
 
@@ -785,7 +784,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _sourceChainSelector 
      */
-    function removelistSourceChain( uint64 _sourceChainSelector) external onlyOwner {//OK
+    function removelistSourceChain( uint64 _sourceChainSelector) external onlyOwner {
         whitelistedSourceChains[_sourceChainSelector] = false;
     }
     
@@ -793,7 +792,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _sender 
      */
-    function addSender(address _sender) external onlyOwner { //OK
+    function addSender(address _sender) external onlyOwner {
         whitelistedSenders[_sender] = true;
     }
     
@@ -801,7 +800,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _sender 
      */
-    function removeSender(address _sender) external onlyOwner {//OK
+    function removeSender(address _sender) external onlyOwner {
         whitelistedSenders[_sender] = false;
     }
 
@@ -809,7 +808,7 @@ contract Horizon is CCIPReceiver{
      * 
      * @param _receiverAddress 
      */
-    function addReceiver(address _receiverAddress) public { //OK
+    function addReceiver(address _receiverAddress) public {
         fujiReceiver = _receiverAddress;
     }
 
