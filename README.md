@@ -1,4 +1,5 @@
 # <p align="center"> HORIZON
+
 </p>
 
 <p align="center"> Chainlink Constellation Hackathon
@@ -11,12 +12,14 @@
    - How does _consórcio_ works
 2. About the protocol
 3. How does it works
-</br>
+   </br>
 
 ---
+
 </br>
 
 ## 1. Introduction
+
 We, humans, have one thing in common: we have dreams! We dream of owning a house, buying a new car, pursuing a degree or specialization to boost our professional career, and we dream of the warm, crystal-clear waters of the Caribbean. But, we wake up to reality when we open our online account and check our balance.
 How many dreams have you failed to realize due to lack of money?
 To overcome this, Brazilians have created the _consórcio_!
@@ -24,6 +27,7 @@ To overcome this, Brazilians have created the _consórcio_!
 </br>
 
 ### What is _consórcio_?
+
 The _consórcio_, created in 1962, is a tool for collective self-financing through which people come together to acquire something they desire, such as a car, a property, or even services. It is managed by an administrative entity, which, in the case of Brazil, is regulated and supervised by the government. This tool has become popular and has even been adopted by other countries such as Argentina, Uruguay, Paraguay, Peru, Mexico, and Venezuela (Source: [ABAC](https://abac.org.br/o-consorcio/historia)).
 
 </br>
@@ -37,212 +41,213 @@ The _consórcio_, created in 1962, is a tool for collective self-financing throu
 </br>
 
 ## 2. About the protocol
-Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of acquired Securities. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
-</br>
 
+Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of acquired Consórcio Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
+</br>
 
 # How does it works
 
-
 ---
 
-Gostaria de entender um pouco mais sobre Bens Tokenizados e sobre o ERC-4337? Acessae os links abaixo:
-Bens Tokenizados [RWA] -
-Account Abstraction [ERC-4337] -
+Would you like to learn more about Tokenized Assets and about ERC-4337? Access the links below:
+Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/)
+Account Abstraction [ERC-4337](https://www.erc4337.io)
 
-Aplicação no Hackathon
-Essa demonstração realizará a simulação das seguintes etapas:
+Application in the Constellation Hackathon
 
-- Criação dos Títulos;
-- Comercialização dos Títuos;
-- Pagamentos, atrasos e aplicação de Juros;
-- Criação de Permissões de Alocação em diferentes redes;
-- Verificação de Garantias;
-- Alocação de Garantias e Monitoramento automatizado do valor junto a FIPE.
+This prototype will simulate the following stages:
 
-Ferramentas Usadas
+- Creation of Titles;
+- Commercialization of Titles;
+- Payments, Delays, and Application of Interest;
+- Creation of Allocation Permissions in Different Networks;
+- Verification of Guarantees;
+- Allocation of Guarantees and Automated Monitoring of Value in Accordance with FIPE.
+
+Tools Used
 
 - Chainlink VRF - Verifiable Random Function
-  O Chainlink VRF é peça crucial da operabilidade do protocolo, visto que a confiança, transparência e segurança que a ferramenta disponibiliza é fundamental para todas as demais funcionalidades sejam desempenhadas corretamente. A aleatoriedade verificável, segurança criptográfica, decentralização e integração com os Contratos Inteligentes torna os resultados apresentados pela ferramenta inquestionáveis.
+  Chainlink VRF is a crucial part of the protocol's operability, as the trust, transparency, and security provided by the tool are essential for all other functionalities to be performed correctly. The verifiable randomness, cryptographic security, decentralization, and integration with Smart Contracts make the results presented by the tool unquestionable.
 
 - Chainlink CCIP - Cross-Chain Interoperability Protocol
-  O Chainlink CCIP possibilita que a Horizon gere inclusão aos mais diversos povos e culturas viabilizando a comunicação entre diversas blockchains e permitindo a integração e utilização de ativos de diferentes locais do globo de forma segura e decentralizada. Na Horizon, específicamente, possibilitará a criação de permissões de alocação de garantias em todas as redes Ethereum compatíveis e, futuramente, poderá integrar o protocolo com redes específicas de cada país.
+  Chainlink CCIP allows Horizon to offer inclusion to diverse peoples and cultures by enabling communication between various blockchains and allowing the integration and use of assets from different parts of the globe in a secure and decentralized manner. Specifically, in Horizon, it will enable the creation of allocation permissions for guarantees on all Ethereum-compatible networks and, in the future, may integrate the protocol with specific networks of each country.
 
 - Chainlink Functions
-  O Chainlink Functions realizará a coleta dos dados necessários para a alocação de Bens de acordo com seus respectivos bancos de dados Offchain. Além disso, futuramente poderá ajudar na tomada de medidas de liquidação ou alertas aos respectivos donos dos ativos alocados no protocolo.
-  É responsável pela coleta dos dados junto à FIPE API trazendo onchain dados de automóveis que, serão utilizados como exemplos de ativos tokenizados para garantias.
+  Chainlink Functions will carry out the collection of necessary data for the allocation of Assets according to their respective off-chain databases. Furthermore, it could assist in the future with the implementation of liquidation measures or alerts to the respective owners of the assets allocated in the protocol.
+  It is responsible for collecting data through the FIPE API, bringing on-chain data of automobiles that will be used as examples of tokenized assets for guarantees.
 
 - Chainlink Automation - Chainlink’s hyper-reliable Automation network
-  Chainlink Automation é fundamental para a manutenção do protocolo. Será responsável, junto ao Chainlink functions, pela coleta periódica de dados atualizados das garantias alocadas. Solicitando os dados e armazenando a partir do log de resposta emitido. Dessa forma, o protocolo tem mecanismos que garantem a saúde do ecossistema.
-  Além disso, poderá ser utilizado para realizar os sorteios e automatizar processos de um possível novo estágio do protocolo.
+  Chainlink Automation is essential for the maintenance of the protocol. It will be responsible, along with Chainlink Functions, for the periodic collection of updated data from the allocated guarantees. This involves requesting the data and storing it based on the emitted response log. Thus, the protocol has mechanisms that ensure the health of the ecosystem.
+  Moreover, it could be used to conduct draws and automate processes for a possible new stage of the protocol.
 
 - API - Application Programming Interface
-  Responsável pela coleta de informações da base da dados da FIPE - Fundação Instituto de Pesquisas Econômicas.
+  Responsible for collecting information from the database of FIPE - Fundação Instituto de Pesquisas Econômicas (Foundation for Economic Research Institute).
 
-Funcionamento
+Operation
 
-O protocolo é desenvolvido a partir de contratos inteligentes em Solidity. Esses contratos permitem que a Administração do Protocolo crie Títulos de Consórcio dos mais variados valores e períodos. Esses títulos tem uma quantidade limitada de participantes. Ou seja, cada título tem um número máximo de participantes e isso é definido na sua criação.
-Além da quantidade de participantes a política de juros para inadimplentes também pode ser ajustada.
+The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create Consortium Titles of various values and durations. These titles have a limited number of participants. Moreover, the interest policy against delinquency can also be adjusted. This is defined at the time of their creation
 
-Comercialização dos Títulos
+Commercialization of Consórcio Titles
 
-Ao adquirir um título, o cliente tem duas opções principais para o saque:
+Upon acquiring a Consórcio Quota, the client has two main options for withdrawal:
 
-Saque Imediato
-Permite ao cliente sacar o valor imediatamente após ser sorteado.
-Taxa de Administração: 10% do valor do título, diluído em parcelas mensais.
+- Immediate Withdrawal
+  Allows the client to withdraw the amount immediately after being drawn.
+  Administration Fee: 10% of the title's value, diluted in monthly installments.
 
-Saque Condicionado
-O saque só é permitido após o título ultrapassar 50% dos sorteios realizados.
-Taxa de Administração: 0%. Por exemplo, se o total de sorteios for 10, o saque só poderá ser feito a partir do sorteio 6, mesmo que o cliente tenha sido sorteado anteriormente.
+- Conditional Withdrawal
+  Withdrawal is only permitted after the Title exceeds the mark of 50% of the participants drawn.
+  Administration Fee: 5% of the title's value, diluted in monthly installments.
 
-Investimento dos Valores Recebidos
-Uso dos Recursos: Os valores recebidos dos títulos de Saque Condicionado são investidos em protocolos parceiros para gerar receita adicional para a Horizon.
-Objetivo: Este processo visa aumentar a sustentabilidade financeira do protocolo e oferecer melhores retornos aos participantes.
+For example, if the total number of draws is 10, withdrawal can only be made from draw 6 onwards, even if the client has been drawn earlier.
 
-Condições de Saque
+- Investment of Received Funds
 
-Condições Gerais
-O saque de um título sorteado não é imediato.
+The funds received from Conditional Withdrawal titles will be invested in partner protocols to generate additional revenue for Horizon.
+Objective: This process aims to enhance the financial sustainability of the protocol and offer better opportunities to participants.
 
-O saque está condicionado ao cumprimento de uma das seguintes condições:
-Pagamento Total do Título: O valor total do título deve ser pago.
-Alocação de Garantias: O cliente pode optar por alocar garantias para liberar o saque.
+- Withdrawal Conditions
 
-Opções de Alocação de Garantias
-O cliente tem duas opções principais para a alocação de garantias:
+The withdrawal of a drawn title is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
 
-Utilização de Títulos Quitados ou Parcialmente Pagos
-Títulos que tiveram seu valor totalmente quitado ou com valor pago superior a duas vezes o valor pendente do título no qual a garantia será alocada.
-Aplicabilidade: Esta opção é ideal para clientes que possuem outros títulos com pagamentos significativos já realizados.
+Full Payment of the Title: The total value of the title must be paid.
+Allocation of Guarantees: The client may choose to allocate guarantees to enable the withdrawal.
 
-Utilização de Bens Tokenizados
-Bens Tokenizados podem ser usados como garantia para o saque.
-Vantagem: Oferece uma alternativa flexível para clientes que possuem ativos digitais tokenizados.
+- Allocation of Guarantees
+  The client has two main options for guarantee allocation:
 
-Alocação de Garantias
+- Use of Paid-Up or Partially Paid Consortium Quotas
+  Quotas that have been fully paid up or with an amount paid more than twice the outstanding value of the quota in which the guarantee will be allocated.
+  Applicability: This option is ideal for clients who possess other titles with significant payments already made.
 
-Após o sorteio de um título, o vencedor tem a opção de alocar garantias para liberar o valor. Esta alocação pode ser feita de duas maneiras principais: usando outros títulos ou utilizando Bens Tokenizados.
+Use of Tokenized Assets
+Tokenized Assets can be used as collateral for withdrawal.
+Advantage: Provides a flexible alternative for clients who own tokenized digital assets.
 
-Processo de Alocação Usando Títulos
-Para usar um título como garantia, o proprietário do título sorteado precisa fornecer algumas informações essenciais:
+Allocation of Guarantees
 
-Identificador do Título Sorteado: Número de identificação do título que foi sorteado.
-Identificador do Seu Título Sorteado: Número da sua cota ou participação no título sorteado.
-Identificador do Título Usado como Garantia: Número de identificação do título que você deseja usar como garantia.
-Identificador da Sua Cota no Título de Garantia: Número da sua cota ou participação no título usado como garantia.
+After a title is drawn, the winner has the option to allocate guarantees to release the value. This allocation can be done in two main ways: using other titles or utilizing Tokenized Assets.
 
-Exemplo Prático:
-Título Sorteado: 10
-Sua Cota no Título Sorteado: 30
-Título para Garantia: 5
-Sua Cota no Título de Garantia: 15
+Allocation Process Using Titles
+To use a title as collateral, the owner of the drawn title needs to provide some essential information:
 
-Se o valor da cota 15 do título 5 usado como garantia atender aos requisitos necessários, ele será transferido para o protocolo, alocado como garantia da cota 30 do Título 10 e o valor do prêmio será liberado.
+Identifier of the Drawn Consórcio Title: Identification number of the title that was drawn.
+Identifier of Your Drawn Quota: Number of your quota or participation in the drawn title.
+Identifier of the Consórcio Title Used as Collateral: Identification number of the title you wish to use as collateral.
+Identifier of Your Quota in the Collateral Title: Number of your quota that will be used as collateral.
 
-Alocação Usando Bens Tokenizados
-Bens Tokenizados são ativos digitais que representam a propriedade de um bem real ou virtual. Eles podem ser usados como garantia da seguinte forma:
+- Practical Example:
+  Drawn Consórcio Title: 10
+  Your Quota in the Drawn Consórcio Title: 30
+  Title for Collateral: 5
+  Your Quota in the Collateral Title: 15
 
-Compatibilidade de Redes: O Bem Tokenizado pode ser alocado em qualquer rede compatível com o CCIP que a Horizon opere.
-Avaliação de Valor: Antes da alocação, o valor do Bem Tokenizado é avaliado através do Chainlink Functions e o API da FIPE. Se for equivalente ou superior ao valor mínimo necessário para o título, ele será aceito como garantia.
-Monitoramento Automatizado: Após a alocação, o valor do Bem Tokenizado é monitorado automaticamente. Se houver variações significativas no valor, medidas podem ser tomadas para manter a integridade do protocolo.
+If the value of quota 15 from title 5, used as collateral, meets the necessary requirements, it will be transferred to the protocol, allocated as the guarantee for quota 30 of Title 10, and the prize amount will be released.
 
-Saque do Título
-O saque do valor do título é um processo importante no protocolo Horizon e pode ser realizado sob duas condições principais:
+- Allocation Using Tokenized Assets
+  Tokenized Assets are digital assets that represent ownership of a real or virtual property. They can be used as collateral in the following way:
 
-Pagamento Total do Título: O saque é permitido após o pagamento integral do valor do título.
-Alocação de Garantias: Se garantias forem alocadas conforme as regras do protocolo, o saque também é liberado.
+Network Compatibility: The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates.
+Value Assessment: Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the title, it will be accepted as collateral.
+Automated Monitoring: After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
 
-Processo de Saque
-Uma vez que uma das condições acima seja atendida, o processo de saque pode ser iniciado:
+Title Withdrawal
+The withdrawal of the title value is an important process in the Horizon protocol and can be performed under two main conditions:
 
-Iniciativa do Proprietário: Normalmente, o dono do título é quem realiza o saque.
-Intervenção Administrativa: Em casos específicos, a administração do protocolo pode transferir o valor do saque diretamente para o dono do título. Isso pode ocorrer por motivos operacionais ou excepcionais definidos pelo protocolo.
+Full Payment of the Title: Withdrawal is permitted after the full payment of the title value.
+Allocation of Guarantees: If guarantees are allocated according to the protocol's rules, withdrawal is also released.
 
-Flexibilidade e Segurança
-Este sistema de saque foi projetado para oferecer flexibilidade aos usuários, ao mesmo tempo em que mantém a segurança e a integridade do protocolo.
+Withdrawal Process
+Once one of the above conditions is met, the withdrawal process can be initiated:
 
-Gestão de Inadimplência e Juros
+Owner's Initiative: Typically, the title owner initiates the withdrawal.
+Administrative Intervention: In specific cases, the protocol administration can transfer the withdrawal value directly to the title owner. This may occur for operational or exceptional reasons defined by the protocol.
 
-Política de Pagamento
-Datas de Pagamento: As datas de pagamento de cada título são estabelecidas no momento da sua criação.
-Flexibilidade Administrativa: A administração do protocolo tem a prerrogativa de postergar as datas de pagamento, se necessário, mas nunca de antecipá-las.
+Flexibility and Security
+This withdrawal system has been designed to offer flexibility to users while maintaining the security and integrity of the protocol.
 
-Inadimplência e Aplicação de Juros
-Atenção às Datas: É crucial que os clientes estejam atentos às datas de pagamento para evitar inadimplência.
-Juros por Atraso: Em caso de atraso no pagamento, os juros previamente definidos serão aplicados. Estes juros são estabelecidos na criação do título e visam manter a saúde financeira do protocolo.
-Consequências da Inadimplência: Se o atraso no pagamento exceder duas parcelas, o título será considerado inadimplente e estará sujeito a cancelamento.
+Management of Delinquency and Interest
 
-Cancelamento de Títulos
-Processo de Cancelamento: O cancelamento de um título é uma medida de última instância, aplicada apenas quando há inadimplência significativa.
-Impacto do Cancelamento: O cancelamento de um título pode ter implicações financeiras para o titular, incluindo a perda de quaisquer pagamentos já realizados.
+Payment Policy
+Payment Dates: The payment dates for each title are established at the time of their creation.
+Administrative Flexibility: The protocol administration has the prerogative to postpone payment dates if necessary, but never to advance them.
 
-Política de Multas
+Delinquency and Interest Application
+Attention to Dates: It is crucial for clients to be attentive to payment dates to avoid delinquency.
+Interest for Late Payment: In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the title and aim to maintain the financial health of the protocol.
+Consequences of Delinquency: If the payment delay exceeds two installments, the title will be considered delinquent and subject to cancellation.
 
-Objetivo das Multas
-Função das Multas: As multas são aplicadas em caso de cancelamento de um título para assegurar a estabilidade do protocolo e proteger os interesses dos demais participantes.
+Title Cancellation
+Cancellation Process: The cancellation of a title is a last resort measure, applied only in cases of significant delinquency.
+Impact of Cancellation: The cancellation of a title can have financial implications for the holder, including the loss of any payments already made.
 
-Multas em Títulos sem Garantias Alocadas
-Cancelamento Pré-Sorteio: Se um título for cancelado antes de ser sorteado e não tiver garantias alocadas, o valor já pago pelo titular será retido como multa.
-Finalidade: Esta medida visa compensar o impacto financeiro do cancelamento no pool geral de fundos.
+Penalty Policy
 
-Multas em Títulos com Garantias Alocadas
-Cancelamento Pós-Sorteio com Garantia: Para títulos cancelados após o sorteio, nos quais garantias já foram alocadas, a garantia será perdida como multa.
-Tratamento da Garantia: A garantia confiscada será vendida no mercado secundário. O valor obtido será utilizado para cobrir a multa correspondente ao título cancelado.
+Purpose of Penalties
+Function of Penalties: Penalties are applied in the event of a title cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
 
-Devolução da Garantia
+Penalties on Titles without Allocated Guarantees
+Pre-Draw Cancellation: If a title is cancelled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty.
+Purpose: This measure aims to offset the financial impact of the cancellation on the overall fund pool.
 
-Após a quitação de todas as parcelas a garantia alocada é retornada ao mesmo endereço responsável pela alocação no Título.
+Penalties on Titles with Allocated Guarantees
+Post-Draw Cancellation with Guarantee: For titles cancelled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
+Treatment of the Guarantee: The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the cancelled title.
 
-Evolução do Protocolo
+Return of the Guarantee
 
-Tendo em vista a estrutura apresentada, o protocolo possui um vasto potencial de crescimento e evolução. Entre os pontos que foram discutidos, temos:
+After the settlement of all installments, the allocated guarantee is returned to the same address responsible for the allocation in the Title.
 
-1 - Otimização da Fase 1.
-Com o intuito dar passos maiores, precisamos reforçar nossa estrutura. Para isso serão necessários estudos aprofundados quanto à gestão de custos, processamento de garantias, UI/UX e estudos mais abrangentes de modo à expandir nosso público alvo. Sempre objetivando uma melhor experiência e maiores oportunidades para o usuário final.
+Evolution of the Protocol
 
-2 - Criação do Mercado Secundário para comercialização dos Títulos;
-A partir da Criação do Mercado Secundario, os detentores dos Títulos terão a liberdade para comercializá-los. Podendo ocorrer o deságio do título para uma venda rápida em caso de necessidade ou até mesmo o àgio na comercialização de um título que foi sorteado. A partir disso o protocolo ganha com crescimento da liquidez, o mercado poderá precificar os Títulos de forma dinâmica a partir da oferta e demanda, tornando o processo mais justo e transparente.
-Além disso, abre se uma porta para que clientes diversifiquem seu portfólio de investimento, reduz a inadimplência, facilita o acesso a novos participantes e estimula a participação uma vez que, apesar de ter assumido o compromisso, o participante poderá repassar o seu título se necessário.
-Por fim, a introdução de um mercado secundário pode levar a inovações adicionais e ao crescimento do ecossistema Horizon, atraindo mais usuários e investidores e aumentando a robustez e a resiliência do sistema.
+Given the structure presented, the protocol has vast potential for growth and evolution. Among the points that have been discussed, we have:
 
-3 - Fomento de parcerias para criação de novas pools para rendimento dos valores bloqueados;
-O desenvolvimento de novas parcerias pode gerar inúmeros benefícios estratégicos e operacionais, ampliando o alcance do Protocolo. Entre elas, temos:
+1 - Optimization of Phase 1.
+Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion.
 
-- O acesso a novos mercados a partir de outros protocolos de DeFi ou finanças tradicionais aumentando considerávelmente o número de usuários.
-- Expansão de Recursos e Diversificação de Investimentos adequando a ofertas e demandas regionais.
-- Sustentabilidade a Longo Prazo fornecendo estabilidade e inovação contínua.
+However, developing classifications for accepted guarantees can reduce the final cost of the Consortia, so that the frequency of monitoring can be decreased. Cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, to expand our target audience we will also face legal challenges.
 
-4 - Serviços de Empréstimo utilizando os Bens Tokenizados como Garantia
+2 - Creation of a Secondary Market for the Commercialization of Consórcio Quotas;
+With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need, or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent.
+Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having made a commitment, a participant can transfer their Quota if necessary.
+Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system.
 
-- Amplia a área de atuação da Horizon para países com taxas de juros mais baixas onde, inicialmente, o consórcio não seria uma opção viável;
-- Facilita o acesso a liquidez de Curto prazo a partir do Bens Tokenizados;
-- Taxas de juros mais baixas a partir da garantia alocada;
-- Eficiência no processo;
-- Gerar liquidez para o mercado de Bens Tokenizados;
-- Crescimento do protocolo a medida que mais bens são Tokenizados ao redor do mundo.
+3 - Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values;
+The development of new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have:
 
-Chainlink Data Streams seria uma ferramenta crucial para o correto funcionamento do protocolo. Assim como poderá ser usado com para monitoramento dos Bens Tokenizados.
+Access to new markets through other DeFi protocols or traditional finance, significantly increasing the number of users.
+Expansion of Resources and Diversification of Investments, tailoring to regional supply and demand.
+Long-Term Sustainability by providing stability and continuous innovation.
 
-5 - Financiamentos utilizando os Bens Tokenizados como Garantia.
+4 - Loan Services Using Tokenized Assets as Collateral
 
-- Acesso fácil e rápido a capital principalmente para empreendedores;
-- Acesso a Financiamentos para grandes compras como imóveis, móveis, equipamentos no geral.
-- Devido a natureza garantida, podemos oferecer condições de financiamento favoráveis como taxas de juros mais baixas e prazos de pagamento dinâmicos à necessidade.
+- Expands Horizon's scope to countries with lower interest rates where, initially, consortiums would not be a viable option;
+- Facilitates access to short-term liquidity using Tokenized Assets;
+- Lower interest rates due to the allocated collateral;
+- Efficiency in the process;
+- Generates liquidity for the Tokenized Asset market;
+- Growth of the protocol as more assets are tokenized around the world.
 
-Todos os possíveis cenários apresentados convergem para processos eficientes e transparentes a partir da tecnologia empregada e geram inclusão financeira para pessoas e empresas que não tem acesso à empréstimos em instituições tradicionais, mas dispõe de bens e precisam gerar valor a partir deles.
+Chainlink Data Streams would be a crucial tool for the proper functioning of the protocol, as well as for monitoring Tokenized Assets.
 
-Em resumo, o produto inicial e seus possíveis desdobramentos não só é útil para investidores, como também será para pessoas que em momento de necessidade podem atender demandas específicas como questões de saúde adquirindo empréstimos, financiamentos de forma rápida e prática utilizando seus bens como garantia.
+5 - Financing Using Tokenized Assets as Collateral.
 
-Conclusão
+- Easy and quick access to capital, especially for entrepreneurs;
+- Access to financing for large purchases such as real estate, furniture, and general equipment.
+- Due to the guaranteed nature, we can offer favorable financing conditions such as lower interest rates and flexible repayment terms according to the need.
+  All the potential scenarios presented converge to efficient and transparent processes through the employed technology and generate financial inclusion for individuals and businesses that lack access to loans from traditional institutions but have assets and need to create value from them.
 
-A Horizon representa um avanço significativo na democratização do acesso ao ecossistema Web3, com um foco especial na inclusão financeira de indivíduos de média e baixa renda. Ao integrar tecnologias inovadoras como Chainlink VRF, CCIP, Functions e Automation, e a integração com a Tabela FIPE, a Horizon estabelece um novo padrão em termos de segurança, transparência e auditabilidade em operações financeiras descentralizadas.
+In summary, the initial product and its possible developments are not only useful for investors but also for people who, in times of need, can meet specific demands such as health issues by acquiring loans and financing quickly and conveniently using their assets as collateral.
 
-Através da implementação de um sistema robusto de consórcios, o Horizon não apenas facilita a aquisição de bens e serviços, mas também abre caminho para o uso eficiente de Bens Tokenizados como garantias, ampliando as possibilidades de saque e investimento para os usuários. Este aspecto é particularmente revolucionário, pois alavanca o potencial dos ativos digitais de uma maneira que beneficia diretamente o usuário final, ao mesmo tempo em que mantém a integridade e a sustentabilidade do sistema.
+Conclusion
 
-Além disso, a estrutura da Horizon está desenhada para evoluir e se adaptar às necessidades emergentes do mercado e dos usuários. Com planos futuros que incluem a criação de um mercado secundário para títulos, a exploração de parcerias para rendimentos adicionais, e a expansão para serviços de empréstimo e financiamento, a Horizon não é apenas uma solução para o presente, mas um investimento no futuro da finança descentralizada.
+Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations.
 
-Sessão do Desenvolvedor
+Through the implementation of a robust consortium system, Horizon not only facilitates the acquisition of goods and services but also paves the way for the efficient use of Tokenized Assets as collateral, expanding the possibilities for withdrawal and investment for users. This aspect is particularly revolutionary as it leverages the potential of digital assets in a way that directly benefits the end-user while maintaining the integrity and sustainability of the system.
+
+Furthermore, Horizon's structure is designed to evolve and adapt to the emerging needs of the market and users. With future plans that include the creation of a secondary market for titles, exploring partnerships for additional yields, and expanding into loan and financing services, Horizon is not just a solution for the present but an investment in the future of decentralized finance.
+
+Developer Session
 
 Smart contracts
 Horizon[]
@@ -270,23 +275,25 @@ API GitHub Repository[https://github.com/deividfortuna/fipe].
 API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
 Input used in demo - ["motos","77","5223","2015-1"].
 
-Body
-{
-"codigoTipoVeiculo": motos,
-"idMarca": 77,
-"idModelo": 5223,
-"dataModelo": "2015-1",
-}
+Want to try in Thunder Client?
 
-Response
-{
-"TipoVeiculo": 2,
-"Valor": "R$ 41.761,00",
-"Marca": "HARLEY-DAVIDSON",
-"Modelo": "XL 883N IRON",
-"AnoModelo": 2015,
-"Combustivel": "Gasolina",
-"CodigoFipe": "810052-7",
-"MesReferencia": "novembro de 2023",
-"SiglaCombustivel": "G"
-}
+- Body
+  {
+  "codigoTipoVeiculo": motos,
+  "idMarca": 77,
+  "idModelo": 5223,
+  "dataModelo": "2015-1",
+  }
+
+- Response
+  {
+  "TipoVeiculo": 2,
+  "Valor": "R$ 41.761,00",
+  "Marca": "HARLEY-DAVIDSON",
+  "Modelo": "XL 883N IRON",
+  "AnoModelo": 2015,
+  "Combustivel": "Gasolina",
+  "CodigoFipe": "810052-7",
+  "MesReferencia": "novembro de 2023",
+  "SiglaCombustivel": "G"
+  }
