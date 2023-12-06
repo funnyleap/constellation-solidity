@@ -4,20 +4,21 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 
 /**
  * @title 
  * @author 
  * @notice 
  */
-contract FakeRWA is ERC721, ERC721URIStorage, ERC721Burnable {
+contract FakeRWA is ERC721, ERC721URIStorage, ERC721Burnable, OwnerIsCreator  {
     uint256 private _nextTokenId;
 
     constructor()
         ERC721("FakeRWA", "RWA")
     {}
 
-    function safeMint(address to, string memory uri) public  {
+    function safeMint(address to, string memory uri) public onlyOwner {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
@@ -27,6 +28,7 @@ contract FakeRWA is ERC721, ERC721URIStorage, ERC721Burnable {
         public
         view
         override(ERC721, ERC721URIStorage)
+        onlyOwner
         returns (string memory)
     {
         return super.tokenURI(tokenId);

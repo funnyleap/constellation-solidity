@@ -2,45 +2,61 @@
 pragma solidity >=0.8.9 <=0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 
 error NothingToWithdraw();
 
 /**
- * @title 
- * @author 
- * @notice 
+ * @title Horizon Staff
+ * @author Barba
+ * @notice This contract is responsable to Create Payment Schedules, control the dates and calculate applicable interest
  */
-contract HorizonStaff {
+contract HorizonStaff is OwnerIsCreator  {
 
-    /*Interest variables*/
+    /// @notice state variables to store interest information
+    /// @notice this method applies only in test enviroment
+    /// @dev the values are adjusted as needed to test the contract
     uint scheduleId = 1;
     uint public baseInterestRate = 10;
     uint public dailyInterestRate = 3;
     uint oneDay = 60; //86400
     address owner;
 
-    /* Events */
+    /// EVENTS
+
+    /// @notice Event emitted when an admin is added
     event AdminADD(address indexed _wallet);
+    /// @notice Event emitted when an admin is removed
     event AdminRemoved(address indexed _wallet);
+    /// @notice Event emitted when a stablecoin is added
     event TokenAdded(IERC20 tokenAddress, string symbol);
+    /// @notice Event emitted when a stablecoin is removed
     event TokenRemoved(string symbol, address _stablecoin );
+    /// @notice Event emitted when a new Consórcio Title is create
     event ScheduleCreated(uint _titleId, uint _numPayments, uint titleSchedule);
+    /// @notice Event emitted when an installment date is updated
     event InstallmentDateUpdated(uint _installmentNumber, uint _dateOfPayment);    
+    /// @notice Event emitted when payment is on schedule
     event TheInstallmenteIsOnTime(uint _paymentDelay);
+    /// @notice Event emitted when the payment is late
     event TheInstallmentIsOneDayLate(uint _amountToPay);
+    /// @notice Event emitted when the title will be cancelled
     event TheTitleIsCloseToBeCanceled(uint currentInterestRate, uint amountToPay);
+    /// @notice Event emitted when a payment is late and the new value is calculated
     event PaymentIsLate(uint currentInterestRate, uint amountToPay);
 
-    /* Structs */
+    /// @notice Struct to admins structure
     struct AdminInfo {
         address wallet;
         bool isAdmin;
     }
+    /// @notice Struct to stablecoins info
     struct TokenInfo {        
         string tokenSymbol;
         IERC20 stablecoin;
         bool isStable;
     }
+    /// @notice Struct to Consórcio Titles payment schedule
     struct Deadlines {
         uint titleId;
         uint installmentNumber;
@@ -51,9 +67,13 @@ contract HorizonStaff {
         uint dailyInterestRate;
     }
 
-    /* Mappings */
+    /// MAPPINGS
+
+    /// @notice mapping to store the accepted stablecoins
     mapping(IERC20 coinAddress => TokenInfo) public allowedCrypto;
+    /// @dev mapping to store the schedule infos
     mapping(uint _titleId => mapping(uint installmentId => Deadlines)) internal schedule;
+    /// @notice mapping to store the admins infos
     mapping(address adminWallet => AdminInfo) public staff;
 
     IERC20 stablecoin;
@@ -62,7 +82,11 @@ contract HorizonStaff {
         owner = msg.sender;
     }
 
-    function addAdmin(address _wallet) public {
+    /**
+     * @notice This function add a new Admin
+     * @param _wallet the admin address
+     */
+    function addAdmin(address _wallet) public onlyOwner{
         require(_wallet != address(0), "Admin wallet can't be empty!");
         require(staff[_wallet].isAdmin == false,"Admin already registered");
 
@@ -74,7 +98,11 @@ contract HorizonStaff {
         emit AdminADD(_wallet);
     }
 
-    function removeAdmin(address _wallet) public {
+    /**
+     * @notice This function remove an Admin
+     * @param _wallet the admin address
+     */
+    function removeAdmin(address _wallet) public onlyOwner{
         require(_wallet != address(0), "Admin wallet can't be empty!");
         require(staff[_wallet].isAdmin == true);
         
@@ -83,7 +111,13 @@ contract HorizonStaff {
         emit AdminRemoved(_wallet);
     }
 
-    function addToken(IERC20 _stablecoin, string memory _tokenSymbol) public {
+    /**
+     * @notice This function add a new stablecoin
+     * @param _stablecoin stablecoin address
+     * @param _tokenSymbol The name of the stablecoin
+     * @dev This method is only to test pouposes in testnet
+     */
+    function addToken(IERC20 _stablecoin, string memory _tokenSymbol) public onlyOwner{
         require(address(_stablecoin) != address(0), "Token address cannot be zero");
         require(allowedCrypto[_stablecoin].stablecoin == IERC20(address(0)), "Token already added");
 
@@ -96,7 +130,12 @@ contract HorizonStaff {
         emit TokenAdded(_stablecoin, _tokenSymbol);
     }
 
-    function removeToken(IERC20 _stablecoin) public {
+    /**
+     * @notice This function remove a stablecoin
+     * @param _stablecoin stablecoin address
+     * @dev This method is only to test pouposes in testnet
+     */
+    function removeToken(IERC20 _stablecoin) public onlyOwner{
         address stablecoinAddress = address(allowedCrypto[_stablecoin].stablecoin);
 
         require(stablecoinAddress != address(0), "Token address cannot be zero");
@@ -109,12 +148,12 @@ contract HorizonStaff {
     }
 
     /**
-     * 
-     * @param _titleId 
-     * @param _numPayments 
-     * @param _closing 
+     * @notice this functions create the role Title Schedule
+     * @param _titleId The Consórcio Title ID
+     * @param _numPayments The number of participants
+     * @param _closing The date that selling period ends
      */
-    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public returns(uint){
+    function createSchedule(uint _titleId, uint _numPayments, uint _closing) public onlyOwner returns(uint){
         require(_numPayments > 0, "Number of payments must be greater than 0!");
         require(_closing > block.timestamp, "The closing of title selling must be in the future!");
 
@@ -150,12 +189,12 @@ contract HorizonStaff {
     }
 
     /**
-     * 
-     * @param _scheduleId 
-     * @param _installmentNumber 
-     * @param _dateOfPayment 
+     * @notice This function update a payment date
+     * @param _scheduleId The schedule Id that the payment belongs
+     * @param _installmentNumber The installment that you want to change the date
+     * @param _dateOfPayment The new date to the payment
      */
-    function updatePaymentDate(uint _scheduleId, uint _installmentNumber, uint _dateOfPayment) public {
+    function updatePaymentDate(uint _scheduleId, uint _installmentNumber, uint _dateOfPayment) public onlyOwner{
         require(_installmentNumber > 0, "Installment number must be greater than zero!");
         require(schedule[_scheduleId][_installmentNumber].installmentNumber == _installmentNumber, "Installment number must exist!");
         require(_dateOfPayment > schedule[_scheduleId][_installmentNumber].dateOfPayment, "You can only postpone the payment!");
@@ -168,20 +207,24 @@ contract HorizonStaff {
 
         emit InstallmentDateUpdated(_installmentNumber, _dateOfPayment);
     }
-    
-    function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) public {
+    /**
+     * @notice This function is responsable to manage the participants of the draws
+     * @param _scheduleId  The schedule Id that the payment belongs
+     * @param _drawNumber The number of the draw
+     */    
+    function addParticipantsToDraw(uint _scheduleId, uint _drawNumber) external onlyOwner {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 
         deadline.participants++;
     }
 
-    /* INTERESTS */
+    /// INTERESTS
 
     /**
-     * 
-     * @param _paymentDelay 
-     * @param _scheduleId 
-     * @param _inicialValue 
+     * @notice This function is responsable to calculate the interest over the late payment
+     * @param _paymentDelay The total late time of the payment
+     * @param _scheduleId  The schedule Id that the payment belongs
+     * @param _inicialValue The inicial value of the installment
      */
     function calculateDelayedPayment(uint _paymentDelay, uint _scheduleId, uint _inicialValue) external returns(uint) {
 
@@ -219,18 +262,18 @@ contract HorizonStaff {
     }
 
     /**
-     * 
-     * @param _baseRate 
-     * @param _dailyRate 
+     * @notice This function update the interests rate
+     * @param _baseRate The interest base rate
+     * @param _dailyRate The interest daily rate
      */
-    function updateInterest(uint _baseRate, uint _dailyRate) public {
+    function updateInterest(uint _baseRate, uint _dailyRate) public onlyOwner {
         baseInterestRate = _baseRate;
         dailyInterestRate = _dailyRate;
     }
 
     /**
-     * 
-     * @param _tokenAddress 
+     * @notice Regular Chainlink withdraw function
+     * @param _tokenAddress The token that you want to withdraw
      */
     function withdrawProtocolFee(IERC20 _tokenAddress) public onlyOwner {
         require(allowedCrypto[_tokenAddress].isStable == true, "Token not allowed");
@@ -246,16 +289,14 @@ contract HorizonStaff {
         stablecoin.transfer(owner, amount);
     }
 
-    /* GET FUNCTIONS */
-
     /**
-     * 
-     * @param _stablecoin 
-     * @return 
-     * @return 
-     * @return 
+     * @notice This functions moderates the stablecoins that can be used
+     * @param _stablecoin The address of the stablecoin
+     * @return stablecoinName The name of the available stablecoin
+     * @return stableAddress The address of the available stablecoin
+     * @return isStable The confirmation that this stablecoin is allowed or not
      */
-    function returnAvailableStablecoin(IERC20 _stablecoin) external view returns(string memory, address, bool){//ok
+    function returnAvailableStablecoin(IERC20 _stablecoin) external view returns(string memory, address, bool){
         string memory symbol = allowedCrypto[_stablecoin].tokenSymbol;
         address stableAddress = address(allowedCrypto[_stablecoin].stablecoin); 
         bool isStable = allowedCrypto[_stablecoin].isStable;
@@ -264,40 +305,34 @@ contract HorizonStaff {
     }
 
     /**
-     * 
-     * @param _scheduleId 
-     * @param _installmentNumber 
+     * @notice This function return the payment deadline
+     * @param _scheduleId  The schedule Id that the payment belongs
+     * @param _installmentNumber The number of the installment
      */
-    function returnPaymentDeadline(uint _scheduleId, uint _installmentNumber) external view returns(uint){ //OK
+    function returnPaymentDeadline(uint _scheduleId, uint _installmentNumber) external view returns(uint){
         uint paymentDate = schedule[_scheduleId][_installmentNumber].dateOfPayment;
         return paymentDate;
     }
 
     /**
-     * 
-     * @param _scheduleId 
-     * @param _installmentNumber 
+     * @notice This function return the draw date
+     * @param _scheduleId  The schedule Id that the payment belongs
+     * @param _installmentNumber The number of the installment
      */
-    function returnDrawDate(uint _scheduleId, uint _installmentNumber) external view returns(uint){ //OK
+    function returnDrawDate(uint _scheduleId, uint _installmentNumber) external view returns(uint){
         uint drawDate = schedule[_scheduleId][_installmentNumber].dateOfDraw;
         
         return drawDate;
     }
 
     /**
-     * 
-     * @param _scheduleId 
-     * @param _drawNumber 
+     * @notice This function return the total participants of the requested draw
+     * @param _scheduleId The schedule Id that the payment belongs
+     * @param _drawNumber The number of the draw
      */
     function returnDrawParticipants(uint _scheduleId, uint _drawNumber) public view returns(uint) {
         Deadlines storage deadline = schedule[_scheduleId][_drawNumber];
 
         return deadline.participants;
-    }
-
-    /* MODIFIERS */
-    modifier onlyOwner() {
-        require(msg.sender == owner,"The caller must be the owner");
-        _;
     }
 }

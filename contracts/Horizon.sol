@@ -4,6 +4,7 @@ pragma solidity >=0.8.9 <=0.8.20;
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
+import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 import {HorizonS} from "./HorizonS.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -21,7 +22,7 @@ error SenderNotWhitelisted(address sender);
  * @notice This contract is the foundation of the protocol structure. Consortium Titles are created, sold, and their prizes are paid through it.
  * @dev This contract integrates with Chainlink CCIP and VRF.
  */
-contract Horizon is CCIPReceiver{
+contract Horizon is CCIPReceiver, OwnerIsCreator{
 
     /// CCIP VARIABLES AND STORAGES
     bytes32 private lastReceivedMessageId;
@@ -81,7 +82,6 @@ contract Horizon is CCIPReceiver{
     /// COMMON STATE VARIABLES
     uint titleId = 0;
     address fujiReceiver;
-    address public owner;
 
     /// ENUMS
 
@@ -203,7 +203,6 @@ contract Horizon is CCIPReceiver{
     HorizonS sender = HorizonS(payable(0xdED9E0F0D9274A74CC5506f80802781dDe6b7E11));
 
     constructor(address _router) CCIPReceiver(_router){
-        owner = msg.sender;
     }
 
     /**
@@ -217,7 +216,7 @@ contract Horizon is CCIPReceiver{
     function createTitle(uint _opening,
                          uint _closing,
                          uint _participants,
-                         uint _value) public {
+                         uint _value) public  onlyOwner {
         require(_opening != 0, "Must Select a date to start to sell the titles!");
         require(_closing > _opening, "Must Select a date to stop to sell the titles!");
         require(_participants != 0, "Must set the number of total participants!");
@@ -254,7 +253,7 @@ contract Horizon is CCIPReceiver{
      * @param _titleId Identifier of the Consórcio Title that should be updated
      * @notice if the Title does not meet the established parameters, nothing will occur.
      */
-    function updateTitleStatus(uint _titleId) public {
+    function updateTitleStatus(uint _titleId) public onlyOwner {
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Waiting || title.status == TitleStatus.Open || title.status == TitleStatus.Closed, "This title already ended");
@@ -493,7 +492,7 @@ contract Horizon is CCIPReceiver{
      * @notice this function sends the request for a random number to the vrfv2consumer contract so that the draw can be carried out
      * @param _idTitle Identifier of the Consortium Title that will be drawn
      */
-    function monthlyVRFWinner(uint _idTitle) public {
+    function monthlyVRFWinner(uint _idTitle) public  onlyOwner {
         Titles storage title = allTitles[_idTitle];
 
         require(title.nextDrawNumber <= title.installments, "All the draws already ocurred!");
@@ -534,7 +533,7 @@ contract Horizon is CCIPReceiver{
      * @notice this function processes the drawn number with the selectorVRF mapping to reveal the winner
      * @param _idTitle Identifier of the Consortium Title that will have the winner revealed
      */
-    function receiveVRFRandomNumber(uint256 _idTitle) public{
+    function receiveVRFRandomNumber(uint256 _idTitle) public {
         Titles storage title = allTitles[_idTitle];
         Draw storage draw = drawInfos[_idTitle][title.nextDrawNumber];
 
@@ -681,7 +680,7 @@ contract Horizon is CCIPReceiver{
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
-        require(msg.sender == myTitle.titleOwner || msg.sender == owner, "Msg.sender must be the contract Owner or the protocol owner!");
+        require(msg.sender == myTitle.titleOwner || msg.sender == owner(), "Msg.sender must be the contract Owner or the protocol owner!");
         require(address(_stablecoin) != address(0), "Token not allowed");
         require(myTitle.myTitleStatus == MyTitleWithdraw.Withdraw, "This title don't have the permission to withdraw");
 
@@ -876,11 +875,6 @@ contract Horizon is CCIPReceiver{
 
     modifier onlyWhitelistedSenders(address _sender){
         if (!whitelistedSenders[_sender]) revert SenderNotWhitelisted(_sender);
-        _;
-    }
-    
-    modifier onlyOwner() {
-        require(msg.sender == owner, "The caller must be the owner!");
         _;
     }
 }

@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
+
 /**
- * @title 
- * @author 
- * @notice 
+ * @title Horizon String Converter
+ * @author Barba
+ * @notice This contract pourpose is to convert the API string into uint
  */
-contract HorizonFujiAssistant {
+contract HorizonFujiAssistant is  OwnerIsCreator {
 
     /**
      * 
-     * @param s 
+     * @param s Value received directly from the API.
      */
-    function stringToUint(string memory s) public pure returns (uint) {
+    function stringToUint(string memory s) public view onlyOwner returns (uint) {
         bytes memory b = bytes(s);
         uint result = 0;
         bool decimalFound = false;
