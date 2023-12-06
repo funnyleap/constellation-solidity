@@ -42,71 +42,71 @@ The _consórcio_, created in 1962, is a tool for collective self-financing throu
 
 ## 2. About the protocol
 
-Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of acquired Consórcio Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
+Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired Consórcio Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
 </br>
 
 # How does it works
 
 ---
 
-Would you like to learn more about Tokenized Assets and about ERC-4337? Access the links below:
+Would you like to learn more about Tokenized Assets and ERC-4337? Access the links below:
 Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/)
 Account Abstraction [ERC-4337](https://www.erc4337.io)
 
-Application in the Constellation Hackathon
+# Application in the Constellation Hackathon
 
-This prototype will simulate the following stages:
+## This prototype will simulate the following stages:
 
-- Creation of Titles;
-- Commercialization of Titles;
-- Payments, Delays, and Application of Interest;
-- Creation of Allocation Permissions in Different Networks;
-- Verification of Guarantees;
-- Allocation of Guarantees and Automated Monitoring of Value in Accordance with FIPE.
+- [X] Creation of Titles;
+- [X] Commercialization of Titles;
+- [X] Payments, Delays, and Application of Interest;
+- [X] Creation of Allocation Permissions in Different Networks;
+- [X] Verification of Guarantees;
+- [X] Allocation of Guarantees and Automated Monitoring of Value following FIPE.
 
-Tools Used
+## Tools Used
 
-- Chainlink VRF - Verifiable Random Function
+- ### Chainlink VRF - Verifiable Random Function
   Chainlink VRF is a crucial part of the protocol's operability, as the trust, transparency, and security provided by the tool are essential for all other functionalities to be performed correctly. The verifiable randomness, cryptographic security, decentralization, and integration with Smart Contracts make the results presented by the tool unquestionable.
 
-- Chainlink CCIP - Cross-Chain Interoperability Protocol
-  Chainlink CCIP allows Horizon to offer inclusion to diverse peoples and cultures by enabling communication between various blockchains and allowing the integration and use of assets from different parts of the globe in a secure and decentralized manner. Specifically, in Horizon, it will enable the creation of allocation permissions for guarantees on all Ethereum-compatible networks and, in the future, may integrate the protocol with specific networks of each country.
+- ### Chainlink CCIP - Cross-Chain Interoperability Protocol
+  Chainlink CCIP allows Horizon to offer inclusion to diverse peoples and cultures by enabling communication between various blockchains and allowing the integration and use of assets from different parts of the globe in a secure and decentralized manner. Specifically, Horizon, will enable the creation of allocation permissions for guarantees on all Ethereum-compatible networks and, in the future, may integrate the protocol with specific networks of each country.
 
-- Chainlink Functions
+- ### Chainlink Functions
   Chainlink Functions will carry out the collection of necessary data for the allocation of Assets according to their respective off-chain databases. Furthermore, it could assist in the future with the implementation of liquidation measures or alerts to the respective owners of the assets allocated in the protocol.
   It is responsible for collecting data through the FIPE API, bringing on-chain data of automobiles that will be used as examples of tokenized assets for guarantees.
 
-- Chainlink Automation - Chainlink’s hyper-reliable Automation network
+- ### Chainlink Automation - Chainlink’s hyper-reliable Automation network
   Chainlink Automation is essential for the maintenance of the protocol. It will be responsible, along with Chainlink Functions, for the periodic collection of updated data from the allocated guarantees. This involves requesting the data and storing it based on the emitted response log. Thus, the protocol has mechanisms that ensure the health of the ecosystem.
-  Moreover, it could be used to conduct draws and automate processes for a possible new stage of the protocol.
+  Moreover, it could be used to conduct draws and automate processes for a possible new protocol stage.
 
-- API - Application Programming Interface
+- ### API - Application Programming Interface
   Responsible for collecting information from the database of FIPE - Fundação Instituto de Pesquisas Econômicas (Foundation for Economic Research Institute).
 
-Operation
+## Operation
 
-The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create Consortium Titles of various values and durations. These titles have a limited number of participants. Moreover, the interest policy against delinquency can also be adjusted. This is defined at the time of their creation
+The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create Consórcio Titles of various values and durations. These titles have a limited number of participants. Moreover, the interest policy against delinquency can also be adjusted. This is defined at the time of their creation.
 
-Commercialization of Consórcio Titles
+## Commercialization of Consórcio Titles
 
 Upon acquiring a Consórcio Quota, the client has two main options for withdrawal:
 
 - Immediate Withdrawal
   Allows the client to withdraw the amount immediately after being drawn.
-  Administration Fee: 10% of the title's value, diluted in monthly installments.
+  Administration Fee: 10% of the Quota value, diluted monthly.
 
 - Conditional Withdrawal
   Withdrawal is only permitted after the Title exceeds the mark of 50% of the participants drawn.
-  Administration Fee: 5% of the title's value, diluted in monthly installments.
+  Administration Fee: 5% of the Quota value, diluted in monthly installments.
 
 For example, if the total number of draws is 10, withdrawal can only be made from draw 6 onwards, even if the client has been drawn earlier.
 
-- Investment of Received Funds
+## Investment of Received Funds
 
 The funds received from Conditional Withdrawal titles will be invested in partner protocols to generate additional revenue for Horizon.
 Objective: This process aims to enhance the financial sustainability of the protocol and offer better opportunities to participants.
 
-- Withdrawal Conditions
+## Withdrawal Conditions
 
 The withdrawal of a drawn title is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
 
@@ -120,15 +120,15 @@ Allocation of Guarantees: The client may choose to allocate guarantees to enable
   Quotas that have been fully paid up or with an amount paid more than twice the outstanding value of the quota in which the guarantee will be allocated.
   Applicability: This option is ideal for clients who possess other titles with significant payments already made.
 
-Use of Tokenized Assets
+## Use of Tokenized Assets
 Tokenized Assets can be used as collateral for withdrawal.
 Advantage: Provides a flexible alternative for clients who own tokenized digital assets.
 
-Allocation of Guarantees
+## Allocation of Collaterals
 
 After a title is drawn, the winner has the option to allocate guarantees to release the value. This allocation can be done in two main ways: using other titles or utilizing Tokenized Assets.
 
-Allocation Process Using Titles
+### Allocation Process Using Titles
 To use a title as collateral, the owner of the drawn title needs to provide some essential information:
 
 Identifier of the Drawn Consórcio Title: Identification number of the title that was drawn.
@@ -136,90 +136,90 @@ Identifier of Your Drawn Quota: Number of your quota or participation in the dra
 Identifier of the Consórcio Title Used as Collateral: Identification number of the title you wish to use as collateral.
 Identifier of Your Quota in the Collateral Title: Number of your quota that will be used as collateral.
 
-- Practical Example:
-  Drawn Consórcio Title: 10
-  Your Quota in the Drawn Consórcio Title: 30
-  Title for Collateral: 5
-  Your Quota in the Collateral Title: 15
+#### Practical Example:
+* Drawn Consórcio Title: 10
+   * Your Quota in the Drawn Consórcio Title: 30
+* Title for Collateral: 5
+   * Your Quota in the Collateral Title: 15
 
-If the value of quota 15 from title 5, used as collateral, meets the necessary requirements, it will be transferred to the protocol, allocated as the guarantee for quota 30 of Title 10, and the prize amount will be released.
+If the value of quota 15 from Title 5, used as collateral, meets the requirements, it will be transferred to the protocol, allocated as the guarantee for quota 30 of Title 10, and the prize amount will be released.
 
-- Allocation Using Tokenized Assets
-  Tokenized Assets are digital assets that represent ownership of a real or virtual property. They can be used as collateral in the following way:
+### Allocation Using Tokenized Assets
+Tokenized Assets are digital assets that represent ownership of a real or virtual property. They can be used as collateral in the following ways:
 
-Network Compatibility: The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates.
-Value Assessment: Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the title, it will be accepted as collateral.
-Automated Monitoring: After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
+**Network Compatibility:** The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates. <br/>
+**Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the title, it will be accepted as collateral. <br/>
+**Automated Monitoring:** After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
 
-Title Withdrawal
-The withdrawal of the title value is an important process in the Horizon protocol and can be performed under two main conditions:
+## Consórcio Quota Withdrawl
+The withdrawal of the Quota value is an important process in the Horizon protocol and can be performed under two main conditions:
 
-Full Payment of the Title: Withdrawal is permitted after the full payment of the title value.
-Allocation of Guarantees: If guarantees are allocated according to the protocol's rules, withdrawal is also released.
+**Full Payment of the Title:** Withdrawal is permitted after the full payment of the Quota value. <br/>
+**Allocation of Guarantees:** If guarantees are allocated according to the protocol's rules, withdrawal is also released. <br/>
 
-Withdrawal Process
+### Withdrawal Process
 Once one of the above conditions is met, the withdrawal process can be initiated:
 
-Owner's Initiative: Typically, the title owner initiates the withdrawal.
-Administrative Intervention: In specific cases, the protocol administration can transfer the withdrawal value directly to the title owner. This may occur for operational or exceptional reasons defined by the protocol.
+**Owner's Initiative:** Typically, the title owner initiates the withdrawal. <br/>
+**Administrative Intervention:** In specific cases, the protocol administration can transfer the withdrawal value directly to the title owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
 
-Flexibility and Security
+### Flexibility and Security
 This withdrawal system has been designed to offer flexibility to users while maintaining the security and integrity of the protocol.
 
-Management of Delinquency and Interest
+## Management of Delinquency and Interest
 
-Payment Policy
-Payment Dates: The payment dates for each title are established at the time of their creation.
-Administrative Flexibility: The protocol administration has the prerogative to postpone payment dates if necessary, but never to advance them.
+### Payment Policy
+**Payment Dates:** The payment dates for each title are established at the time of their creation. <br/>
+**Administrative Flexibility:** The protocol administration has the prerogative to postpone payment dates if necessary, but never to advance them.
 
-Delinquency and Interest Application
-Attention to Dates: It is crucial for clients to be attentive to payment dates to avoid delinquency.
-Interest for Late Payment: In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the title and aim to maintain the financial health of the protocol.
-Consequences of Delinquency: If the payment delay exceeds two installments, the title will be considered delinquent and subject to cancellation.
+### Delinquency and Interest Application
+**Attention to Dates:** Clients must be attentive to payment dates to avoid delinquency. <br/>
+**Interest for Late Payment:** In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the title and aim to maintain the financial health of the protocol. <br/>
+**Consequences of Delinquency:** If the payment delay exceeds two installments, the title will be considered delinquent and subject to cancellation.
 
-Title Cancellation
-Cancellation Process: The cancellation of a title is a last resort measure, applied only in cases of significant delinquency.
-Impact of Cancellation: The cancellation of a title can have financial implications for the holder, including the loss of any payments already made.
+## Title Cancellation
+**Cancellation Process:** The cancellation of a Quota is a last resource measure, applied only in cases of significant delinquency.
+**Impact of Cancellation:** The cancellation of a title can have financial implications for the holder, including the loss of any payments already made.
 
-Penalty Policy
+## Penalty Policy
 
-Purpose of Penalties
-Function of Penalties: Penalties are applied in the event of a title cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
+### Purpose of Penalties
+**Function of Penalties:** Penalties are applied in the event of a title cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
 
-Penalties on Titles without Allocated Guarantees
-Pre-Draw Cancellation: If a title is cancelled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty.
-Purpose: This measure aims to offset the financial impact of the cancellation on the overall fund pool.
+### Penalties on Titles without Allocated Guarantees
+**Pre-Draw Cancellation:** If a title is canceled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty. <br/>
+**Purpose:** This measure aims to offset the financial impact of the cancellation on the overall fund pool.
 
-Penalties on Titles with Allocated Guarantees
-Post-Draw Cancellation with Guarantee: For titles cancelled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
-Treatment of the Guarantee: The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the cancelled title.
+### Penalties on Titles with Allocated Guarantees
+**Post-Draw Cancellation with Guarantee:** For titles canceled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
+**Treatment of the Guarantee:** The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the canceled title.
 
-Return of the Guarantee
+## Return of the Guarantee
 
 After the settlement of all installments, the allocated guarantee is returned to the same address responsible for the allocation in the Title.
 
-Evolution of the Protocol
+# Evolution of the Protocol
 
 Given the structure presented, the protocol has vast potential for growth and evolution. Among the points that have been discussed, we have:
 
-1 - Optimization of Phase 1.
-Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion.
+1 - **Optimization of Phase 1**.
+Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion. <br/>
 
-However, developing classifications for accepted guarantees can reduce the final cost of the Consortia, so that the frequency of monitoring can be decreased. Cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, to expand our target audience we will also face legal challenges.
+However, developing classifications for accepted guarantees can reduce the final cost of the Consortia, so that the frequency of monitoring can be decreased. Cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
 
-2 - Creation of a Secondary Market for the Commercialization of Consórcio Quotas;
-With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need, or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent.
-Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having made a commitment, a participant can transfer their Quota if necessary.
+2 - **Creation of a Secondary Market for the Commercialization of Consórcio Quotas**
+With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent.
+Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary.
 Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system.
 
-3 - Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values;
+3 - **Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values**
 The development of new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have:
 
-Access to new markets through other DeFi protocols or traditional finance, significantly increasing the number of users.
+Access to new markets through other DeFi protocols or traditional finance significantly increases the number of users.
 Expansion of Resources and Diversification of Investments, tailoring to regional supply and demand.
-Long-Term Sustainability by providing stability and continuous innovation.
+Long-term sustainability by providing stability and continuous innovation.
 
-4 - Loan Services Using Tokenized Assets as Collateral
+4 - **Loan Services Using Tokenized Assets as Collateral**
 
 - Expands Horizon's scope to countries with lower interest rates where, initially, consortiums would not be a viable option;
 - Facilitates access to short-term liquidity using Tokenized Assets;
@@ -230,7 +230,7 @@ Long-Term Sustainability by providing stability and continuous innovation.
 
 Chainlink Data Streams would be a crucial tool for the proper functioning of the protocol, as well as for monitoring Tokenized Assets.
 
-5 - Financing Using Tokenized Assets as Collateral.
+5 - **Financing Using Tokenized Assets as Collateral**
 
 - Easy and quick access to capital, especially for entrepreneurs;
 - Access to financing for large purchases such as real estate, furniture, and general equipment.
@@ -239,45 +239,45 @@ Chainlink Data Streams would be a crucial tool for the proper functioning of the
 
 In summary, the initial product and its possible developments are not only useful for investors but also for people who, in times of need, can meet specific demands such as health issues by acquiring loans and financing quickly and conveniently using their assets as collateral.
 
-Conclusion
+# Conclusion
 
-Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations.
+Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations. <br/>
 
-Through the implementation of a robust consortium system, Horizon not only facilitates the acquisition of goods and services but also paves the way for the efficient use of Tokenized Assets as collateral, expanding the possibilities for withdrawal and investment for users. This aspect is particularly revolutionary as it leverages the potential of digital assets in a way that directly benefits the end-user while maintaining the integrity and sustainability of the system.
+Through the implementation of a robust consortium system, Horizon not only facilitates the acquisition of goods and services but also paves the way for the efficient use of Tokenized Assets as collateral, expanding the possibilities for withdrawal and investment for users. This aspect is particularly revolutionary as it leverages the potential of digital assets in a way that directly benefits the end-user while maintaining the integrity and sustainability of the system. <br/>
 
-Furthermore, Horizon's structure is designed to evolve and adapt to the emerging needs of the market and users. With future plans that include the creation of a secondary market for titles, exploring partnerships for additional yields, and expanding into loan and financing services, Horizon is not just a solution for the present but an investment in the future of decentralized finance.
+Furthermore, Horizon's structure is designed to evolve and adapt to the emerging needs of the market and users. With plans that include the creation of a secondary market for titles, exploring partnerships for additional yields, and expanding into loan and financing services, Horizon is not just a solution for the present but an investment in the future of decentralized finance. <br/>
 
-Developer Session
+# Developer Session
 
-Smart contracts
-Horizon[]
-HorizonS[]
-HorizonStaff[]
-HorizonVRF[]
-HorizonFujiR[]
-HorizonFujiS[]
-HorizonFunctions[]
-HorizonFujiAssistant[]
-FakeRWA[]
+## Smart contracts
+[Horizon]() <br/>
+[HorizonS]() <br/>
+[HorizonStaff]() <br/>
+[HorizonVRF]() <br/>
+[HorizonFujiR]() <br/>
+[HorizonFujiS]() <br/>
+[HorizonFunctions]() <br/>
+[HorizonFujiAssistant]() <br/>
+[FakeRWA]() <br/>
 
-Blockchains
-Polygon[]
-Avalanche[]
+## Blockchains
+[Polygon]() <br/>
+[Avalanche]() <br/>
 
-Tools
-Chainlink Automation[https://docs.chain.link/chainlink-automation]
-Chainlink CCIP[https://docs.chain.link/ccip]
-Chainlink Functions[https://docs.chain.link/chainlink-functions]
-Chainlink VRF[https://docs.chain.link/vrf]
+## Tools
+[Chainlink Automation](https://docs.chain.link/chainlink-automation) <br/>
+[Chainlink CCIP](https://docs.chain.link/ccip) <br/>
+[Chainlink Functions](https://docs.chain.link/chainlink-functions) <br/>
+[Chainlink VRF](https://docs.chain.link/vrf) <br/>
 
-API
-API GitHub Repository[https://github.com/deividfortuna/fipe].
-API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
-Input used in demo - ["motos","77","5223","2015-1"].
+## API
+- [API GitHub Repository](https://github.com/deividfortuna/fipe)  <br/>
+- API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}  <br/>
+- Input used in demo - ["motos","77","5223","2015-1"].  <br/>
 
-Want to try in Thunder Client?
+## Want to try Thunder Client?
 
-- Body
+- **Body**
   {
   "codigoTipoVeiculo": motos,
   "idMarca": 77,
@@ -285,7 +285,7 @@ Want to try in Thunder Client?
   "dataModelo": "2015-1",
   }
 
-- Response
+- **Response**
   {
   "TipoVeiculo": 2,
   "Valor": "R$ 41.761,00",
