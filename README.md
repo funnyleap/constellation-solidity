@@ -250,19 +250,19 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 # Developer Session
 
 ## Smart contracts
-[Horizon]() <br/>
-[HorizonS]() <br/>
-[HorizonStaff]() <br/>
-[HorizonVRF]() <br/>
-[HorizonFujiR]() <br/>
-[HorizonFujiS]() <br/>
-[HorizonFunctions]() <br/>
-[HorizonFujiAssistant]() <br/>
-[FakeRWA]() <br/>
+[Horizon](contracts/Horizon.sol) <br/>
+[HorizonS](contracts/HorizonS.sol) <br/>
+[HorizonStaff](contracts/HorizonStaff.sol) <br/>
+[HorizonVRF](contracts/HorizonVRF.sol) <br/>
+[HorizonFujiR](contracts/HorizonFujiR.sol) <br/>
+[HorizonFujiS](contracts/HorizonFujiS.sol) <br/>
+[HorizonFunctions](contracts/HorizonFunctions.sol) <br/>
+[HorizonFujiAssistant](contracts/HorizonFujiAssistant.sol) <br/>
+[FakeRWA](contracts/FakeRWA.sol) <br/>
 
 ## Blockchains
-[Polygon]() <br/>
-[Avalanche]() <br/>
+[Polygon](https://polygon.technology) <br/>
+[Avalanche](https://www.avax.network) <br/>
 
 ## Tools
 [Chainlink Automation](https://docs.chain.link/chainlink-automation) <br/>
