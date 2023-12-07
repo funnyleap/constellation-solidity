@@ -69,9 +69,9 @@ If we project these values globally, considering only countries similar to Brazi
 Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired _Consórcio_ Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
 </br>
 
-### Would you like to learn more about Tokenized Assets and ERC-4337? Access the links below:
-Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/) </br>
-Account Abstraction [ERC-4337](https://www.erc4337.io)
+Would you like to learn more about Tokenized Assets and ERC-4337? Access the links below: </br>
+- Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/) </br>
+- Account Abstraction [ERC-4337](https://www.erc4337.io)
 
 # How does it works
 
