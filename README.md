@@ -33,7 +33,30 @@ The _consórcio_, created in 1962 due to the lack of availability of credit line
 </br>
 
 ### Why is it relevant?
-The wide adoption of the consortium system, which grows year after year, is attributed, among other factors, mainly to the power of inclusion and financial discipline that this tool promotes.
+The wide adoption of the _consórcio_ system, which grows year after year, is attributed, among other factors, mainly to the power of inclusion and financial discipline that this tool promotes. Beyond that, this is a product in full expansion in the traditional system and little explored, which, in web3, has even greater potential given that we can reach other countries. Let's look at some data about the _consórcio_ in Brazil (Source: [ABAC - September details Press Release](https://abac.org.br/imprensa/press-releases-detalhe&id=383)).
+
+</br>
+
+From January to September 2023:
+- More than 3 million new quotas were sold
+- That is, an average of 350 thousand sales per month
+- This represents an increase of 6.8% compared to the same period last year
+- There are almost 10 million active participants, which is about 5.4% of Brazil's population
+- Whose average ticket is 15 thousand dollars
+- There was also an increase of 28.9% in contemplations (that means, drawn quotas)
+- Which directly injected more than 12 billion dollars into the economy
+- And moved more than 50 billion dollars in traded credits
+- In 2022, this represented a participation of 4.7% in the GDP, contributing to the country's development
+
+</br>
+
+If we project these values globally, considering only countries similar to Brazil (in terms of per capita income, see details of this study [here](https://docs.google.com/spreadsheets/d/1L7-VuZEdYFtonFrzvHYbFk2gRbB-TP_TIUpr_jgzv-Q/edit?usp=sharing)), we would have:
+
+- 57 countries with the potential for adoption
+- That adds up to more than 520 million people
+- Which could represent more than 28 million customers (considering the same 5.4% of the Brazilian population that already joined the _consórcio_)
+- Representing an injection of more than 33 billion dollars into the economy
+- And a movement of 140 billion dollars in traded credits over one year
 
 <br/>
 
