@@ -83,12 +83,13 @@ You can access [Horizon](https://horizon-dapp.vercel.app) live demo. </br>
 
 ## This prototype will simulate the following stages:
 
-- [X] Creation of Titles;
-- [X] Commercialization of Titles;
+- [X] Creation of Consórcio Titles;
+- [X] Commercialization of Consórcio Quotas;
+- [X] Conducting Consórcio Quota Lottery via VRF;
 - [X] Payments, Delays, and Application of Interest;
-- [X] Creation of Allocation Permissions in Different Networks;
+- [X] Creation of Allocation Permissions through Chainlink CCIP;
 - [X] Verification of Guarantees;
-- [X] Allocation of Guarantees and Automated Monitoring of Value following FIPE.
+- [X] Allocation of Guarantees and Chainlink Automated Monitoring of Value following FIPE through Chainlink Functions.
 
 ## Tools Used
 
@@ -107,11 +108,11 @@ You can access [Horizon](https://horizon-dapp.vercel.app) live demo. </br>
   Moreover, it could be used to conduct draws and automate processes for a possible new protocol stage.
 
 - ### API - Application Programming Interface
-  Responsible for collecting information from the database of FIPE - Fundação Instituto de Pesquisas Econômicas (Foundation for Economic Research Institute).
+  Responsible for collecting information from the database of [FIPE](https://www.fipe.org.br) - Fundação Instituto de Pesquisas Econômicas (Foundation for Economic Research Institute).
 
 ## Operation
 
-The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These titles have a limited number of participants. Moreover, the interest policy against delinquency can also be adjusted. This is defined at the time of their creation.
+The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These Consórcios have a limited number of participants and each Consórcio has an interest policy against delinquency. This is defined before their creation.
 
 ## Commercialization of _Consórcio_ Titles
 
@@ -134,9 +135,9 @@ Objective: This process aims to enhance the financial sustainability of the prot
 
 ## Withdrawal Conditions
 
-The withdrawal of a drawn title is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
+The withdrawal of a drawn consórcio quota is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
 
-Full Payment of the Title: The total value of the title must be paid.
+Full Payment of the Consórcio quota: The total value of the quota must be paid.
 Allocation of Guarantees: The client may choose to allocate guarantees to enable the withdrawal.
 
 - Allocation of Guarantees
@@ -145,36 +146,35 @@ Allocation of Guarantees: The client may choose to allocate guarantees to enable
 - Use of Paid-Up or Partially Paid _Consórcio_ Quotas
   Quotas that have been fully paid up or with an amount paid more than twice the outstanding value of the quota in which the guarantee will be allocated.
   Applicability: This option is ideal for clients who possess other titles with significant payments already made.
-
-## Use of Tokenized Assets
-Tokenized Assets can be used as collateral for withdrawal.
-Advantage: Provides a flexible alternative for clients who own tokenized digital assets.
+- Use of Tokenized Assets
+  Tokenized Assets can be used as collateral for withdrawal.
+  Advantage: Provides a flexible alternative for clients who own tokenized digital assets.
 
 ## Allocation of Collaterals
 
-After a title is drawn, the winner has the option to allocate guarantees to release the value. This allocation can be done in two main ways: using other titles or utilizing Tokenized Assets.
+After a Quota is drawn, the winner has the option to allocate guarantees to release the value. This allocation can be done in two main ways: using other titles or utilizing Tokenized Assets.
 
 ### Allocation Process Using Titles
 To use a title as collateral, the owner of the drawn title needs to provide some essential information:
 
-Identifier of the Drawn _Consórcio_ Title: Identification number of the title that was drawn.
+Identifier of the Drawn _Consórcio_ Title: Identification number of the title that your quota was drawn.
 Identifier of Your Drawn Quota: Number of your quota or participation in the drawn title.
-Identifier of the _Consórcio_ Title Used as Collateral: Identification number of the title you wish to use as collateral.
+Identifier of the _Consórcio_ Title Used as Collateral: Identification number of the title that the quota you wish to use as collateral.
 Identifier of Your Quota in the Collateral Title: Number of your quota that will be used as collateral.
 
 #### Practical Example:
 * Drawn _Consórcio_ Title: 10
    * Your Quota in the Drawn _Consórcio_ Title: 30
-* Title for Collateral: 5
+* _Consórcio_ Title for Collateral: 5
    * Your Quota in the Collateral Title: 15
 
-If the value of quota 15 from Title 5, used as collateral, meets the requirements, it will be transferred to the protocol, allocated as the guarantee for quota 30 of Title 10, and the prize amount will be released.
+If the value of quota 15 from _Consórcio_ 5, used as collateral, meets the requirements, it will be transferred to the protocol, allocated as the guarantee for quota 30 of _Consórcio_ 10, and the prize amount will be released.
 
 ### Allocation Using Tokenized Assets
 Tokenized Assets are digital assets that represent ownership of a real or virtual property. They can be used as collateral in the following ways:
 
 **Network Compatibility:** The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates. <br/>
-**Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the title, it will be accepted as collateral. <br/>
+**Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the _Consórcio_ quota, it will be accepted as collateral. <br/>
 **Automated Monitoring:** After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
 
 ## _Consórcio_ Quota Withdrawl
@@ -186,8 +186,8 @@ The withdrawal of the Quota value is an important process in the Horizon protoco
 ### Withdrawal Process
 Once one of the above conditions is met, the withdrawal process can be initiated:
 
-**Owner's Initiative:** Typically, the title owner initiates the withdrawal. <br/>
-**Administrative Intervention:** In specific cases, the protocol administration can transfer the withdrawal value directly to the title owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
+**Owner's Initiative:** Typically, the quota owner initiates the withdrawal. <br/>
+**Administrative Intervention:** In specific cases, the protocol administration can transfer the withdrawal value directly to the quota owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
 
 ### Flexibility and Security
 This withdrawal system has been designed to offer flexibility to users while maintaining the security and integrity of the protocol.
@@ -195,34 +195,34 @@ This withdrawal system has been designed to offer flexibility to users while mai
 ## Management of Delinquency and Interest
 
 ### Payment Policy
-**Payment Dates:** The payment dates for each title are established at the time of their creation. <br/>
+**Payment Dates:** The payment dates for each _Consórcio_ Title are established at the time of their creation. <br/>
 **Administrative Flexibility:** The protocol administration has the prerogative to postpone payment dates if necessary, but never to advance them.
 
 ### Delinquency and Interest Application
 **Attention to Dates:** Clients must be attentive to payment dates to avoid delinquency. <br/>
-**Interest for Late Payment:** In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the title and aim to maintain the financial health of the protocol. <br/>
-**Consequences of Delinquency:** If the payment delay exceeds two installments, the title will be considered delinquent and subject to cancellation.
+**Interest for Late Payment:** In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the _Consórcio_ Title and aim to maintain the financial health of the protocol. <br/>
+**Consequences of Delinquency:** If the payment delay exceeds two installments, the _Consórcio_ quota will be considered delinquent and subject to cancellation.
 
-## Title Cancellation
+## _Consórcio_ Quota Cancellation
 **Cancellation Process:** The cancellation of a Quota is a last resource measure, applied only in cases of significant delinquency.
-**Impact of Cancellation:** The cancellation of a title can have financial implications for the holder, including the loss of any payments already made.
+**Impact of Cancellation:** The cancellation of a quota can have financial implications for the holder, including the loss of any payments already made.
 
 ## Penalty Policy
 
 ### Purpose of Penalties
-**Function of Penalties:** Penalties are applied in the event of a title cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
+**Function of Penalties:** Penalties are applied in the event of a quota cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
 
-### Penalties on Titles without Allocated Guarantees
-**Pre-Draw Cancellation:** If a title is canceled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty. <br/>
+### Penalties on Quotas without Allocated Guarantees
+**Pre-Draw Cancellation:** If a quota is canceled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty. <br/>
 **Purpose:** This measure aims to offset the financial impact of the cancellation on the overall fund pool.
 
-### Penalties on Titles with Allocated Guarantees
-**Post-Draw Cancellation with Guarantee:** For titles canceled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
-**Treatment of the Guarantee:** The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the canceled title.
+### Penalties on Quotas with Allocated Guarantees
+**Post-Draw Cancellation with Guarantee:** For Quotas canceled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
+**Treatment of the Guarantee:** The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the canceled quota.
 
 ## Return of the Guarantee
 
-After the settlement of all installments, the allocated guarantee is returned to the same address responsible for the allocation in the Title.
+After the settlement of all installments, the allocated guarantee is returned to the same address responsible for the allocation in the Quota.
 
 # Evolution of the Protocol
 
@@ -231,19 +231,21 @@ Given the structure presented, the protocol has vast potential for growth and ev
 1 - **Optimization of Phase 1**.
 Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion. <br/>
 
-However, developing classifications for accepted guarantees can reduce the final cost of the _Consórcio_, so that the frequency of monitoring can be decreased. Cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
+Measures such as developing classifications for accepted guarantees can reduce the final costs of the _Consórcio_. Therefore, cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
 
 2 - **Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas**
-With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent.
-Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary.
-Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system.
+With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent. </br>
+
+Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary. </br>
+
+Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system. </br>
 
 3 - **Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values**
-The development of new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have:
+Developing new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have: 
 
-Access to new markets through other DeFi protocols or traditional finance significantly increases the number of users.
-Expansion of Resources and Diversification of Investments, tailoring to regional supply and demand.
-Long-term sustainability by providing stability and continuous innovation.
+- Access to new markets through other DeFi protocols or traditional finance significantly increases the number of users;
+- Expansion of Resources and Diversification of Investments, tailoring to regional supply and demand;
+- Long-term sustainability by providing stability and continuous innovation.
 
 4 - **Loan Services Using Tokenized Assets as Collateral**
 
@@ -261,7 +263,12 @@ Chainlink Data Streams would be a crucial tool for the proper functioning of the
 - Easy and quick access to capital, especially for entrepreneurs;
 - Access to financing for large purchases such as real estate, furniture, and general equipment.
 - Due to the guaranteed nature, we can offer favorable financing conditions such as lower interest rates and flexible repayment terms according to the need.
-  All the potential scenarios presented converge to efficient and transparent processes through the employed technology and generate financial inclusion for individuals and businesses that lack access to loans from traditional institutions but have assets and need to create value from them.
+
+ </br>
+ 
+All the potential scenarios presented converge to efficient and transparent processes through the employed technology and generate financial inclusion for individuals and businesses that lack access to loans from traditional institutions but have assets and need to create value from them.
+
+ </br>
 
 In summary, the initial product and its possible developments are not only useful for investors but also for people who, in times of need, can meet specific demands such as health issues by acquiring loans and financing quickly and conveniently using their assets as collateral.
 
