@@ -8,7 +8,7 @@
 
 1. Introduction
    - What is _consórcio_?
-   - Why it is relevant?
+   - Why is it relevant?
    - How does _consórcio_ works
 2. About the protocol
 3. How does it works
@@ -28,11 +28,12 @@ To overcome this, Brazilians have created the _consórcio_!
 
 ### What is _consórcio_?
 
-The _consórcio_, created in 1962, is a tool for collective self-financing through which people come together to acquire something they desire, such as a car, a property, or even services. It is managed by an administrative entity, which, in the case of Brazil, is regulated and supervised by the government. This tool has become popular and has even been adopted by other countries such as Argentina, Uruguay, Paraguay, Peru, Mexico, and Venezuela (Source: [ABAC](https://abac.org.br/o-consorcio/historia)).
+The _consórcio_, created in 1962 due to the lack of availability of credit lines, is a tool for collective self-financing through which people come together to acquire something they desire, such as a car, a property, or even services. It is managed by an administrative entity, which, in the case of Brazil, is regulated and supervised by the government. This tool has become popular and has even been adopted by other countries such as Argentina, Uruguay, Paraguay, Peru, Mexico, and Venezuela (Source: [ABAC - History](https://abac.org.br/o-consorcio/historia)).
 
 </br>
 
-### Why it is relevant?
+### Why is it relevant?
+The wide adoption of the consortium system, which grows year after year, is attributed, among other factors, mainly to the power of inclusion and financial discipline that this tool promotes.
 
 <br/>
 
@@ -42,7 +43,7 @@ The _consórcio_, created in 1962, is a tool for collective self-financing throu
 
 ## 2. About the protocol
 
-Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired Consórcio Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
+Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired _Consórcio_ Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
 </br>
 
 # How does it works
@@ -85,11 +86,11 @@ Account Abstraction [ERC-4337](https://www.erc4337.io)
 
 ## Operation
 
-The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create Consórcio Titles of various values and durations. These titles have a limited number of participants. Moreover, the interest policy against delinquency can also be adjusted. This is defined at the time of their creation.
+The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These titles have a limited number of participants. Moreover, the interest policy against delinquency can also be adjusted. This is defined at the time of their creation.
 
-## Commercialization of Consórcio Titles
+## Commercialization of _Consórcio_ Titles
 
-Upon acquiring a Consórcio Quota, the client has two main options for withdrawal:
+Upon acquiring a _Consórcio_ Quota, the client has two main options for withdrawal:
 
 - Immediate Withdrawal
   Allows the client to withdraw the amount immediately after being drawn.
@@ -116,7 +117,7 @@ Allocation of Guarantees: The client may choose to allocate guarantees to enable
 - Allocation of Guarantees
   The client has two main options for guarantee allocation:
 
-- Use of Paid-Up or Partially Paid Consortium Quotas
+- Use of Paid-Up or Partially Paid _Consórcio_ Quotas
   Quotas that have been fully paid up or with an amount paid more than twice the outstanding value of the quota in which the guarantee will be allocated.
   Applicability: This option is ideal for clients who possess other titles with significant payments already made.
 
@@ -131,14 +132,14 @@ After a title is drawn, the winner has the option to allocate guarantees to rele
 ### Allocation Process Using Titles
 To use a title as collateral, the owner of the drawn title needs to provide some essential information:
 
-Identifier of the Drawn Consórcio Title: Identification number of the title that was drawn.
+Identifier of the Drawn _Consórcio_ Title: Identification number of the title that was drawn.
 Identifier of Your Drawn Quota: Number of your quota or participation in the drawn title.
-Identifier of the Consórcio Title Used as Collateral: Identification number of the title you wish to use as collateral.
+Identifier of the _Consórcio_ Title Used as Collateral: Identification number of the title you wish to use as collateral.
 Identifier of Your Quota in the Collateral Title: Number of your quota that will be used as collateral.
 
 #### Practical Example:
-* Drawn Consórcio Title: 10
-   * Your Quota in the Drawn Consórcio Title: 30
+* Drawn _Consórcio_ Title: 10
+   * Your Quota in the Drawn _Consórcio_ Title: 30
 * Title for Collateral: 5
    * Your Quota in the Collateral Title: 15
 
@@ -151,7 +152,7 @@ Tokenized Assets are digital assets that represent ownership of a real or virtua
 **Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the title, it will be accepted as collateral. <br/>
 **Automated Monitoring:** After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
 
-## Consórcio Quota Withdrawl
+## _Consórcio_ Quota Withdrawl
 The withdrawal of the Quota value is an important process in the Horizon protocol and can be performed under two main conditions:
 
 **Full Payment of the Title:** Withdrawal is permitted after the full payment of the Quota value. <br/>
@@ -205,9 +206,9 @@ Given the structure presented, the protocol has vast potential for growth and ev
 1 - **Optimization of Phase 1**.
 Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion. <br/>
 
-However, developing classifications for accepted guarantees can reduce the final cost of the Consortia, so that the frequency of monitoring can be decreased. Cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
+However, developing classifications for accepted guarantees can reduce the final cost of the _Consórcio_, so that the frequency of monitoring can be decreased. Cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
 
-2 - **Creation of a Secondary Market for the Commercialization of Consórcio Quotas**
+2 - **Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas**
 With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent.
 Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary.
 Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system.
@@ -221,7 +222,7 @@ Long-term sustainability by providing stability and continuous innovation.
 
 4 - **Loan Services Using Tokenized Assets as Collateral**
 
-- Expands Horizon's scope to countries with lower interest rates where, initially, consortiums would not be a viable option;
+- Expands Horizon's scope to countries with lower interest rates where, initially, _consórcio_ would not be a viable option;
 - Facilitates access to short-term liquidity using Tokenized Assets;
 - Lower interest rates due to the allocated collateral;
 - Efficiency in the process;
@@ -243,7 +244,7 @@ In summary, the initial product and its possible developments are not only usefu
 
 Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations. <br/>
 
-Through the implementation of a robust consortium system, Horizon not only facilitates the acquisition of goods and services but also paves the way for the efficient use of Tokenized Assets as collateral, expanding the possibilities for withdrawal and investment for users. This aspect is particularly revolutionary as it leverages the potential of digital assets in a way that directly benefits the end-user while maintaining the integrity and sustainability of the system. <br/>
+Through the implementation of a robust _consórcio_ system, Horizon not only facilitates the acquisition of goods and services but also paves the way for the efficient use of Tokenized Assets as collateral, expanding the possibilities for withdrawal and investment for users. This aspect is particularly revolutionary as it leverages the potential of digital assets in a way that directly benefits the end-user while maintaining the integrity and sustainability of the system. <br/>
 
 Furthermore, Horizon's structure is designed to evolve and adapt to the emerging needs of the market and users. With plans that include the creation of a secondary market for titles, exploring partnerships for additional yields, and expanding into loan and financing services, Horizon is not just a solution for the present but an investment in the future of decentralized finance. <br/>
 
