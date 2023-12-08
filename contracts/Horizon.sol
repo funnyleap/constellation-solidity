@@ -13,7 +13,7 @@ import "./HorizonVRF.sol";
 
 error ThereIsNoTitlesAvailableAnymore(uint numberOfTitlesSold);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
-error FailedToWithdrawEth(address owner, address target, uint256 value);
+error FailedToWithdrawalEth(address owner, address target, uint256 value);
 error SenderNotWhitelisted(address sender);
 
 /**
@@ -56,10 +56,10 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
     event CollateralTitleAdded(uint _idTitle, uint _contractId, uint _drawNumber, uint _idOfCollateralTitle, uint _idOfCollateralContract);
     /// @notice Event emitted when sending permission to allocate RWA to another network.
     event CreatingPermission(uint _idTitle, uint _contractId, uint _drawSelected, address _fujiReceiver);
-    /// @notice Event emitted when the drawn winner withdraws the Consórcio amount.
+    /// @notice Event emitted when the drawn winner withdrawals the Consórcio amount.
     event MonthlyWinnerPaid(uint _idTitle, uint _drawNumber, address _winner, uint _titleValue);
     /// @notice Event emitted when the status of a Consórcio Quota is updated.
-    event MyTitleStatusUpdated(MyTitleWithdraw _myTitleStatus);
+    event MyTitleStatusUpdated(MyTitleWithdrawal _myTitleStatus);
     /// @notice Event emitted to report the number of late payments.
     event PaymentLateNumber(uint _i);
     /// @notice Event emitted to report the updated amount with late interest. 
@@ -68,8 +68,8 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
     event PaymentIsLate(uint _lateInstallments);
     /// @notice Event emitted when the allocated Collateral is returned to the owner.
     event CollateralRefunded(uint _idTitle, uint _contractId, uint _collateralId);
-    /// @notice Event emitted when the owner of the Consórcio Quota tries to withdraw, but the Quota has pending issues.
-    event ThereAreSomePendencies(uint _installmentsPaid, uint _collateralTitleId, address _collateralTitleAddress, address _collateralRWAAddress, MyTitleWithdraw _myTitleStatus);
+    /// @notice Event emitted when the owner of the Consórcio Quota tries to withdrawals, but the Quota has pending issues.
+    event ThereAreSomePendencies(uint _installmentsPaid, uint _collateralTitleId, address _collateralTitleAddress, address _collateralRWAAddress, MyTitleWithdrawal _myTitleStatus);
     /// @notice Event emitted to report the last installment paid.
     event LastInstallmentPaid(uint _installmentsPaid);
     /// @notice Event emitted when a Consórcio Quota is canceled due to delay.
@@ -97,15 +97,15 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
     TitleStatus status;
     
     ///@notice Enum for the Status of the Consórcio Quotas
-    enum MyTitleWithdraw{
+    enum MyTitleWithdrawal{
         Canceled, //0
         Late, //1
         OnSchedule, //2
-        Withdraw, //3
+        Withdrawal, //3
         Finalized //4
     }
     
-    MyTitleWithdraw myTitleStatus;
+    MyTitleWithdrawal myTitleStatus;
 
     /// STRUCTS
     
@@ -141,7 +141,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         address collateralTitleAddress;
         address collateralRWAAddress;
         uint valueOfInsuranceNeeded;
-        MyTitleWithdraw myTitleStatus;
+        MyTitleWithdrawal myTitleStatus;
         bool paid;
     }
     ///@notice Payment Structure
@@ -288,11 +288,11 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
     /**
      * 
      * @param _titleId Identifier of the Consórcio Title for which the client wishes to purchase a Quota
-     * @param withdrawPeriod withdrawal modality that the client desires
+     * @param withdrawalPeriod withdrawal modality that the client desires
      * @param _tokenAddress the stablecoin that will be used for payment.
      * @dev on the mainnet, the stablecoin will be dynamic.
      */
-    function buyTitle(uint64 _titleId, bool withdrawPeriod, IERC20 _tokenAddress) public {
+    function buyTitle(uint64 _titleId, bool withdrawalPeriod, IERC20 _tokenAddress) public {
         Titles storage title = allTitles[_titleId];
 
         require(title.status == TitleStatus.Open,"This Title is not available. Check the Title status!");
@@ -302,7 +302,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
 
         uint fee;
         uint lockPeriod;
-        if(withdrawPeriod == true){
+        if(withdrawalPeriod == true){
             fee = title.protocolFee;
             lockPeriod = 0;
         } else {
@@ -324,7 +324,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
             collateralTitleAddress: address(0),
             collateralRWAAddress: address(0),
             valueOfInsuranceNeeded: 0,
-            myTitleStatus: MyTitleWithdraw.OnSchedule,
+            myTitleStatus: MyTitleWithdrawal.OnSchedule,
             paid: false
         });
 
@@ -348,7 +348,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         require(title.status == TitleStatus.Closed || title.status == TitleStatus.Open, "Check the title status!");
-        require(myTitle.myTitleStatus == MyTitleWithdraw.OnSchedule || myTitle.myTitleStatus == MyTitleWithdraw.Late || myTitle.myTitleStatus == MyTitleWithdraw.Withdraw );
+        require(myTitle.myTitleStatus == MyTitleWithdrawal.OnSchedule || myTitle.myTitleStatus == MyTitleWithdrawal.Late || myTitle.myTitleStatus == MyTitleWithdrawal.Withdrawal );
         require(myTitle.installmentsPaid < title.installments, "You already paid all the installments!");
 
         uint _installment;
@@ -404,14 +404,14 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         }
 
         if(myTitle.installmentsPaid == myTitle.installments){
-            myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
+            myTitle.myTitleStatus = MyTitleWithdrawal.Withdrawal;
 
             if(myTitle.collateralId != 0 ){
                 refundCollateral(_idTitle, _contractId);
             }
         }
-        if(myTitle.installmentsPaid == title.nextDrawNumber &&  myTitle.myTitleStatus == MyTitleWithdraw.Late){
-            myTitle.myTitleStatus = MyTitleWithdraw.OnSchedule;
+        if(myTitle.installmentsPaid == title.nextDrawNumber &&  myTitle.myTitleStatus == MyTitleWithdrawal.Late){
+            myTitle.myTitleStatus = MyTitleWithdrawal.OnSchedule;
         }
 
         updateValueOfInsurance(_idTitle, _contractId);
@@ -431,7 +431,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         Titles storage title = allTitles[_idTitle];
         require(myTitle.contractId <= title.numberOfTitlesSold, "Enter a valid contract Id for this Title!");
-        require(myTitle.myTitleStatus != MyTitleWithdraw.Canceled || myTitle.myTitleStatus != MyTitleWithdraw.Finalized, "your title already have been finalized or canceled. Please check the status.");
+        require(myTitle.myTitleStatus != MyTitleWithdrawal.Canceled || myTitle.myTitleStatus != MyTitleWithdrawal.Finalized, "your title already have been finalized or canceled. Please check the status.");
         require(address(_tokenAddress) != address(0), "Enter a token address");
 
         (, , bool isStable) = staff.returnAvailableStablecoin(_tokenAddress);
@@ -583,7 +583,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
 
         require(myCollateralTitle.titleValue == colateralValuePaid || colateralValuePaid >= insuranceNeeded, "All the installments from the colateral must have been paid or at least the value paid must be greater then two times the ensureValueNeeded");
 
-        myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
+        myTitle.myTitleStatus = MyTitleWithdrawal.Withdrawal;
 
         CollateralTitles memory collateral = CollateralTitles ({
             collateralOwner: msg.sender,
@@ -640,7 +640,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(myTitle.installmentsPaid == myTitle.installments, "All the installments must have been paid!");
-        require(myTitle.paid == true, "You can't retrieve the collateral before the withdraw!");
+        require(myTitle.paid == true, "You can't retrieve the collateral before the withdrawal!");
 
         if(myTitle.installmentsPaid == myTitle.installments && myTitle.collateralRWAAddress != address(0)){
 
@@ -648,7 +648,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
 
             bytes memory updatePermission = abi.encode(permissionHash, myTitle.valueOfInsuranceNeeded, false);
 
-            myTitle.myTitleStatus = MyTitleWithdraw.Finalized;
+            myTitle.myTitleStatus = MyTitleWithdrawal.Finalized;
 
             sender.sendMessagePayLINK(14767482510784806043, fujiReceiver, updatePermission); // Chain - 14767482510784806043
 
@@ -662,7 +662,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
 
                 myCollateralTitle.titleOwner = collateral.collateralOwner;
 
-                myTitle.myTitleStatus = MyTitleWithdraw.Finalized;
+                myTitle.myTitleStatus = MyTitleWithdrawal.Finalized;
 
                 emit CollateralRefunded(_idTitle, _contractId, myTitle.collateralId);
             }
@@ -676,16 +676,16 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
      * @param _stablecoin The address of the currency that will be used to pay the winner.
      * @dev on the mainnet, the stablecoin will be dynamic.
      */
-    function winnerWithdraw(uint _idTitle, uint _contractId, IERC20 _stablecoin) public {
+    function winnerWithdrawal(uint _idTitle, uint _contractId, IERC20 _stablecoin) public {
         Titles storage title = allTitles[_idTitle];
         TitlesSold storage myTitle = titleSoldInfos[_idTitle][_contractId];
         
         require(msg.sender == myTitle.titleOwner || msg.sender == owner(), "Msg.sender must be the contract Owner or the protocol owner!");
         require(address(_stablecoin) != address(0), "Token not allowed");
-        require(myTitle.myTitleStatus == MyTitleWithdraw.Withdraw, "This title don't have the permission to withdraw");
+        require(myTitle.myTitleStatus == MyTitleWithdrawal.Withdrawal, "This title don't have the permission to withdrawal");
 
         if(myTitle.periodLocked > 0){
-            require(title.nextDrawNumber > myTitle.periodLocked, "You can't withdraw at this time. Your lock period ends on the 6 month!");
+            require(title.nextDrawNumber > myTitle.periodLocked, "You can't withdrawal at this time. Your lock period ends on the 6 month!");
         }
  
         if(myTitle.installmentsPaid == myTitle.installments ||
@@ -728,7 +728,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         uint cancellationLimit = 600;
 
         if((block.timestamp - delayedPaymentDate) > cancellationLimit ){
-            clientTitle.myTitleStatus = MyTitleWithdraw.Canceled;
+            clientTitle.myTitleStatus = MyTitleWithdrawal.Canceled;
             title.titleCanceled++;
 
             emit TitleCanceled(_titleId, _contractId, lastInstallmentPaid);
@@ -742,12 +742,12 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
                 TitlesSold storage collateralContract = titleSoldInfos[collateral.titleIdOfCollateral][collateral.contractIdOfCollateral];
 
                 collateralTitle.titleCanceled++;
-                collateralContract.myTitleStatus = MyTitleWithdraw.Canceled;
+                collateralContract.myTitleStatus = MyTitleWithdrawal.Canceled;
             }
         }else{
             if(block.timestamp > delayedPaymentDate && (block.timestamp - delayedPaymentDate) < cancellationLimit) {
 
-                clientTitle.myTitleStatus = MyTitleWithdraw.Late;
+                clientTitle.myTitleStatus = MyTitleWithdrawal.Late;
                 emit MyTitleStatusUpdated(clientTitle.myTitleStatus);
 
             }
@@ -762,7 +762,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
      * @param _tokenAddress The address of the currency that will be used for withdrawal.
      * @dev on the mainnet, the stablecoin will be dynamic.
      */
-    function protocolWithdraw(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{
+    function protocolWithdrawal(uint _idTitle, IERC20 _tokenAddress) public onlyOwner{
         Titles storage title = allTitles[_idTitle];
 
         require(title.status == TitleStatus.Finalized || title.status == TitleStatus.Canceled);
@@ -810,7 +810,7 @@ contract Horizon is CCIPReceiver, OwnerIsCreator{
         myTitle.collateralRWAAddress = _collectionAddress;
 
         if(myTitle.collateralId != 0 && myTitle.collateralRWAAddress != address(0)) {
-            myTitle.myTitleStatus = MyTitleWithdraw.Withdraw;
+            myTitle.myTitleStatus = MyTitleWithdrawal.Withdrawal;
         }
 
         emit MessageReceived( any2EvmMessage.messageId, any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address)), abi.decode(any2EvmMessage.data, (string)));

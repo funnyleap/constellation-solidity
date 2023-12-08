@@ -4,7 +4,7 @@ pragma solidity >=0.8.9 <=0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 
-error NothingToWithdraw();
+error NothingToWithdrawal();
 
 /**
  * @title Horizon Staff
@@ -18,7 +18,7 @@ contract HorizonStaff is OwnerIsCreator  {
     /// @dev the values are adjusted as needed to test the contract
     uint scheduleId = 1;
     uint public baseInterestRate = 10;
-    uint public dailyInterestRate = 3;
+    uint public dailyInterestRate = 3; 
     uint oneDay = 60; //86400
     address owner;
 
@@ -272,10 +272,10 @@ contract HorizonStaff is OwnerIsCreator  {
     }
 
     /**
-     * @notice Regular Chainlink withdraw function
-     * @param _tokenAddress The token that you want to withdraw
+     * @notice Regular Chainlink Withdrawal function
+     * @param _tokenAddress The token that you want to Withdrawal
      */
-    function withdrawProtocolFee(IERC20 _tokenAddress) public onlyOwner {
+    function withdrawalProtocolFee(IERC20 _tokenAddress) public onlyOwner {
         require(allowedCrypto[_tokenAddress].isStable == true, "Token not allowed");
 
         stablecoin = allowedCrypto[_tokenAddress].stablecoin;
@@ -283,7 +283,7 @@ contract HorizonStaff is OwnerIsCreator  {
         uint amount = stablecoin.balanceOf(address(this));
 
         if (amount == 0){
-            revert NothingToWithdraw();
+            revert NothingToWithdrawal();
         }
         
         stablecoin.transfer(owner, amount);

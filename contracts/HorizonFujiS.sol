@@ -17,8 +17,8 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator  {
 
     // Custom errors to provide more descriptive revert messages.    
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
-    error NothingToWithdraw();
-    error FailedToWithdrawEth(address owner, address target, uint256 value);
+    error NothingToWithdrawal();
+    error FailedToWithdrawalEth(address owner, address target, uint256 value);
     error DestinationChainNotWhitelisted(uint64 destinationChainSelector);
 
     // Event emitted when a message is sent to another chain.
@@ -118,28 +118,28 @@ contract HorizonFujiS is CCIPReceiver, OwnerIsCreator  {
     receive() external payable {}
 
     /**
-     * @notice Regular Chainlink withdraw function
-     * @param _beneficiary The address that will receive the withdraw value
+     * @notice Regular Chainlink Withdrawal function
+     * @param _beneficiary The address that will receive the Withdrawal value
      */
-    function withdraw(address _beneficiary) public onlyOwner {
+    function withdrawal(address _beneficiary) public onlyOwner {
         uint256 amount = address(this).balance;
 
-        if (amount == 0) revert NothingToWithdraw();
+        if (amount == 0) revert NothingToWithdrawal();
 
         (bool sent, ) = _beneficiary.call{value: amount}("");
 
-        if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
+        if (!sent) revert FailedToWithdrawalEth(msg.sender, _beneficiary, amount);
     }
 
     /**
-     * @notice Regular Chainlink withdraw function
-     * @param _beneficiary  The address that will receive the withdraw value
-     * @param _token The token that you want to withdraw
+     * @notice Regular Chainlink Withdrawal function
+     * @param _beneficiary  The address that will receive the Withdrawal value
+     * @param _token The token that you want to Withdrawal
      */
-    function withdrawToken( address _beneficiary, address _token) public onlyOwner {
+    function withdrawalToken( address _beneficiary, address _token) public onlyOwner {
         uint256 amount = IERC20(_token).balanceOf(address(this));
 
-        if (amount == 0) revert NothingToWithdraw();
+        if (amount == 0) revert NothingToWithdrawal();
 
         IERC20(_token).transfer(_beneficiary, amount);
     }

@@ -13,8 +13,8 @@ import "./HorizonFujiS.sol";
 
 // Custom errors to provide more descriptive revert messages.
 error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
-error NothingToWithdraw();
-error FailedToWithdrawEth(address owner, address target, uint256 value);
+error NothingToWithdrawal();
+error FailedToWithdrawalEth(address owner, address target, uint256 value);
 error DestinationChainNotWhitelisted(uint64 destinationChainSelector);
 error SourceChainNotWhitelisted(uint64 sourceChainSelector);
 error SenderNotWhitelisted(address sender);
@@ -373,29 +373,29 @@ contract HorizonFujiR is CCIPReceiver,OwnerIsCreator {
     receive() external payable {}
 
     /**
-     * @notice Basic chainlink withdraw function
+     * @notice Basic chainlink Withdrawal function
      * @param _beneficiary The address to recive the value
      */
-    function withdraw(address _beneficiary) public onlyOwner {
+    function withdrawal(address _beneficiary) public onlyOwner {
         
         uint256 amount = address(this).balance;
 
-        if (amount == 0) revert NothingToWithdraw();
+        if (amount == 0) revert NothingToWithdrawal();
         
         (bool sent, ) = _beneficiary.call{value: amount}("");
 
-        if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
+        if (!sent) revert FailedToWithdrawalEth(msg.sender, _beneficiary, amount);
     }
 
     /**
-     * @notice Basic chainlink withdraw function
+     * @notice Basic chainlink Withdrawal function
      * @param _beneficiary The address to recive the value
      */
-    function withdrawToken( address _beneficiary, address _token) public onlyOwner {
+    function withdrawalToken( address _beneficiary, address _token) public onlyOwner {
         
         uint256 amount = IERC20(_token).balanceOf(address(this));
 
-        if (amount == 0) revert NothingToWithdraw();
+        if (amount == 0) revert NothingToWithdrawal();
 
         IERC20(_token).transfer(_beneficiary, amount);
     }
