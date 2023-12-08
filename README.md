@@ -46,7 +46,7 @@
 
    4.4.2. Allocation Using Tokenized Assets
 
-   4.5. _Consórcio_ Quota Withdrawl
+   4.5. _Consórcio_ Quota Withdrawal
    
 </br>
 
@@ -314,7 +314,7 @@ Tokenized Assets are digital assets that represent ownership of a real or virtua
 
 </br>
 
-### 4.5. _Consórcio_ Quota Withdrawl
+### 4.5. _Consórcio_ Quota Withdrawal
 
 The withdrawal of the Quota value is an important process in the Horizon protocol and can be performed under two main conditions:
 
