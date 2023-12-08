@@ -35,6 +35,6 @@ This file was created to facilitate access to the requested content. Additionall
 |----------------|----------|------------------------|----------|
 |HorizonRFuji    |   289    |  checkCollateralPrice  | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L289)|
 |HorizonFunctions|   80     |       sendRequest      | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFunctions.sol#L80)|
-|HorizonRFuji    |   111    |   getCollateralPrice   | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L308C14-L308C32)|
+|HorizonRFuji    |   308    |   getCollateralPrice   | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L308C14-L308C32)|
 
 [Automation Log Registry](Automation-RG.pdf)
