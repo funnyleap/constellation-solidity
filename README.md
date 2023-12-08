@@ -6,13 +6,25 @@
 </p>
 </br>
 
-1. Introduction
-   - What is _consórcio_?
-   - Why is it relevant?
-   - How does _consórcio_ works
-2. About the protocol
-3. How does it works
-   </br>
+1. [Introduction](https://github.com/BellumGalaxy/constellation-bg#1-introduction)
+
+   1.1. What is _consórcio_?
+
+   1.2. Why is it relevant?
+
+   1.3. How does _consórcio_ works
+   
+2. Horizon Protocol
+   
+
+</br>
+
+Horizon Links
+
+- Pitch deck presentation → 
+- Live demo website → https://horizon-dapp.vercel.app
+
+</br>
 
 ---
 
@@ -26,13 +38,13 @@ To overcome this, Brazilians have created the _consórcio_!
 
 </br>
 
-### What is _consórcio_?
+### 1.1. What is _consórcio_?
 
 The _consórcio_, created in 1962 due to the lack of availability of credit lines, is a tool for collective self-financing through which people come together to acquire something they desire, such as a car, a property, or even services. It is managed by an administrative entity, which, in the case of Brazil, is regulated and supervised by the government. This tool has become popular and has even been adopted by other countries such as Argentina, Uruguay, Paraguay, Peru, Mexico, and Venezuela (Source: [ABAC - History](https://abac.org.br/o-consorcio/historia)).
 
 </br>
 
-### Why is it relevant?
+### 1.2. Why is it relevant?
 The wide adoption of the _consórcio_ system, which grows year after year, is attributed, among other factors, mainly to the power of inclusion and financial discipline that this tool promotes. Beyond that, this is a product in full expansion in the traditional system and little explored, which, in web3, has even greater potential given that we can reach other countries. Let's look at some data about the _consórcio_ in Brazil (Source: [ABAC - September details Press Release](https://abac.org.br/imprensa/press-releases-detalhe&id=383)).
 
 </br>
@@ -60,28 +72,23 @@ If we project these values globally, considering only countries similar to Brazi
 
 <br/>
 
-### How does _consórcio_ works
+### 1.3. How does _consórcio_ works
 
 </br>
 
-## 2. About the protocol
+## 2. Horizon Protocol
 
-Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired _Consórcio_ Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people
+Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired _Consórcio_ Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people.
+
 </br>
 
 Would you like to learn more about Tokenized Assets and ERC-4337? Access the links below: </br>
 - Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/) </br>
 - Account Abstraction [ERC-4337](https://www.erc4337.io)
 
-# How does it works
+</br>
 
----
-
-# Application in the Constellation Hackathon
-Our [pitch](https://youtu.be/LdYLifCuKFo).
-You can access [Horizon](https://horizon-dapp.vercel.app) live demo. </br>
-
-## This prototype will simulate the following stages:
+### This prototype will simulate the following stages:
 
 - [X] Creation of Consórcio Titles;
 - [X] Commercialization of Consórcio Quotas;
