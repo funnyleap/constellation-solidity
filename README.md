@@ -12,17 +12,35 @@
 
    1.2. Why is it relevant?
 
-   1.3. How does _consórcio_ works
+   1.3. How does _consórcio_ works?
    
-2. Horizon Protocol
+2. [Horizon Protocol](https://github.com/BellumGalaxy/constellation-bg#2-horizon-protocol)
+
+   2.1. The Prototype
+   
+3. [Tools Used](https://github.com/BellumGalaxy/constellation-bg#tools-used)
+
+   3.1. Chainlink VRF - Verifiable Random Function
+
+   3.2. Chainlink CCIP - Cross-Chain Interoperability Protocol
+
+   3.3. Chainlink Functions
+
+   3.4. Chainlink Automation - Chainlink’s hyper-reliable Automation network
+
+   3.5. Chainlink Tools Summary Table
+
+   3.6. API - Application Programming Interface
+
+4. Operation
    
 
 </br>
 
-Horizon Links
+### Horizon Links
 
-- Pitch deck presentation → 
-- Live demo website → https://horizon-dapp.vercel.app
+- Pitch deck presentation is available on [YouTube](https://www.youtube.com/watch?v=fGnu5_pe2V4)
+- Live demo [website](https://horizon-dapp.vercel.app)
 
 </br>
 
@@ -72,7 +90,7 @@ If we project these values globally, considering only countries similar to Brazi
 
 <br/>
 
-### 1.3. How does _consórcio_ works
+### 1.3. How does _consórcio_ works?
 
 </br>
 
@@ -82,13 +100,19 @@ Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, pr
 
 </br>
 
-Would you like to learn more about Tokenized Assets and ERC-4337? Access the links below: </br>
-- Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/) </br>
+Would you like to learn more about Tokenized Assets and ERC-4337? Access the links below:
+
+- Real World Assets [RWA](https://www.coindesk.com/learn/rwa-tokenization-what-does-it-mean-to-tokenize-real-world-assets/)
+  
 - Account Abstraction [ERC-4337](https://www.erc4337.io)
 
 </br>
 
-### This prototype will simulate the following stages:
+### 2.1. The Prototype
+
+This prototype simulates the following stages:
+
+</br>
 
 - [X] Creation of Consórcio Titles;
 - [X] Commercialization of Consórcio Quotas;
@@ -98,26 +122,95 @@ Would you like to learn more about Tokenized Assets and ERC-4337? Access the lin
 - [X] Verification of Guarantees;
 - [X] Allocation of Guarantees and Chainlink Automated Monitoring of Value following FIPE through Chainlink Functions.
 
-## Tools Used
+</br>
 
-- ### Chainlink VRF - Verifiable Random Function
-  Chainlink VRF is a crucial part of the protocol's operability, as the trust, transparency, and security provided by the tool are essential for all other functionalities to be performed correctly. The verifiable randomness, cryptographic security, decentralization, and integration with Smart Contracts make the results presented by the tool unquestionable.
+## 3. Tools Used
 
-- ### Chainlink CCIP - Cross-Chain Interoperability Protocol
-  Chainlink CCIP allows Horizon to offer inclusion to diverse peoples and cultures by enabling communication between various blockchains and allowing the integration and use of assets from different parts of the globe in a secure and decentralized manner. Specifically, Horizon, will enable the creation of allocation permissions for guarantees on all Ethereum-compatible networks and, in the future, may integrate the protocol with specific networks of each country.
+</br>
 
-- ### Chainlink Functions
-  Chainlink Functions will carry out the collection of necessary data for the allocation of Assets according to their respective off-chain databases. Furthermore, it could assist in the future with the implementation of liquidation measures or alerts to the respective owners of the assets allocated in the protocol.
-  It is responsible for collecting data through the FIPE API, bringing on-chain data of automobiles that will be used as examples of tokenized assets for guarantees.
+### 3.1. Chainlink VRF - Verifiable Random Function
 
-- ### Chainlink Automation - Chainlink’s hyper-reliable Automation network
-  Chainlink Automation is essential for the maintenance of the protocol. It will be responsible, along with Chainlink Functions, for the periodic collection of updated data from the allocated guarantees. This involves requesting the data and storing it based on the emitted response log. Thus, the protocol has mechanisms that ensure the health of the ecosystem.
-  Moreover, it could be used to conduct draws and automate processes for a possible new protocol stage.
+Chainlink VRF is a crucial part of the protocol's operability, as the trust, transparency, and security provided by the tool are essential for all other functionalities to be performed correctly. The verifiable randomness, cryptographic security, decentralization, and integration with Smart Contracts make the results presented by the tool unquestionable.
 
-- ### API - Application Programming Interface
-  Responsible for collecting information from the database of [FIPE](https://www.fipe.org.br) - Fundação Instituto de Pesquisas Econômicas (Foundation for Economic Research Institute).
+</br>
 
-## Operation
+### 3.2. Chainlink CCIP - Cross-Chain Interoperability Protocol
+
+Chainlink CCIP allows Horizon to offer inclusion to diverse peoples and cultures by enabling communication between various blockchains and allowing the integration and use of assets from different parts of the globe in a secure and decentralized manner. Specifically, Horizon, will enable the creation of allocation permissions for guarantees on all Ethereum-compatible networks and, in the future, may integrate the protocol with specific networks of each country.
+
+</br>
+
+### 3.3. Chainlink Functions
+
+Chainlink Functions will carry out the collection of necessary data for the allocation of Assets according to their respective off-chain databases. Furthermore, it could assist in the future with the implementation of liquidation measures or alerts to the respective owners of the assets allocated in the protocol.
+
+It is responsible for collecting data through the FIPE API, bringing on-chain data of automobiles that will be used as examples of tokenized assets for guarantees.
+
+</br>
+
+### 3.4. Chainlink Automation - Chainlink’s hyper-reliable Automation network
+
+Chainlink Automation is essential for the maintenance of the protocol. It will be responsible, along with Chainlink Functions, for the periodic collection of updated data from the allocated guarantees. This involves requesting the data and storing it based on the emitted response log. Thus, the protocol has mechanisms that ensure the health of the ecosystem.
+
+Moreover, it could be used to conduct draws and automate processes for a possible new protocol stage.
+
+</br>
+
+### 3.5. Chainlink Tools Summary Table
+
+Click on a function to check it on the code.
+
+</br>
+
+#### Chainlink VRF
+|    Contract    |   Line   | Function               |   Go to  |
+|----------------|----------|------------------------|----------|
+|Horizon         |   495    | MonthlyVRFWinner       | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/Horizon.sol#L495)|
+|Horizon VRF     |   83     | requestRandomWords     | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonVRF.sol#L83)|
+|Horizon VRF     |   110    | fulfillRandomWords     | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonVRF.sol#L110)|
+|Horizon         |   536    | ReceiveVRFRandomNumber | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/Horizon.sol#L536)|
+
+</br>
+
+#### Chainlink CCIP
+|    Contract    |   Line   |       Function         |   Go to  |
+|----------------|----------|------------------------|----------|
+|Horizon         |   608    |    addRWACollateral    | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/Horizon.sol#L608)|
+|Horizon         |   796    |      _ccipReceive      | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/Horizon.sol#L796)|
+|HorizonS        |   70     |   sendMessagePayLINK   | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonS.sol#L70)|
+|HorizonRFuji    |   131    |      _ccipReceive      | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L131)|
+|HorizonRFuji    |   219    |    addCollateral       | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L219)|
+|HorizonSFuji    |   63     |   sendMessagePayLINK   | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/3035310d7f182e3b1ccda6764b2d7df2b0553ae2/contracts/HorizonFujiS.sol#L63)|
+
+</br>
+
+#### Chainlink Functions
+|    Contract    |   Line   |        Function        |   Go to  |
+|----------------|----------|------------------------|----------|
+|HorizonRFuji    |   192    |  verifyCollateralValue | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L192)|
+|HorizonFunctions|   80     |       sendRequest      | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFunctions.sol#L80)|
+|HorizonFunctions|   111    |      fulfillRequest    | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFunctions.sol#L111)|
+
+</br>
+
+#### Chainlink Automation
+|     Contract   |   Line   |        Function        |   Go to  |
+|----------------|----------|------------------------|----------|
+|HorizonRFuji    |   289    |  checkCollateralPrice  | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L289)|
+|HorizonFunctions|   80     |       sendRequest      | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFunctions.sol#L80)|
+|HorizonRFuji    |   308    |   getCollateralPrice   | [Check](https://github.com/BellumGalaxy/constellation-bg/blob/f7e3ff621dabdd0f98e700a06b631a2d8320fea6/contracts/HorizonFujiR.sol#L308C14-L308C32)|
+
+[Automation Log Registry](Automation-RG.pdf)
+
+</br>
+
+### 3.6. API - Application Programming Interface
+
+Responsible for collecting information from the database of [FIPE](https://www.fipe.org.br) - Fundação Instituto de Pesquisas Econômicas (Foundation for Economic Research Institute).
+
+</br>
+
+## 4. Operation
 
 The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These Consórcios have a limited number of participants and each Consórcio has an interest policy against delinquency. This is defined before their creation.
 
@@ -279,7 +372,9 @@ All the potential scenarios presented converge to efficient and transparent proc
 
 In summary, the initial product and its possible developments are not only useful for investors but also for people who, in times of need, can meet specific demands such as health issues by acquiring loans and financing quickly and conveniently using their assets as collateral.
 
-# Conclusion
+</br>
+
+## Conclusion
 
 Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations. <br/>
 
@@ -287,7 +382,9 @@ Through the implementation of a robust _consórcio_ system, Horizon not only fac
 
 Furthermore, Horizon's structure is designed to evolve and adapt to the emerging needs of the market and users. With plans that include the creation of a secondary market for titles, exploring partnerships for additional yields, and expanding into loan and financing services, Horizon is not just a solution for the present but an investment in the future of decentralized finance. <br/>
 
-# Developer Session
+</br>
+
+## Developer Session
 
 ## Smart contracts
 [Horizon](contracts/Horizon.sol) <br/>
