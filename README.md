@@ -18,7 +18,7 @@
 
    2.1. The Prototype
    
-3. [Tools Used](https://github.com/BellumGalaxy/constellation-bg#tools-used)
+3. [Tools Used](https://github.com/BellumGalaxy/constellation-bg#3-tools-used)
 
    3.1. Chainlink VRF - Verifiable Random Function
 
@@ -28,13 +28,18 @@
 
    3.4. Chainlink Automation - Chainlink’s hyper-reliable Automation network
 
-   3.5. Chainlink Tools Summary Table
+   3.5. [Chainlink Tools Summary Table](https://github.com/BellumGalaxy/constellation-bg#35-chainlink-tools-summary-table)
 
    3.6. API - Application Programming Interface
 
-4. Operation
-   
+4. [Operation](https://github.com/BellumGalaxy/constellation-bg#4-operation)
 
+   4.1. Commercialization of _Consórcio_ Titles
+
+   4.2. Investment of Received Funds
+
+   4.3. Withdrawal Conditions
+   
 </br>
 
 ### Horizon Links
@@ -63,6 +68,7 @@ The _consórcio_, created in 1962 due to the lack of availability of credit line
 </br>
 
 ### 1.2. Why is it relevant?
+
 The wide adoption of the _consórcio_ system, which grows year after year, is attributed, among other factors, mainly to the power of inclusion and financial discipline that this tool promotes. Beyond that, this is a product in full expansion in the traditional system and little explored, which, in web3, has even greater potential given that we can reach other countries. Let's look at some data about the _consórcio_ in Brazil (Source: [ABAC - September details Press Release](https://abac.org.br/imprensa/press-releases-detalhe&id=383)).
 
 </br>
@@ -114,13 +120,13 @@ This prototype simulates the following stages:
 
 </br>
 
-- [X] Creation of Consórcio Titles;
-- [X] Commercialization of Consórcio Quotas;
-- [X] Conducting Consórcio Quota Lottery via VRF;
-- [X] Payments, Delays, and Application of Interest;
-- [X] Creation of Allocation Permissions through Chainlink CCIP;
-- [X] Verification of Guarantees;
-- [X] Allocation of Guarantees and Chainlink Automated Monitoring of Value following FIPE through Chainlink Functions.
+- [X] Creation of Consórcio Titles
+- [X] Commercialization of Consórcio Quotas
+- [X] Conducting Consórcio Quota Lottery via VRF
+- [X] Payments, Delays, and Application of Interest
+- [X] Creation of Allocation Permissions through Chainlink CCIP
+- [X] Verification of Guarantees
+- [X] Allocation of Guarantees and Chainlink Automated Monitoring of Value following FIPE through Chainlink Functions
 
 </br>
 
@@ -214,7 +220,9 @@ Responsible for collecting information from the database of [FIPE](https://www.f
 
 The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These Consórcios have a limited number of participants and each Consórcio has an interest policy against delinquency. This is defined before their creation.
 
-## Commercialization of _Consórcio_ Titles
+</br>
+
+### 4.1. Commercialization of _Consórcio_ Titles
 
 Upon acquiring a _Consórcio_ Quota, the client has two main options for withdrawal:
 
@@ -228,12 +236,16 @@ Upon acquiring a _Consórcio_ Quota, the client has two main options for withdra
 
 For example, if the total number of draws is 10, withdrawal can only be made from draw 6 onwards, even if the client has been drawn earlier.
 
-## Investment of Received Funds
+</br>
+
+### 4.2. Investment of Received Funds
 
 The funds received from Conditional Withdrawal titles will be invested in partner protocols to generate additional revenue for Horizon.
 Objective: This process aims to enhance the financial sustainability of the protocol and offer better opportunities to participants.
 
-## Withdrawal Conditions
+</br>
+
+### 4.3. Withdrawal Conditions
 
 The withdrawal of a drawn consórcio quota is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
 
@@ -364,11 +376,11 @@ Chainlink Data Streams would be a crucial tool for the proper functioning of the
 - Access to financing for large purchases such as real estate, furniture, and general equipment.
 - Due to the guaranteed nature, we can offer favorable financing conditions such as lower interest rates and flexible repayment terms according to the need.
 
- </br>
+</br>
  
 All the potential scenarios presented converge to efficient and transparent processes through the employed technology and generate financial inclusion for individuals and businesses that lack access to loans from traditional institutions but have assets and need to create value from them.
 
- </br>
+</br>
 
 In summary, the initial product and its possible developments are not only useful for investors but also for people who, in times of need, can meet specific demands such as health issues by acquiring loans and financing quickly and conveniently using their assets as collateral.
 
@@ -386,33 +398,59 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 ## Developer Session
 
-## Smart contracts
-[Horizon](contracts/Horizon.sol) <br/>
-[HorizonS](contracts/HorizonS.sol) <br/>
-[HorizonStaff](contracts/HorizonStaff.sol) <br/>
-[HorizonVRF](contracts/HorizonVRF.sol) <br/>
-[HorizonFujiR](contracts/HorizonFujiR.sol) <br/>
-[HorizonFujiS](contracts/HorizonFujiS.sol) <br/>
-[HorizonFunctions](contracts/HorizonFunctions.sol) <br/>
-[HorizonFujiAssistant](contracts/HorizonFujiAssistant.sol) <br/>
-[FakeRWA](contracts/FakeRWA.sol) <br/>
+### Smart contracts
 
-## Blockchains
-[Polygon](https://polygon.technology) <br/>
-[Avalanche](https://www.avax.network) <br/>
+[Horizon](contracts/Horizon.sol)
 
-## Tools
-[Chainlink Automation](https://docs.chain.link/chainlink-automation) <br/>
-[Chainlink CCIP](https://docs.chain.link/ccip) <br/>
-[Chainlink Functions](https://docs.chain.link/chainlink-functions) <br/>
-[Chainlink VRF](https://docs.chain.link/vrf) <br/>
+[HorizonS](contracts/HorizonS.sol)
 
-## API
-- [API GitHub Repository](https://github.com/deividfortuna/fipe)  <br/>
-- API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}  <br/>
-- Input used in demo - ["motos","77","5223","2015-1"].  <br/>
+[HorizonStaff](contracts/HorizonStaff.sol)
 
-## Want to try Thunder Client?
+[HorizonVRF](contracts/HorizonVRF.sol)
+
+[HorizonFujiR](contracts/HorizonFujiR.sol)
+
+[HorizonFujiS](contracts/HorizonFujiS.sol)
+
+[HorizonFunctions](contracts/HorizonFunctions.sol)
+
+[HorizonFujiAssistant](contracts/HorizonFujiAssistant.sol)
+
+[FakeRWA](contracts/FakeRWA.sol)
+
+</br>
+
+### Blockchains
+
+[Polygon](https://polygon.technology)
+
+[Avalanche](https://www.avax.network)
+
+</br>
+
+### Tools
+
+[Chainlink Automation](https://docs.chain.link/chainlink-automation)
+
+[Chainlink CCIP](https://docs.chain.link/ccip)
+
+[Chainlink Functions](https://docs.chain.link/chainlink-functions)
+
+[Chainlink VRF](https://docs.chain.link/vrf)
+
+</br>
+
+### API
+
+[API GitHub Repository](https://github.com/deividfortuna/fipe)
+
+API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
+
+Input used in demo - ["motos","77","5223","2015-1"].  <br/>
+
+</br>
+
+### Want to try Thunder Client?
 
 - **Body**
   {
@@ -434,3 +472,6 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
   "MesReferencia": "novembro de 2023",
   "SiglaCombustivel": "G"
   }
+
+  ---
+  
