@@ -234,13 +234,13 @@ The protocol is developed using smart contracts in Solidity. These contracts ena
 
 Upon acquiring a _Consórcio_ Quota, the client has two main options for withdrawal:
 
-- Immediate Withdrawal
-  Allows the client to withdraw the amount immediately after being drawn.
-  Administration Fee: 10% of the Quota value, diluted monthly.
+- Open Withdrawal 
+   - Allows the client to withdraw the amount immediately after being drawn.</br>
+   - Administration Fee: 10% of the Quota value, diluted monthly.
 
 - Conditional Withdrawal
-  Withdrawal is only permitted after the Title exceeds the mark of 50% of the participants drawn.
-  Administration Fee: 5% of the Quota value, diluted in monthly installments.
+   - Withdrawal is only permitted after the Title exceeds the mark of 50% of the participants drawn.
+   - Administration Fee: 5% of the Quota value, diluted in monthly installments.
 
 For example, if the total number of draws is 10, withdrawal can only be made from draw 6 onwards, even if the client has been drawn earlier.
 
