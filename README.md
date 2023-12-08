@@ -39,6 +39,14 @@
    4.2. Investment of Received Funds
 
    4.3. Withdrawal Conditions
+
+   4.4. Allocation of Collaterals
+
+   4.4.1. Allocation Process Using Titles
+
+   4.4.2. Allocation Using Tokenized Assets
+
+   4.5. _Consórcio_ Quota Withdrawl
    
 </br>
 
@@ -262,11 +270,16 @@ Allocation of Guarantees: The client may choose to allocate guarantees to enable
   Tokenized Assets can be used as collateral for withdrawal.
   Advantage: Provides a flexible alternative for clients who own tokenized digital assets.
 
-## Allocation of Collaterals
+</br>
+
+### 4.4. Allocation of Collaterals
 
 After a Quota is drawn, the winner has the option to allocate guarantees to release the value. This allocation can be done in two main ways: using other titles or utilizing Tokenized Assets.
 
-### Allocation Process Using Titles
+</br>
+
+### 4.4.1. Allocation Process Using Titles
+
 To use a title as collateral, the owner of the drawn title needs to provide some essential information:
 
 Identifier of the Drawn _Consórcio_ Title: Identification number of the title that your quota was drawn.
@@ -274,22 +287,35 @@ Identifier of Your Drawn Quota: Number of your quota or participation in the dra
 Identifier of the _Consórcio_ Title Used as Collateral: Identification number of the title that the quota you wish to use as collateral.
 Identifier of Your Quota in the Collateral Title: Number of your quota that will be used as collateral.
 
-#### Practical Example:
+</br>
+
+A Practical Example
+
 * Drawn _Consórcio_ Title: 10
    * Your Quota in the Drawn _Consórcio_ Title: 30
 * _Consórcio_ Title for Collateral: 5
    * Your Quota in the Collateral Title: 15
 
+</br>
+
 If the value of quota 15 from _Consórcio_ 5, used as collateral, meets the requirements, it will be transferred to the protocol, allocated as the guarantee for quota 30 of _Consórcio_ 10, and the prize amount will be released.
 
-### Allocation Using Tokenized Assets
+</br>
+
+### 4.4.2. Allocation Using Tokenized Assets
+
 Tokenized Assets are digital assets that represent ownership of a real or virtual property. They can be used as collateral in the following ways:
 
-**Network Compatibility:** The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates. <br/>
-**Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the _Consórcio_ quota, it will be accepted as collateral. <br/>
-**Automated Monitoring:** After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
+- **Network Compatibility:** The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates. <br/>
 
-## _Consórcio_ Quota Withdrawl
+- **Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the _Consórcio_ quota, it will be accepted as collateral. <br/>
+
+- **Automated Monitoring:** After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
+
+</br>
+
+### 4.5. _Consórcio_ Quota Withdrawl
+
 The withdrawal of the Quota value is an important process in the Horizon protocol and can be performed under two main conditions:
 
 **Full Payment of the Title:** Withdrawal is permitted after the full payment of the Quota value. <br/>
@@ -400,53 +426,53 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 ### Smart contracts
 
-[Horizon](contracts/Horizon.sol)
+- [Horizon](contracts/Horizon.sol)
 
-[HorizonS](contracts/HorizonS.sol)
+- [HorizonS](contracts/HorizonS.sol)
 
-[HorizonStaff](contracts/HorizonStaff.sol)
+- [HorizonStaff](contracts/HorizonStaff.sol)
 
-[HorizonVRF](contracts/HorizonVRF.sol)
+- [HorizonVRF](contracts/HorizonVRF.sol)
 
-[HorizonFujiR](contracts/HorizonFujiR.sol)
+- [HorizonFujiR](contracts/HorizonFujiR.sol)
 
-[HorizonFujiS](contracts/HorizonFujiS.sol)
+- [HorizonFujiS](contracts/HorizonFujiS.sol)
 
-[HorizonFunctions](contracts/HorizonFunctions.sol)
+- [HorizonFunctions](contracts/HorizonFunctions.sol)
 
-[HorizonFujiAssistant](contracts/HorizonFujiAssistant.sol)
+- [HorizonFujiAssistant](contracts/HorizonFujiAssistant.sol)
 
-[FakeRWA](contracts/FakeRWA.sol)
+- [FakeRWA](contracts/FakeRWA.sol)
 
 </br>
 
 ### Blockchains
 
-[Polygon](https://polygon.technology)
+- [Polygon](https://polygon.technology)
 
-[Avalanche](https://www.avax.network)
+- [Avalanche](https://www.avax.network)
 
 </br>
 
 ### Tools
 
-[Chainlink Automation](https://docs.chain.link/chainlink-automation)
+- [Chainlink Automation](https://docs.chain.link/chainlink-automation)
 
-[Chainlink CCIP](https://docs.chain.link/ccip)
+- [Chainlink CCIP](https://docs.chain.link/ccip)
 
-[Chainlink Functions](https://docs.chain.link/chainlink-functions)
+- [Chainlink Functions](https://docs.chain.link/chainlink-functions)
 
-[Chainlink VRF](https://docs.chain.link/vrf)
+- [Chainlink VRF](https://docs.chain.link/vrf)
 
 </br>
 
 ### API
 
-[API GitHub Repository](https://github.com/deividfortuna/fipe)
+- [API GitHub Repository](https://github.com/deividfortuna/fipe)
 
-API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
+- API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
 
-Input used in demo - ["motos","77","5223","2015-1"].  <br/>
+- Input used in demo - ["motos","77","5223","2015-1"].  <br/>
 
 </br>
 
