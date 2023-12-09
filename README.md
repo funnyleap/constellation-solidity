@@ -6,6 +6,15 @@
 </p>
 </br>
 
+### Links
+- Pitch deck presentation is available on [YouTube](https://www.youtube.com/watch?v=fGnu5_pe2V4)
+- Live demo [website](https://horizon-dapp.vercel.app)
+- [Slide](https://docs.google.com/presentation/d/17KFWbSeWlj5DFj8vHn1dGskj_kFVUXx9/edit?usp=sharing&ouid=111730934185528151488&rtpof=true&sd=true) presentation
+
+</br>
+
+### Summary
+
 1. [Introduction](https://github.com/BellumGalaxy/constellation-bg#1-introduction)
 
    1.1. What is _consórcio_?
@@ -118,13 +127,6 @@
 
    8.5. Want to try Thunder Client?
     
-</br>
-
-### Horizon Links
-
-- Pitch deck presentation is available on [YouTube](https://www.youtube.com/watch?v=fGnu5_pe2V4)
-- Live demo [website](https://horizon-dapp.vercel.app)
-
 </br>
 
 ---
