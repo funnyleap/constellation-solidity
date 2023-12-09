@@ -70,7 +70,7 @@
 
    4.8.4. Return of the Guarantee
 
-5. _Consórcio_ Cost Projection
+5. [_Consórcio_ Cost Projection](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#5-cons%C3%B3rcio-cost-projection)
 
    5.1. Objective
 
@@ -90,7 +90,7 @@
 
    5.9. Research References
 
-6. Evolution of the Protocol
+6. [Evolution of the Protocol](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#6-evolution-of-the-protocol)
 
    6.1. Optimization of Phase 1
 
@@ -102,9 +102,9 @@
 
    6.5. Financing Using Tokenized Assets as Collateral
 
-7. Conclusion
+7. [Conclusion](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#7-conclusion)
    
-8. Developer Session
+8. [Developer Session](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#8-developer-session)
 
    8.1. Smart contracts
 
@@ -198,9 +198,9 @@ This prototype simulates the following stages:
 
 </br>
 
-- [X] Creation of Consórcio Titles
-- [X] Commercialization of Consórcio Quotas
-- [X] Conducting Consórcio Quota Lottery via VRF
+- [X] Creation of _Consórcio_ Titles
+- [X] Commercialization of _Consórcio_ Quotas
+- [X] Conducting _Consórcio_ Quota Lottery via VRF
 - [X] Payments, Delays, and Application of Interest
 - [X] Creation of Allocation Permissions through Chainlink CCIP
 - [X] Verification of Guarantees
@@ -296,7 +296,7 @@ Responsible for collecting information from the database of [FIPE](https://www.f
 
 ## 4. Operation
 
-The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These Consórcios have a limited number of participants and each Consórcio has an interest policy against delinquency. This is defined before their creation.
+The protocol is developed using smart contracts in Solidity. These contracts enable the Protocol Administration to create _Consórcio_ Titles of various values and durations. These _Consórcios_ have a limited number of participants and each _Consórcio_ has an interest policy against default. This is defined before their creation.
 
 </br>
 
@@ -328,9 +328,9 @@ Objective: This process aims to enhance the financial sustainability of the prot
 
 ### 4.3. Withdrawal Conditions
 
-The withdrawal of a drawn consórcio quota is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
+The withdrawal of a drawn _consórcio_ quota is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
 
-- Full Payment of the Consórcio quota:
+- Full Payment of the _Consórcio_ quota:
    </br>
   The total value of the quota must be paid.
 
@@ -534,7 +534,7 @@ After the settlement of all installments, the allocated guarantee is returned to
 
 This is a simple and straightforward projection, covering only the costs of a single _Consórcio_ Title. We will not take into account the contract deployment costs.
 
-The sources of the data used here is at the end of the document.
+The sources of the data used here are at the end of the document.
 
 </br>
 
@@ -556,11 +556,11 @@ For this projection, we consider the following information:
 
 ### 5.2. _Consórcio_ Title - Matic
 
-We consider a complete cycle of a Consórcio with 100 installments.
+We consider a complete cycle of a _Consórcio_ with 100 installments.
 
 | Action             | Cost in wei          | Calls | Total Wei Cost     |
 | ------------------ | -------------------- | ----- | ------------------ |
-| Consórcio Creation | 0.02801992           | 1     | 0.02801992         |
+| _Consórcio_ Creation | 0.02801992           | 1     | 0.02801992         |
 | Selling opening    | 0.0207426017212544   | 1     | 0.0207426017212544 |
 | Selling closing    | 0.0207426017212544   | 1     | 0.0207426017212544 |
 | VRF Calls          | 0.00090366124154694  | 100   | 0.09036612         |
@@ -608,10 +608,10 @@ NOTE²: Regarding the calls of Functions and Automation, we assume that the func
 
 </br>
 
-We will consider the average percentage of the amount withdrawn in 2022 as a parameter. Based on 2022 data, only 20% of the total amount moved was withdrawn. Therefore, we will only consider 20% of the Consórcio in the Open Withdraw mode.
+We will consider the average percentage of the amount withdrawn in 2022 as a parameter. Based on 2022 data, only 20% of the total amount moved was withdrawn. Therefore, we will only consider 20% of the _Consórcio_ in the Open Withdraw mode.
 
 In other words:
-Out of the 100 shares of this Consórcio, only 20 would be in the Open mode and, therefore, would pay a 10% administrative fee. The rest would be under the Conditional mode and, therefore, would contribute with a 5% administrative fee.
+Out of the 100 shares of this _Consórcio_, only 20 would be in the Open mode and, therefore, would pay a 10% administrative fee. The rest would be under the Conditional mode and, therefore, would contribute with a 5% administrative fee.
 
 </br>
 
@@ -628,24 +628,40 @@ R$ 100,00 / 4,91 = $ 20.36 ~ $ 20.00
 
 Payments Monthly - **100x**
 
+</br>
+
 Open Withdraw Number of Payments - **20x**
 Conditional Withdraw Number of Payments - **80x**
+
+<br/>
 
 Open Withdraw Payment Value - $ **21.00**
 Conditional Withdraw Payment Value - $ **22.00**
 
+</br>
+
 Total Received from Open Withdraw - 20 _ $ 21.00 = $ **420.00**
 Total Received from Conditional Withdraw - 80 _ $ 22.00 = $ **1,760.00**
 
+</br>
+
 Total Received Monthly - $ **2,180.00**
+
+</br>
 
 Total Installments - **100**
 
-Total Received from Payments through the entire period of Consórcio = $ 2,180.00 _ 100 = $ **218,000.00**
-Total Paid to Participants through the entire period of Consórcio = $2,000.00 _ 100 = $ **200,000.00**
+</br>
+
+Total Received from Payments through the entire period of _Consórcio_ = $ 2,180.00 _ 100 = $ **218,000.00**
+Total Paid to Participants through the entire period of _Consórcio_ = $2,000.00 _ 100 = $ **200,000.00**
+
+</br>
 
 Diff = $ **18,000.00**
 Total Costs = $ **10,922.51**
+
+</br>
 
 Profit = $ **7,077.49**
 
@@ -685,7 +701,7 @@ Measures such as developing classifications for accepted guarantees can reduce t
 
 With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent. 
 
-Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary. 
+Moreover, it opens a door for clients to diversify their investment portfolio, reduces default, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary. 
 
 Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system. 
 
@@ -802,7 +818,7 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 - Input used in demo:
   </br>
-  ["motos","77","5223","2015-1"]
+  ```["motos","77","5223","2015-1"]```
 
 </br>
 
