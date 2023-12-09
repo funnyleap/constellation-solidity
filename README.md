@@ -47,6 +47,8 @@
    4.4.2. Allocation Using Tokenized Assets
 
    4.5. _Consórcio_ Quota Withdrawal
+
+   4.5.1. Withdrawal Process
    
 </br>
 
@@ -242,6 +244,8 @@ Upon acquiring a _Consórcio_ Quota, the client has two main options for withdra
    - Withdrawal is only permitted after the Title exceeds the mark of 50% of the participants drawn.
    - Administration Fee: 5% of the Quota value, diluted in monthly installments.
 
+</br>
+
 For example, if the total number of draws is 10, withdrawal can only be made from draw 6 onwards, even if the client has been drawn earlier.
 
 </br>
@@ -249,6 +253,7 @@ For example, if the total number of draws is 10, withdrawal can only be made fro
 ### 4.2. Investment of Received Funds
 
 The funds received from Conditional Withdrawal titles will be invested in partner protocols to generate additional revenue for Horizon.
+
 Objective: This process aims to enhance the financial sustainability of the protocol and offer better opportunities to participants.
 
 </br>
@@ -257,18 +262,30 @@ Objective: This process aims to enhance the financial sustainability of the prot
 
 The withdrawal of a drawn consórcio quota is not unrestricted. Withdrawal is conditional upon meeting one of the following conditions:
 
-Full Payment of the Consórcio quota: The total value of the quota must be paid.
-Allocation of Guarantees: The client may choose to allocate guarantees to enable the withdrawal.
+- Full Payment of the Consórcio quota:
+   </br>
+  The total value of the quota must be paid.
 
-- Allocation of Guarantees
-  The client has two main options for guarantee allocation:
+- Allocation of Guarantees:
+  </br>
+  The client may choose to allocate guarantees to enable the withdrawal.
 
-- Use of Paid-Up or Partially Paid _Consórcio_ Quotas
-  Quotas that have been fully paid up or with an amount paid more than twice the outstanding value of the quota in which the guarantee will be allocated.
-  Applicability: This option is ideal for clients who possess other titles with significant payments already made.
-- Use of Tokenized Assets
-  Tokenized Assets can be used as collateral for withdrawal.
-  Advantage: Provides a flexible alternative for clients who own tokenized digital assets.
+
+   - Use of Paid-Up or Partially Paid _Consórcio_ Quotas
+     </br>
+     Quotas that have been fully paid up or with an amount paid more than twice the outstanding value of the quota in which the guarantee will be allocated.
+     
+      Applicability:
+      </br>
+      This option is ideal for clients who possess other titles with significant payments already made.
+   
+   - Use of Tokenized Assets
+     </br>
+     Tokenized Assets can be used as collateral for withdrawal.
+
+     Advantage:
+     </br>
+     Provides a flexible alternative for clients who own tokenized digital assets.
 
 </br>
 
@@ -282,10 +299,21 @@ After a Quota is drawn, the winner has the option to allocate guarantees to rele
 
 To use a title as collateral, the owner of the drawn title needs to provide some essential information:
 
-Identifier of the Drawn _Consórcio_ Title: Identification number of the title that your quota was drawn.
-Identifier of Your Drawn Quota: Number of your quota or participation in the drawn title.
-Identifier of the _Consórcio_ Title Used as Collateral: Identification number of the title that the quota you wish to use as collateral.
-Identifier of Your Quota in the Collateral Title: Number of your quota that will be used as collateral.
+- Identifier of the Drawn _Consórcio_ Title:
+  </br>
+  Identification number of the title that your quota was drawn.
+  
+- Identifier of Your Drawn Quota:
+  </br>
+  Number of your quota or participation in the drawn title.
+  
+- Identifier of the _Consórcio_ Title Used as Collateral:
+  </br>
+  Identification number of the title that the quota you wish to use as collateral.
+  
+- Identifier of Your Quota in the Collateral Title:
+  </br>
+  Number of your quota that will be used as collateral.
 
 </br>
 
@@ -306,11 +334,17 @@ If the value of quota 15 from _Consórcio_ 5, used as collateral, meets the requ
 
 Tokenized Assets are digital assets that represent ownership of a real or virtual property. They can be used as collateral in the following ways:
 
-- **Network Compatibility:** The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates. <br/>
+- Network Compatibility:
+  </br>
+  The Tokenized Asset can be allocated on any network compatible with the CCIP that Horizon operates.
 
-- **Value Assessment:** Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the _Consórcio_ quota, it will be accepted as collateral. <br/>
+- Value Assessment:
+  </br>
+  Before allocation, the value of the Tokenized Asset is assessed through Chainlink Functions and the FIPE API. If it is equivalent to or greater than the minimum value required for the _Consórcio_ quota, it will be accepted as collateral. <br/>
 
-- **Automated Monitoring:** After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
+- Automated Monitoring:
+  </br>
+  After allocation, the value of the Tokenized Asset is automatically monitored. If there are significant variations in value, measures can be taken to maintain the integrity of the protocol.
 
 </br>
 
@@ -318,14 +352,23 @@ Tokenized Assets are digital assets that represent ownership of a real or virtua
 
 The withdrawal of the Quota value is an important process in the Horizon protocol and can be performed under two main conditions:
 
-**Full Payment of the Title:** Withdrawal is permitted after the full payment of the Quota value. <br/>
-**Allocation of Guarantees:** If guarantees are allocated according to the protocol's rules, withdrawal is also released. <br/>
+- Full Payment of the Title:
 
-### Withdrawal Process
+  Withdrawal is permitted after the full payment of the Quota value.
+  
+- Allocation of Guarantees:
+
+   If guarantees are allocated according to the protocol's rules, withdrawal is also released.
+
+</br>
+
+### 4.5.1. Withdrawal Process
 Once one of the above conditions is met, the withdrawal process can be initiated:
 
-**Owner's Initiative:** Typically, the quota owner initiates the withdrawal. <br/>
-**Administrative Intervention:** In specific cases, the protocol administration can transfer the withdrawal value directly to the quota owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
+- Owner's Initiative: Typically, the quota owner initiates the withdrawal.
+- Administrative Intervention:** In specific cases, the protocol administration can transfer the withdrawal value directly to the quota owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
+
+</br>
 
 ### Flexibility and Security
 This withdrawal system has been designed to offer flexibility to users while maintaining the security and integrity of the protocol.
