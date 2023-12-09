@@ -49,7 +49,19 @@
    4.5. _Consórcio_ Quota Withdrawal
 
    4.5.1. Withdrawal Process
-   
+
+   4.5.2. Flexibility and Security
+
+   4.6. Management of Default and Interest
+
+   4.6.1. Payment Policy
+
+   4.6.2. Default and Interest Application
+
+   4.7. _Consórcio_ Quota Cancellation
+
+ 7. Developer Session
+    
 </br>
 
 ### Horizon Links
@@ -353,40 +365,76 @@ Tokenized Assets are digital assets that represent ownership of a real or virtua
 The withdrawal of the Quota value is an important process in the Horizon protocol and can be performed under two main conditions:
 
 - Full Payment of the Title:
-
+  </br>
   Withdrawal is permitted after the full payment of the Quota value.
   
 - Allocation of Guarantees:
-
-   If guarantees are allocated according to the protocol's rules, withdrawal is also released.
+  </br>
+  If guarantees are allocated according to the protocol's rules, withdrawal is also released.
 
 </br>
 
 ### 4.5.1. Withdrawal Process
 Once one of the above conditions is met, the withdrawal process can be initiated:
 
-- Owner's Initiative: Typically, the quota owner initiates the withdrawal.
-- Administrative Intervention:** In specific cases, the protocol administration can transfer the withdrawal value directly to the quota owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
+- Owner's Initiative:
+  </br>
+  Typically, the quota owner initiates the withdrawal.
+  
+- Administrative Intervention:
+  </br>
+  In specific cases, the protocol administration can transfer the withdrawal value directly to the quota owner. This may occur for operational or exceptional reasons defined by the protocol. <br/>
 
 </br>
 
-### Flexibility and Security
+### 4.5.2. Flexibility and Security
 This withdrawal system has been designed to offer flexibility to users while maintaining the security and integrity of the protocol.
 
-## Management of Delinquency and Interest
+</br>
 
-### Payment Policy
-**Payment Dates:** The payment dates for each _Consórcio_ Title are established at the time of their creation. <br/>
-**Administrative Flexibility:** The protocol administration has the prerogative to postpone payment dates if necessary, but never to advance them.
+## 4.6. Management of Default and Interest
 
-### Delinquency and Interest Application
-**Attention to Dates:** Clients must be attentive to payment dates to avoid delinquency. <br/>
-**Interest for Late Payment:** In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the _Consórcio_ Title and aim to maintain the financial health of the protocol. <br/>
-**Consequences of Delinquency:** If the payment delay exceeds two installments, the _Consórcio_ quota will be considered delinquent and subject to cancellation.
+</br>
 
-## _Consórcio_ Quota Cancellation
-**Cancellation Process:** The cancellation of a Quota is a last resource measure, applied only in cases of significant delinquency.
-**Impact of Cancellation:** The cancellation of a quota can have financial implications for the holder, including the loss of any payments already made.
+### 4.6.1. Payment Policy
+
+- Payment Dates:
+  </br>
+  The payment dates for each _Consórcio_ Title are established at the time of their creation.
+  
+- Administrative Flexibility:
+  </br>
+  The protocol administration has the prerogative to postpone payment dates if necessary, but never to advance them.
+
+</br>
+
+### 4.6.2. Default and Interest Application
+
+- Attention to Dates:
+  </br>
+  Clients must be attentive to payment dates to avoid default.
+  
+- Interest for Late Payment:
+  </br>
+  In case of payment delay, the pre-defined interest will be applied. These interest rates are established at the creation of the _Consórcio_ Title and aim to maintain the financial health of the protocol.
+
+- Consequences of Default:
+  </br>
+  If the payment delay exceeds two installments, the _Consórcio_ quota will be considered default and subject to cancellation.
+
+</br>
+
+## 4.7. _Consórcio_ Quota Cancellation
+
+- Cancellation Process:
+  </br>
+  The cancellation of a Quota is a last resource measure, applied only in cases of significant default.
+
+- Impact of Cancellation:
+  </br>
+  The cancellation of a quota can have financial implications for the holder, including the loss of any payments already made.
+
+</br> 
 
 ## Penalty Policy
 
@@ -405,7 +453,7 @@ This withdrawal system has been designed to offer flexibility to users while mai
 
 After the settlement of all installments, the allocated guarantee is returned to the same address responsible for the allocation in the Quota.
 
-# Evolution of the Protocol
+## 5. Evolution of the Protocol
 
 Given the structure presented, the protocol has vast potential for growth and evolution. Among the points that have been discussed, we have:
 
@@ -455,7 +503,7 @@ In summary, the initial product and its possible developments are not only usefu
 
 </br>
 
-## Conclusion
+## 6. Conclusion
 
 Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations. <br/>
 
@@ -465,9 +513,9 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-## Developer Session
+## 7. Developer Session
 
-### Smart contracts
+### 7.1. Smart contracts
 
 - [Horizon](contracts/Horizon.sol)
 
