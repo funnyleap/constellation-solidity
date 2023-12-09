@@ -70,35 +70,51 @@
 
    4.8.4. Return of the Guarantee
 
-5. [Evolution of the Protocol](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#5-evolution-of-the-protocol)
+5. _Consórcio_ Cost Projection
 
-   5.1. Optimization of Phase 1
+   5.1. Objective
 
-   5.2. Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas
+   5.2. _Consórcio_ Title - Matic
 
-   5.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
+   5.3. Chainlink Tools - Link
 
-   5.4. Loan Services Using Tokenized Assets as Collateral
+   5.4. Total Cost - $
 
-   5.5. Financing Using Tokenized Assets as Collateral
+   5.5. _Consórcio_ Title - Withdraw Modalities
 
+   5.6. Average Ticket Practiced in Brazil
 
+   5.7. Monthly income
 
+   5.8. Conclusion
+
+   5.9. Research References
+
+6. Evolution of the Protocol
+
+   6.1. Optimization of Phase 1
+
+   6.2. Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas
+
+   6.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
+
+   6.4. Loan Services Using Tokenized Assets as Collateral
+
+   6.5. Financing Using Tokenized Assets as Collateral
+
+7. Conclusion
    
+8. Developer Session
 
-6. [Conclusion](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#6-conclusion)
-   
-7. [Developer Session](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#7-developer-session)
+   8.1. Smart contracts
 
-   7.1. Smart contracts
+   8.2. Blockchains
 
-   7.2. Blockchains
+   8.3. Tools
 
-   7.3. Tools
+   8.4. API
 
-   7.4. API
-
-   7.5. Want to try Thunder Client?
+   8.5. Want to try Thunder Client?
     
 </br>
 
@@ -514,13 +530,150 @@ After the settlement of all installments, the allocated guarantee is returned to
 
 </br>
 
-## 5. Evolution of the Protocol
+## 5. _Consórcio_ Cost Projection
+
+This is a simple and straightforward projection, covering only the costs of a single _Consórcio_ Title. We will not take into account the contract deployment costs.
+
+The sources of the data used here is at the end of the document.
+
+</br>
+
+### 5.1. Objective
+
+The purpose of this test is to demonstrate the feasibility of the protocol by practicing minimal administrative fees. </br>
+
+For this projection, we consider the following information:
+
+- Token value
+
+   | Data  | Token   | Valor   |
+   | ----- | ------- | ------- |
+   | 07/12 | Matic   | $ 0,85  |
+   | 07/12 | Link    | $ 15,73 |
+   | 07/12 | BRLxUSD | R$ 4,91 |
+
+</br>
+
+### 5.2. _Consórcio_ Title - Matic
+
+We consider a complete cycle of a Consórcio with 100 installments.
+
+| Action             | Cost in wei          | Calls | Total Wei Cost     |
+| ------------------ | -------------------- | ----- | ------------------ |
+| Consórcio Creation | 0.02801992           | 1     | 0.02801992         |
+| Selling opening    | 0.0207426017212544   | 1     | 0.0207426017212544 |
+| Selling closing    | 0.0207426017212544   | 1     | 0.0207426017212544 |
+| VRF Calls          | 0.00090366124154694  | 100   | 0.09036612         |
+| Reveal Winner      | 0.000303593319049576 | 100   | 0.03035933         |
+| Withdrawal         | 0.00018869           | 1     | 0.00018869         |
+
+NOTE: The value in wei may vary depending on the network situation.
+
+</br>
+
+### 5.3. Chainlink Tools - Link
+
+| Tool            | Value per call       | Calls | Total Wei Cost |
+| --------------- | -------------------- | ----- | -------------- |
+| VRF Link        | 0.000532970963743846 | 100   | 0.0532971      |
+| CCIP Link       | 0.124037857          | 15    | 1.86056786     |
+| Functions Link  | 0,210627978631381    | 3000  | 631.883936     |
+| Automation Link | 0,0201923013272661   | 3000  | 60.576904      |
+
+</br>
+
+### 5.4. Total Cost - $
+
+| Token | Wei Cost   | Value in $ | Total Cost - $ |
+| ----- | ---------- | ---------- | -------------- |
+| Matic | 0,19041927 | $0.85      | $ 0.16         |
+| Link  | 694.374705 | $15.73     | $ 10,922.51    |
+
+**Total cost:** $ 10,922.67
+
+</br>
+
+NOTE¹: According to records from the Central Bank of Brazil, under current conditions, only 5% of those drawn have allocated guarantees and made the withdrawal of the amount. Therefore, we consider 5 cycles of the CCIP. Each cycle has three calls.
+
+NOTE²: Regarding the calls of Functions and Automation, we assume that the functions will be used from the first month. That is, the first winner would allocate a guarantee right in the first month, and we would monitor it daily until the payment of the 100 installments.
+
+</br>
+
+### 5.5. _Consórcio_ Title - Withdraw Modalities
+
+| Modality             | Adm Fee |
+| -------------------- | ------- |
+| Open Withdraw        | 10%     |
+| Conditional Withdraw | 5%      |
+
+</br>
+
+We will consider the average percentage of the amount withdrawn in 2022 as a parameter. Based on 2022 data, only 20% of the total amount moved was withdrawn. Therefore, we will only consider 20% of the Consórcio in the Open Withdraw mode.
+
+In other words:
+Out of the 100 shares of this Consórcio, only 20 would be in the Open mode and, therefore, would pay a 10% administrative fee. The rest would be under the Conditional mode and, therefore, would contribute with a 5% administrative fee.
+
+</br>
+
+### 5.6. Average Ticket Practiced in Brazil
+
+In Brazil, the average cost of Tickets is BRL 100.00. The average Administrative Fee is 17%.
+
+So, converting the BRL value to USD:
+R$ 100,00 / 4,91 = $ 20.36 ~ $ 20.00
+
+</br>
+
+### 5.7. Monthly income
+
+Payments Monthly - **100x**
+
+Open Withdraw Number of Payments - **20x**
+Conditional Withdraw Number of Payments - **80x**
+
+Open Withdraw Payment Value - $ **21.00**
+Conditional Withdraw Payment Value - $ **22.00**
+
+Total Received from Open Withdraw - 20 _ $ 21.00 = $ **420.00**
+Total Received from Conditional Withdraw - 80 _ $ 22.00 = $ **1,760.00**
+
+Total Received Monthly - $ **2,180.00**
+
+Total Installments - **100**
+
+Total Received from Payments through the entire period of Consórcio = $ 2,180.00 _ 100 = $ **218,000.00**
+Total Paid to Participants through the entire period of Consórcio = $2,000.00 _ 100 = $ **200,000.00**
+
+Diff = $ **18,000.00**
+Total Costs = $ **10,922.51**
+
+Profit = $ **7,077.49**
+
+</br>
+
+### 5.8. Conclusion
+
+Horizon has a great potential! Even practicing administrative fee two times smaller than the value practiced on web2.
+
+Here, with this projection we don't consider interests from delayed payments or even the income from investments made with de value locked from Conditional Withdraw modality.
+
+</br>
+
+### 5.9. Research References
+
+[Coinbase](https://www.coinbase.com/pt/)
+
+[Central Bank of Brazil](https://www.bcb.gov.br/estabilidadefinanceira/consorciobd)
+
+</br>
+
+## 6. Evolution of the Protocol
 
 Given the structure presented, the protocol has vast potential for growth and evolution. Among the points that have been discussed, we have:
 
 </br>
 
-### 5.1. Optimization of Phase 1
+### 6.1. Optimization of Phase 1
 
 Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion.
 
@@ -528,7 +681,7 @@ Measures such as developing classifications for accepted guarantees can reduce t
 
 </br>
 
-### 5.2. Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas
+### 6.2. Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas
 
 With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent. 
 
@@ -538,7 +691,7 @@ Finally, the introduction of a secondary market can lead to additional innovatio
 
 </br>
 
-### 5.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
+### 6.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
 
 Developing new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have: 
 
@@ -550,7 +703,7 @@ Developing new partnerships can bring numerous strategic and operational benefit
 
 </br>
 
-### 5.4. Loan Services Using Tokenized Assets as Collateral
+### 6.4. Loan Services Using Tokenized Assets as Collateral
 
 - Expands Horizon's scope to countries with lower interest rates where, initially, _consórcio_ would not be a viable option
   
@@ -570,7 +723,7 @@ Chainlink Data Streams would be a crucial tool for the proper functioning of the
 
 </br>
 
-### 5.5. Financing Using Tokenized Assets as Collateral
+### 6.5. Financing Using Tokenized Assets as Collateral
 
 - Easy and quick access to capital, especially for entrepreneurs;
 - Access to financing for large purchases such as real estate, furniture, and general equipment.
@@ -578,7 +731,7 @@ Chainlink Data Streams would be a crucial tool for the proper functioning of the
 
 </br>
 
-### 5.6. Our Thoughts
+### 6.6. Our Thoughts
  
 All the potential scenarios presented converge to efficient and transparent processes through the employed technology and generate financial inclusion for individuals and businesses that lack access to loans from traditional institutions but have assets and need to create value from them.
 
@@ -586,7 +739,7 @@ In summary, the initial product and its possible developments are not only usefu
 
 </br>
 
-## 6. Conclusion
+## 7. Conclusion
 
 Horizon represents a significant advancement in democratizing access to the Web3 ecosystem, with a special focus on the financial inclusion of middle and low-income individuals. By integrating innovative technologies such as Chainlink VRF, CCIP, Functions, and Automation, and the integration with the FIPE Table, Horizon establishes a new standard in terms of security, transparency, and auditability in decentralized financial operations. <br/>
 
@@ -596,9 +749,9 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-## 7. Developer Session
+## 8. Developer Session
 
-### 7.1. Smart contracts
+### 8.1. Smart contracts
 
 - [Horizon](contracts/Horizon.sol)
 
@@ -620,7 +773,7 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-### 7.2. Blockchains
+### 8.2. Blockchains
 
 - [Polygon](https://polygon.technology)
 
@@ -628,7 +781,7 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-### 7.3. Tools
+### 8.3. Tools
 
 - [Chainlink Automation](https://docs.chain.link/chainlink-automation)
 
@@ -640,7 +793,7 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-### 7.4. API
+### 8.4. API
 
 - [API GitHub Repository](https://github.com/deividfortuna/fipe)
 
