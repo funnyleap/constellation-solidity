@@ -60,7 +60,27 @@
 
    4.7. _Consórcio_ Quota Cancellation
 
- 7. Developer Session
+   4.8. Penalty Policy
+
+   4.8.1. Purpose of Penalties
+
+   4.8.2. Penalties on Quotas without Allocated Guarantees
+
+   4.8.3. Penalties on Quotas with Allocated Guarantees
+
+   4.8.4. Return of the Guarantee
+
+5. Evolution of the Protocol
+
+   5.1. Optimization of Phase 1
+
+   5.2. Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas
+
+   5.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
+
+7. Conclusion
+   
+8. Developer Session
     
 </br>
 
@@ -124,7 +144,9 @@ If we project these values globally, considering only countries similar to Brazi
 
 ## 2. Horizon Protocol
 
-Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired _Consórcio_ Title. To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people.
+Horizon is a DEFI protocol aimed at simplifying access to the Web3 ecosystem, primarily for people with middle to low-income, making the process safer, more transparent, and auditable. With the imminent advancement of Tokenized Assets, we go further by implementing a logic that allows these Assets to be used as collateral for withdrawing the value of the acquired _Consórcio_ Title. 
+
+To make this possible and to enable its use in various regions of the planet, in addition to the reliability of the Chainlink tools that will be used, the main barrier that needs to be overcome is the onboarding process, which until recently was restrictive due to the limited options of available Wallets. Today, we have a great ally in ERC-4337. And this is the first step towards changing the lives of many people.
 
 </br>
 
@@ -392,9 +414,7 @@ This withdrawal system has been designed to offer flexibility to users while mai
 
 </br>
 
-## 4.6. Management of Default and Interest
-
-</br>
+### 4.6. Management of Default and Interest
 
 ### 4.6.1. Payment Policy
 
@@ -424,7 +444,7 @@ This withdrawal system has been designed to offer flexibility to users while mai
 
 </br>
 
-## 4.7. _Consórcio_ Quota Cancellation
+### 4.7. _Consórcio_ Quota Cancellation
 
 - Cancellation Process:
   </br>
@@ -432,44 +452,82 @@ This withdrawal system has been designed to offer flexibility to users while mai
 
 - Impact of Cancellation:
   </br>
-  The cancellation of a quota can have financial implications for the holder, including the loss of any payments already made.
+  The cancellation of a quota can have financial implications for the holder, including the loss of the payments already made.
 
 </br> 
 
-## Penalty Policy
+### 4.8. Penalty Policy
 
-### Purpose of Penalties
-**Function of Penalties:** Penalties are applied in the event of a quota cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
+### 4.8.1. Purpose of Penalties
 
-### Penalties on Quotas without Allocated Guarantees
-**Pre-Draw Cancellation:** If a quota is canceled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty. <br/>
-**Purpose:** This measure aims to offset the financial impact of the cancellation on the overall fund pool.
+- Function of Penalties:
+  </br>
+  Penalties are applied in the event of a quota cancellation to ensure the stability of the protocol and to protect the interests of the other participants.
 
-### Penalties on Quotas with Allocated Guarantees
-**Post-Draw Cancellation with Guarantee:** For Quotas canceled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
-**Treatment of the Guarantee:** The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the canceled quota.
+</br>
 
-## Return of the Guarantee
+### 4.8.2. Penalties on Quotas without Allocated Guarantees
+
+- Pre-Draw Cancellation:
+  </br>
+  If a quota is canceled before being drawn and does not have allocated guarantees, the amount already paid by the holder will be retained as a penalty.
+  
+- Purpose:
+  </br>
+  This measure aims to offset the financial impact of the cancellation on the overall fund pool.
+
+</br>
+
+### 4.8.3. Penalties on Quotas with Allocated Guarantees
+
+- Post-Draw Cancellation with Guarantee:
+  </br>
+  For Quotas canceled after the draw, in which guarantees have already been allocated, the guarantee will be forfeited as a penalty.
+  
+- Treatment of the Guarantee:
+  </br>
+  The confiscated guarantee will be sold in the secondary market. The proceeds will be used to cover the penalty corresponding to the canceled quota.
+
+</br>
+
+### 4.8.4. Return of the Guarantee
 
 After the settlement of all installments, the allocated guarantee is returned to the same address responsible for the allocation in the Quota.
+
+</br>
 
 ## 5. Evolution of the Protocol
 
 Given the structure presented, the protocol has vast potential for growth and evolution. Among the points that have been discussed, we have:
 
-1 - **Optimization of Phase 1**.
-Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion. <br/>
+</br>
+
+### 5.1. Optimization of Phase 1
+
+Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion.
+
+</br>
 
 Measures such as developing classifications for accepted guarantees can reduce the final costs of the _Consórcio_. Therefore, cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
 
-2 - **Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas**
-With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent. </br>
+</br>
 
-Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary. </br>
+### 5.2. Creation of a Secondary Market for the Commercialization of _Consórcio_ Quotas
 
-Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system. </br>
+With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent. 
 
-3 - **Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values**
+</br>
+
+Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary. 
+
+</br>
+
+Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system. 
+
+</br>
+
+### 5.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
+
 Developing new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have: 
 
 - Access to new markets through other DeFi protocols or traditional finance significantly increases the number of users;
