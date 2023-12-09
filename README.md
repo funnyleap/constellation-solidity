@@ -14,6 +14,8 @@
 
    1.3. How does _consórcio_ works?
    
+   1.4. _Consórcio_ Advantages
+   
 2. [Horizon Protocol](https://github.com/BellumGalaxy/constellation-bg#2-horizon-protocol)
 
    2.1. The Prototype
@@ -173,6 +175,30 @@ If we project these values globally, considering only countries similar to Brazi
 <br/>
 
 ### 1.3. How does _consórcio_ works?
+
+In a _consórcio_, the value of the good or service is diluted over a predetermined period, and all group members contribute throughout this period. Monthly (or as stipulated in the contract), the administrator contemplates them, either by draw or bid, with the credit in the amount of the contracted good or service, until all members are served (Source: [ABAC - What is Consórcio](https://abac.org.br/o-consorcio/o-que-e-consorcio)).
+
+</br>
+
+Let's look at a simplified example of how it works:
+
+Imagine you have the dream of owning your property, and it costs about 120 thousand dollars. Like you, many other people have this dream but don't have the money to purchase it immediately. You manage to gather a group of 100 people, so, every month, each one will contribute 1,200 dollars. Therefore, every month the group will have a fund of 1,200 (paid per person) x 100 (people in the group) = 120 thousand dollars.
+
+To decide who will receive this entire amount, you do a draw. The person drawn receives the 120 thousand dollars and can fulfill their dream of buying a property. This person continues to pay the monthly 1,200 dollars. Also, the person who has already been drawn will no longer participate in future draws, as he has already been selected.
+
+And so, the draws continue every month, until the entire group has been drawn.
+
+With that, everyone in the group eventually manages to buy their property, but the order of who buys first is decided by draw. And no one needs to have all the money at once, as everyone contributes a little each month.
+
+</br>
+
+### 1.4. _Consórcio_ Advantages
+
+- no need for a down payment, as is usually required in financing
+- no need to provide guarantees until the moment of contemplation (or being "drawn"), making the adherence process simpler
+- a wide variety of terms and values, allowing each client to choose what suits them best
+- fixed terms
+- low risk
 
 </br>
 
