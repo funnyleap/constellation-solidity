@@ -70,7 +70,7 @@
 
    4.8.4. Return of the Guarantee
 
-5. Evolution of the Protocol
+5. [Evolution of the Protocol](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#5-evolution-of-the-protocol)
 
    5.1. Optimization of Phase 1
 
@@ -78,9 +78,27 @@
 
    5.3. Encouragement of Partnerships for the Creation of New Pools for Yield on Locked Values
 
-7. Conclusion
+   5.4. Loan Services Using Tokenized Assets as Collateral
+
+   5.5. Financing Using Tokenized Assets as Collateral
+
+
+
    
-8. Developer Session
+
+6. [Conclusion](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#6-conclusion)
+   
+7. [Developer Session](https://github.com/BellumGalaxy/constellation-bg?tab=readme-ov-file#7-developer-session)
+
+   7.1. Smart contracts
+
+   7.2. Blockchains
+
+   7.3. Tools
+
+   7.4. API
+
+   7.5. Want to try Thunder Client?
     
 </br>
 
@@ -506,8 +524,6 @@ Given the structure presented, the protocol has vast potential for growth and ev
 
 Given the billion-dollar market for investments of this nature, we need to reinforce our structure. This involves restructuring smart contracts for real environments, conducting audits, and redesigning UI and UX. Additionally, economic studies and local market analyses are crucial to gauge the challenges of expansion.
 
-</br>
-
 Measures such as developing classifications for accepted guarantees can reduce the final costs of the _Consórcio_. Therefore, cost management, adjustments of fees and penalties, processing of guarantees, more comprehensive studies, and targeted research can create new strategic advantages, always aiming for a better experience and greater opportunities for the end user. It is important to emphasize that beyond internal focus, we are aware that to expand our target audience we will also face legal challenges. 
 
 </br>
@@ -516,11 +532,7 @@ Measures such as developing classifications for accepted guarantees can reduce t
 
 With the creation of the Secondary Market, quota holders will have the freedom to trade them. This could involve reducing the quota price for a quick sale in case of need or even marking up the sale of a quota that has been drawn. From this, the protocol benefits from increased liquidity, as the market will be able to dynamically price the Quotas based on supply and demand, making the process fairer and more transparent. 
 
-</br>
-
 Moreover, it opens a door for clients to diversify their investment portfolio, reduces delinquency, facilitates access for new participants, and stimulates participation since, despite having committed, a participant can transfer their Quota if necessary. 
-
-</br>
 
 Finally, the introduction of a secondary market can lead to additional innovations and the growth of the Horizon ecosystem, attracting more users and investors and enhancing the robustness and resilience of the system. 
 
@@ -530,32 +542,45 @@ Finally, the introduction of a secondary market can lead to additional innovatio
 
 Developing new partnerships can bring numerous strategic and operational benefits, expanding the reach of the Protocol. Among these, we have: 
 
-- Access to new markets through other DeFi protocols or traditional finance significantly increases the number of users;
-- Expansion of Resources and Diversification of Investments, tailoring to regional supply and demand;
-- Long-term sustainability by providing stability and continuous innovation.
+- Access to new markets through other DeFi protocols or traditional finance significantly increases the number of users
+  
+- Expansion of Resources and Diversification of Investments, tailoring to regional supply and demand
+  
+- Long-term sustainability by providing stability and continuous innovation
 
-4 - **Loan Services Using Tokenized Assets as Collateral**
+</br>
 
-- Expands Horizon's scope to countries with lower interest rates where, initially, _consórcio_ would not be a viable option;
-- Facilitates access to short-term liquidity using Tokenized Assets;
-- Lower interest rates due to the allocated collateral;
-- Efficiency in the process;
-- Generates liquidity for the Tokenized Asset market;
-- Growth of the protocol as more assets are tokenized around the world.
+### 5.4. Loan Services Using Tokenized Assets as Collateral
+
+- Expands Horizon's scope to countries with lower interest rates where, initially, _consórcio_ would not be a viable option
+  
+- Facilitates access to short-term liquidity using Tokenized Assets
+  
+- Lower interest rates due to the allocated collateral
+  
+- Efficiency in the process
+  
+- Generates liquidity for the Tokenized Asset market
+  
+- Growth of the protocol as more assets are tokenized around the world
+
+</br>
 
 Chainlink Data Streams would be a crucial tool for the proper functioning of the protocol, as well as for monitoring Tokenized Assets.
 
-5 - **Financing Using Tokenized Assets as Collateral**
+</br>
+
+### 5.5. Financing Using Tokenized Assets as Collateral
 
 - Easy and quick access to capital, especially for entrepreneurs;
 - Access to financing for large purchases such as real estate, furniture, and general equipment.
 - Due to the guaranteed nature, we can offer favorable financing conditions such as lower interest rates and flexible repayment terms according to the need.
 
 </br>
+
+### 5.6. Our Thoughts
  
 All the potential scenarios presented converge to efficient and transparent processes through the employed technology and generate financial inclusion for individuals and businesses that lack access to loans from traditional institutions but have assets and need to create value from them.
-
-</br>
 
 In summary, the initial product and its possible developments are not only useful for investors but also for people who, in times of need, can meet specific demands such as health issues by acquiring loans and financing quickly and conveniently using their assets as collateral.
 
@@ -595,7 +620,7 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-### Blockchains
+### 7.2. Blockchains
 
 - [Polygon](https://polygon.technology)
 
@@ -603,7 +628,7 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-### Tools
+### 7.3. Tools
 
 - [Chainlink Automation](https://docs.chain.link/chainlink-automation)
 
@@ -615,27 +640,35 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
 
 </br>
 
-### API
+### 7.4. API
 
 - [API GitHub Repository](https://github.com/deividfortuna/fipe)
 
-- API_Key: https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
+- API_Key:
+  </br>     https://parallelum.com.br/fipe/api/v1/${tipoAutomovel}/marcas/${idMarca}/modelos/${idModelo}/anos/${dataModelo}
 
-- Input used in demo - ["motos","77","5223","2015-1"].  <br/>
+- Input used in demo:
+  </br>
+  ["motos","77","5223","2015-1"]
 
 </br>
 
-### Want to try Thunder Client?
+### 7.5. Want to try Thunder Client?
 
-- **Body**
+- Body
+  </br>
+  ```
   {
   "codigoTipoVeiculo": motos,
   "idMarca": 77,
   "idModelo": 5223,
   "dataModelo": "2015-1",
   }
+  ```
 
-- **Response**
+- Response
+  </br>
+  ```
   {
   "TipoVeiculo": 2,
   "Valor": "R$ 41.761,00",
@@ -647,6 +680,5 @@ Furthermore, Horizon's structure is designed to evolve and adapt to the emerging
   "MesReferencia": "novembro de 2023",
   "SiglaCombustivel": "G"
   }
-
-  ---
+  ```
   
