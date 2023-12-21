@@ -7,3 +7,4 @@ hardhat.config.js
 deployments
 tests
 *.json
+HorizonUpgrades.txt
